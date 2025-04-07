@@ -9,7 +9,7 @@ import sc2002.fcsi.grp3.view.ApplicantView;
 
 import java.util.Optional;
 
-public class ApplicantController implements BaseController {
+public class ApplicantController implements IBaseController {
     private final ApplicantView view;
     private final ProjectService projectService;
     private final ApplicationService applicationService;

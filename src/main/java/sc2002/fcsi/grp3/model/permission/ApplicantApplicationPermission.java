@@ -6,7 +6,7 @@ import sc2002.fcsi.grp3.model.User;
 import sc2002.fcsi.grp3.model.enums.FlatType;
 import sc2002.fcsi.grp3.model.enums.MaritalStatus;
 
-public class ApplicantApplicationPermission implements ApplicationPermission {
+public class ApplicantApplicationPermission implements IApplicationPermission {
     @Override
     public boolean canCreateApplication(User user, Project project) {
         if (user.getAge() >= 35 && user.getMaritalStatus() == MaritalStatus.SINGLE) {

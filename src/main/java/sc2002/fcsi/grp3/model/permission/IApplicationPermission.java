@@ -4,7 +4,7 @@ import sc2002.fcsi.grp3.model.Project;
 import sc2002.fcsi.grp3.model.User;
 import sc2002.fcsi.grp3.model.Application;
 
-public interface ApplicationPermission {
+public interface IApplicationPermission {
     boolean canCreateApplication(User user, Project project);
     boolean canViewApplication(User user, Application application);
     boolean canWithdrawApplication(User user, Application application);

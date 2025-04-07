@@ -3,9 +3,8 @@ package sc2002.fcsi.grp3.model.permission;
 import sc2002.fcsi.grp3.model.Application;
 import sc2002.fcsi.grp3.model.Project;
 import sc2002.fcsi.grp3.model.User;
-import sc2002.fcsi.grp3.model.enums.MaritalStatus;
 
-public class ManagerApplicationPermission implements ApplicationPermission {
+public class ManagerApplicationPermission implements IApplicationPermission {
     @Override
     public boolean canCreateApplication(User user, Project project) {
         return false;

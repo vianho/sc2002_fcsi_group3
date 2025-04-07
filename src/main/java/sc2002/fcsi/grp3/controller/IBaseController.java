@@ -1,5 +1,5 @@
 package sc2002.fcsi.grp3.controller;
 
-public interface BaseController {
+public interface IBaseController {
     void start();
 }

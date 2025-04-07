@@ -31,7 +31,7 @@ public class ControllerFactory {
         return new LoginController(authService, viewInit.getLoginView());
     }
 
-    public BaseController createControllerForUser(User user) {
+    public IBaseController createControllerForUser(User user) {
         String roleName = user.getRoleName();
 
         return switch (roleName) {

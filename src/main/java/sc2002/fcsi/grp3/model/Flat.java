@@ -3,9 +3,9 @@ package sc2002.fcsi.grp3.model;
 import sc2002.fcsi.grp3.model.enums.FlatType;
 
 public class Flat {
-    private FlatType type;
+    private final FlatType type;
     private int unitsAvailable;
-    private int sellingPrice;
+    private final int sellingPrice;
 
     public Flat(FlatType type, int unitsAvailable, int sellingPrice) {
         this.type = type;

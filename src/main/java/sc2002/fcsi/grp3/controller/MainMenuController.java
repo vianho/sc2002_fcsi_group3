@@ -4,7 +4,7 @@ import sc2002.fcsi.grp3.model.User;
 import sc2002.fcsi.grp3.session.Session;
 import sc2002.fcsi.grp3.view.MainMenuView;
 
-public class MainMenuController implements BaseController {
+public class MainMenuController implements IBaseController {
     private final MainMenuView view;
     private final LoginController loginController;
     private final ControllerFactory controllerFactory;
@@ -36,7 +36,7 @@ public class MainMenuController implements BaseController {
         boolean success = loginController.login();
         if (!success) return;
         User loggedIn = Session.getCurrentUser();
-        BaseController userController = controllerFactory.createControllerForUser(loggedIn);
+        IBaseController userController = controllerFactory.createControllerForUser(loggedIn);
 
         if (userController != null) {
             userController.start();

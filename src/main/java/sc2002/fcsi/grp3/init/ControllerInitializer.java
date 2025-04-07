@@ -1,7 +1,6 @@
 package sc2002.fcsi.grp3.init;
 
 import sc2002.fcsi.grp3.controller.ControllerFactory;
-import sc2002.fcsi.grp3.controller.LoginController;
 import sc2002.fcsi.grp3.controller.MainMenuController;
 import sc2002.fcsi.grp3.datastore.DataStore;
 
