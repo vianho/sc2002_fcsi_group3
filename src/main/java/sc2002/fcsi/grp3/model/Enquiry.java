@@ -14,6 +14,18 @@ public class Enquiry {
     private LocalDate createdAt;
     private LocalDate lastUpdatedAt;
 
+    public Enquiry(int ID, String title, String content, String reply, User createdby, Project relatedProject, User repliedby, EnquiryStatus status, LocalDate createdAt, LocalDate lastUpdatedAt){
+        this.ID = ID;
+        this.title = title;
+        this.content = content;
+        this.reply = reply;
+        this.createdAt = createdAt;
+        this.relatedProject = relatedProject;
+        this.repliedby = repliedby;
+        this.status = status;
+        this.createdAt = createdAt;
+        this.lastUpdatedAt = lastUpdatedAt;
+    }
     public int getID(){
         return this.ID;
     }
