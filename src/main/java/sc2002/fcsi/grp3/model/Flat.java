@@ -5,9 +5,9 @@ import sc2002.fcsi.grp3.model.enums.FlatType;
 public class Flat {
     private final FlatType type;
     private int unitsAvailable;
-    private final int sellingPrice;
+    private final float sellingPrice;
 
-    public Flat(FlatType type, int unitsAvailable, int sellingPrice) {
+    public Flat(FlatType type, int unitsAvailable, float sellingPrice) {
         this.type = type;
         this.unitsAvailable = unitsAvailable;
         this.sellingPrice = sellingPrice;
@@ -21,7 +21,7 @@ public class Flat {
         return unitsAvailable;
     }
 
-    public int getSellingPrice() {
+    public float getSellingPrice() {
         return sellingPrice;
     }
 

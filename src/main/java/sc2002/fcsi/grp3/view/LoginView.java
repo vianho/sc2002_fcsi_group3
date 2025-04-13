@@ -10,7 +10,7 @@ public class LoginView {
     }
 
     public void showHeader() {
-        System.out.println("\n=== Login ===");
+        prompt.showTitle("Login");
     }
 
     public String promptNRIC() {

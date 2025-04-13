@@ -43,4 +43,8 @@ public final class DataStore {
     public List<Application> getApplications() { return applications; }
 
     public void setApplications(List<Application> applications) { this.applications = applications; }
+
+    public void addApplication(Application application) {
+        applications.add(application);
+    }
 }

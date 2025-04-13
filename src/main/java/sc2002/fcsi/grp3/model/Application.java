@@ -12,14 +12,35 @@ public class Application {
     private final FlatType flatType;
     private ApplicationStatus status;
     private final LocalDate submittedAt;
+    private static int nextId;
 
-    public Application(int id, Project project, User applicant, FlatType flatType, LocalDate submittedAt) {
+    public Application(
+            int id,
+            Project project,
+            User applicant,
+            FlatType flatType,
+            ApplicationStatus status,
+            LocalDate submittedAt
+    ) {
         this.id = id;
         this.project = project;
         this.applicant = applicant;
         this.flatType = flatType;
-        this.status = ApplicationStatus.PENDING;
+        this.status = status;
         this.submittedAt = submittedAt;
+    }
+
+    public Application(
+            Project project,
+            User applicant,
+            FlatType flatType
+    ) {
+        this.id = nextId++;
+        this.project = project;
+        this.applicant = applicant;
+        this.flatType = flatType;
+        this.status = ApplicationStatus.PENDING;
+        this.submittedAt = LocalDate.now();
     }
 
     // getters
@@ -52,5 +73,9 @@ public class Application {
 
     public void setStatus(ApplicationStatus status) {
         this.status = status;
+    }
+
+    public static void setNextId(int id) {
+        nextId = id;
     }
 }
