@@ -9,6 +9,7 @@ public final class DataStore {
     private List<User> users = new ArrayList<>();
     private List<Project> projects = new ArrayList<>();
     private List<Application> applications = new ArrayList<>();
+    private List<Registration> registrations = new ArrayList<>();
 
     private DataStore() {
     }
@@ -47,4 +48,8 @@ public final class DataStore {
     public void addApplication(Application application) {
         applications.add(application);
     }
+
+    public void addRegistration(Registration registration){registrations.add(registration);}
+
+
 }
