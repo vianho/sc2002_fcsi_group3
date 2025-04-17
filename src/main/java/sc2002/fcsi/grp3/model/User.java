@@ -56,6 +56,15 @@ public class User {
         return role.getRoleName();
     }
 
+    public boolean isEligibleFor2R() {
+        return (maritalStatus.equals(MaritalStatus.MARRIED) && age >= 21)
+                || (maritalStatus.equals(MaritalStatus.SINGLE) && age >= 35);
+    }
+
+    public boolean isEligibleForAny() {
+        return (maritalStatus.equals(MaritalStatus.MARRIED) && age >= 21);
+    }
+
     // setters
 
     public void setName(String name) {

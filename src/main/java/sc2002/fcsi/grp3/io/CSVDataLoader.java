@@ -1,29 +1,38 @@
 package sc2002.fcsi.grp3.io;
 
 import sc2002.fcsi.grp3.model.*;
-import sc2002.fcsi.grp3.model.enums.FlatType;
-import sc2002.fcsi.grp3.model.enums.MaritalStatus;
-import sc2002.fcsi.grp3.model.role.IRole;
-import sc2002.fcsi.grp3.model.role.RoleFactory;
+import sc2002.fcsi.grp3.parser.ApplicationParser;
+import sc2002.fcsi.grp3.parser.ProjectParser;
+import sc2002.fcsi.grp3.parser.UserParser;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class CSVDataLoader implements IDataLoader {
-    private final String usersFilePath;
+    private final String userFilePath;
     private final String projectFilePath;
+    private final String applicationFilePath;
+    private final static DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private List<Project> projects;
+    private static Map<Integer, Project> projectMap;
+    private List<User> users;
+    private Map<String, User> userMap;
+    private List<Application> applications;
 
     public CSVDataLoader(
-            String usersFilePath,
-            String projectFilePath
+            String userFilePath,
+            String projectFilePath,
+            String applicationFilePath
     ) {
-        this.usersFilePath = usersFilePath;
+        this.userFilePath = userFilePath;
         this.projectFilePath = projectFilePath;
+        this.applicationFilePath = applicationFilePath;
     }
 
     protected static void readCSVLines(String filepath, Consumer<String[]> rowHandler) {
@@ -39,104 +48,50 @@ public class CSVDataLoader implements IDataLoader {
         }
     }
 
-    protected static User parseUser(String[] tokens) {
-        if (tokens.length != 6) return null;
-
-        String nric = tokens[0].trim();
-        String name = tokens[1].trim();
-        int age = Integer.parseInt(tokens[2].trim());
-        MaritalStatus maritalStatus;
-        if (tokens[3].trim().equalsIgnoreCase("Single")) {
-            maritalStatus = MaritalStatus.SINGLE;
-        } else if (tokens[3].trim().equalsIgnoreCase("Married")) {
-            maritalStatus = MaritalStatus.MARRIED;
-        } else {
-            maritalStatus = null;
-        }
-        String password = tokens[4].trim();
-        IRole role = RoleFactory.fromString(tokens[5].trim());
-        return new User(nric, name, age, password, maritalStatus, role);
-    }
-
     @Override
     public List<User> loadUsers() {
-        List<User> users = new ArrayList<>();
+        users = new ArrayList<>();
+        UserParser userParser = new UserParser();
 
-        readCSVLines(usersFilePath, tokens -> {
+        readCSVLines(userFilePath, tokens -> {
             try {
-                User user = parseUser(tokens);
+                User user = userParser.parse(tokens);
                 if (user != null) users.add(user);
             } catch (Exception e) {
                 System.out.println("Invalid user row: " + Arrays.toString(tokens));
             }
         });
-
+        this.userMap = users.stream()
+                .collect(Collectors.toMap(User::getNric, u -> u));
         return users;
     }
 
-    protected static Project parseProject(String[] tokens) {
-        if (tokens.length != 12) return null;
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-        int projectId = Integer.parseInt(tokens[0].trim());
-        String name = tokens[1].trim();
-        String neighborhood = tokens[2].trim();
-        boolean visibility = Boolean.parseBoolean(tokens[3].trim());
-        String[] flatTypes = tokens[4].trim().split(";");
-        String[] availableUnits = tokens[5].trim().split(";");
-        String[] sellingPrice = tokens[6].trim().split(";");
-        LocalDate applicationOpeningDate = LocalDate.parse(tokens[7].trim(), formatter);
-        LocalDate applicationClosingDate = LocalDate.parse(tokens[8].trim(), formatter);
-        String managerNric = tokens[9].trim();
-        int totalOfficerSlots = Integer.parseInt(tokens[10].trim());
-        String[] officerNrics = tokens[11].trim().split(";");
-
-        List<Flat> flats = getFlats(flatTypes, availableUnits, sellingPrice);
-
-        return new Project(
-                projectId,
-                name,
-                neighborhood,
-                visibility,
-                applicationOpeningDate,
-                applicationClosingDate,
-                managerNric,
-                totalOfficerSlots,
-                flats,
-                List.of(officerNrics)
-        );
-    }
-
-    protected static List<Flat> getFlats(String[] flatTypes, String[] availableUnits, String[] sellingPrice) {
-        List<Flat> flats = new ArrayList<>();
-        for (int i = 0; i < flatTypes.length; i++) {
-
-            FlatType type;
-            if (flatTypes[i].equals("2R")) {
-                type = FlatType.TWO_ROOM;
-            } else if (flatTypes[i].equals("3R")) {
-                type = FlatType.THREE_ROOM;
-            } else {
-                throw new RuntimeException("Invalid flat type: " + flatTypes[i]);
+    public static void saveUsers(String filePath, List<User> users) {
+        try (FileWriter writer = new FileWriter(filePath)) {
+            // Write header
+            writer.write("Name,NRIC,Age,Marital Status,Password,Role\n");
+            for (User user : users) {
+                writer.write(String.format("%s,%s,%d,%s,%s,%s\n",
+                        user.getName(),
+                        user.getNric(),
+                        user.getAge(),
+                        user.getMaritalStatus().toString(),
+                        user.getPassword(),
+                        user.getRoleName()));
             }
-
-            Flat flat = new Flat(
-                    type,
-                    Integer.parseInt(availableUnits[i].trim()),
-                    Integer.parseInt(sellingPrice[i].trim())
-            );
-            flats.add(flat);
+        } catch (IOException e) {
+            System.out.println("Failed to save users: " + e.getMessage());
         }
-        return flats;
     }
 
     @Override
     public List<Project> loadProjects() {
-        List<Project> projects = new ArrayList<>();
+        projects = new ArrayList<>();
+        ProjectParser projectParser = new ProjectParser();
+
         readCSVLines(projectFilePath, tokens -> {
             try {
-                Project project = parseProject(tokens);
+                Project project = projectParser.parse(tokens);
                 if (project != null) projects.add(project);
             } catch (Exception e) {
                 System.out.println("Invalid project row: " + Arrays.toString(tokens));
@@ -145,6 +100,90 @@ public class CSVDataLoader implements IDataLoader {
             }
         });
 
+        projectMap = projects.stream()
+                .collect(Collectors.toMap(Project::getId, p -> p));
         return projects;
+    }
+
+    public static void saveProjects(String filePath, List<Project> projects) {
+        try (FileWriter writer = new FileWriter(filePath)) {
+            writer.write("id,Project Name,Neighborhood,Visible,Flat Types,Available Units,Selling Price,Application opening date,Application closing date,Manager,Officer Slot,Officer NRICs\n");
+            for (Project project : projects) {
+                List<Flat> flats = project.getFlats();
+
+                String flatTypes = flats
+                        .stream()
+                        .map(flat -> flat.getType().getCode())
+                        .collect(Collectors.joining(";"));
+
+                String availableUnits = flats
+                        .stream()
+                        .map(flat -> Integer.toString(flat.getUnitsAvailable()))
+                        .collect(Collectors.joining(";"));
+
+                String sellingPrice = flats
+                        .stream()
+                        .map(flat -> String.format("%.2f", flat.getSellingPrice()))
+                        .collect(Collectors.joining(";"));
+
+                writer.write(String.format("%d,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+                        project.getId(),
+                        project.getName(),
+                        project.getNeighbourhood(),
+                        project.isVisible(),
+                        flatTypes.trim(),
+                        availableUnits.trim(),
+                        sellingPrice.trim(),
+                        project.getApplicationOpeningDate().format(dtFormatter),
+                        project.getApplicationClosingDate().format(dtFormatter),
+                        project.getManagerNric(),
+                        project.getTotalOfficerSlots(),
+                        String.join(";", project.getOfficerNrics())));
+            }
+        } catch (IOException e) {
+            System.out.println("Failed to save projects: " + e.getMessage());
+        }
+    }
+
+    public List<Application> loadApplications() {
+        this.applications = new ArrayList<>();
+        ApplicationParser applicationParser = new ApplicationParser(projectMap, userMap);
+        readCSVLines(applicationFilePath, tokens -> {
+            try {
+                Application application = applicationParser.parse(tokens);
+                if (application != null) {
+                    applications.add(application);
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid application row: " + Arrays.toString(tokens));
+                System.out.println(e.getMessage());
+                throw e;
+            }
+        });
+
+        int maxApplicationId = applications.stream()
+                .mapToInt(Application::getId)
+                .max()
+                .orElse(1);
+        Application.setNextId(maxApplicationId);
+
+        return applications;
+    }
+
+    public static void saveApplications(String filePath, List<Application> applications) {
+        try (FileWriter writer = new FileWriter(filePath)) {
+            writer.write("id,projectId,userNric,flatType,applicationStatus,submittedAt\n");
+            for (Application app : applications) {
+                writer.write(String.format("%d,%d,%s,%s,%s,%s\n",
+                        app.getId(),
+                        app.getProject().getId(),
+                        app.getApplicant().getNric(),
+                        app.getFlatType().getCode(),
+                        app.getStatus(),
+                        app.getSubmittedAt().format(dtFormatter)));
+            }
+        } catch (IOException e) {
+            System.out.println("Failed to save applications: " + e.getMessage());
+        }
     }
 }

@@ -1,5 +1,8 @@
 package sc2002.fcsi.grp3.view;
 
+import sc2002.fcsi.grp3.view.helper.TablePrinter;
+
+import java.util.List;
 import java.util.Scanner;
 
 public class SharedPromptView {
@@ -9,8 +12,32 @@ public class SharedPromptView {
         this.sc = new Scanner(System.in);
     }
 
+    public void clear() {
+        // not sure how to clear screen yet :(((((
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
+
+    /**
+     * Utility method to show a table in CLI.
+     * @param headers list of column headers
+     * @param rows list of rows, each row a list of strings
+     */
+    public void showTable(List<String> headers, List<List<String>> rows) {
+        TablePrinter.printTable(headers, rows);
+    }
+
+    public void showTitle(String title) {
+        clear();
+        System.out.print("\n");
+        String border = "=".repeat(title.length() + 4);
+        System.out.println(border);
+        System.out.println("| " + title + " |");
+        System.out.println(border);
+    }
+
     public int menuPrompt(String title, String[] options, String prompt) {
-        System.out.println("\n=== " + title + " ===");
+        showTitle(title);
         for (int i = 0; i < options.length; i++) {
             System.out.printf("(%d). %s\n", i+1, options[i]);
         }

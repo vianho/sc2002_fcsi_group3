@@ -3,21 +3,51 @@ package sc2002.fcsi.grp3.init;
 import sc2002.fcsi.grp3.io.ConfigLoader;
 import sc2002.fcsi.grp3.datastore.DataStore;
 import sc2002.fcsi.grp3.io.CSVDataLoader;
+import sc2002.fcsi.grp3.service.SystemSaver;
 
 public class SystemInitializer {
-    public static void initialize(DataStore dataStore, ConfigLoader config) {
-        // Load file paths from config
+    private final DataStore dataStore;
+    private final ConfigLoader config;
+    private final ViewInitializer viewInitializer;
+    private final ControllerInitializer controllerInitializer;
+    private final SystemSaver systemSaver;
+
+    public SystemInitializer() {
+        this.dataStore = DataStore.getInstance();
+        this.config = new ConfigLoader("config.properties");
+        this.viewInitializer = new ViewInitializer();
+        this.controllerInitializer = new ControllerInitializer(dataStore, viewInitializer);
+        this.systemSaver = new SystemSaver(dataStore, config);
+        registerShutdownHook();
+    }
+
+    private void loadData() {
         String usersPath = config.get("usersFile");
         String projectsPath = config.get("projectsFile");
+        String applicationsPath = config.get("applicationsFile");
 
-        // Use CSVDataLoader
-        CSVDataLoader dataLoader = new CSVDataLoader(usersPath, projectsPath);
+        CSVDataLoader loader = new CSVDataLoader(
+                usersPath,
+                projectsPath,
+                applicationsPath);
+        dataStore.setUsers(loader.loadUsers());
+        dataStore.setProjects(loader.loadProjects());
+        dataStore.setApplications(loader.loadApplications());
 
-        // Load and inject into DataStore
-        dataStore.setUsers(dataLoader.loadUsers());
-        dataStore.setProjects(dataLoader.loadProjects());
-
-        // You can also validate here if needed
         System.out.println("[SystemInitializer] Loaded " + dataStore.getUsers().size() + " users.");
+        System.out.println("[SystemInitializer] Loaded " + dataStore.getProjects().size() + " projects.");
+        System.out.println("[SystemInitializer] Loaded " + dataStore.getApplications().size() + " applications.");
+    }
+
+    private void registerShutdownHook() {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("[SystemSaver] Saving system state...");
+            systemSaver.saveAll();
+        }));
+    }
+
+    public void startSystem() {
+        loadData();
+        controllerInitializer.getMainMenuController().start();
     }
 }

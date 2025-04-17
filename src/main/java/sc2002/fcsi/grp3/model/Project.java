@@ -1,5 +1,7 @@
 package sc2002.fcsi.grp3.model;
 
+import sc2002.fcsi.grp3.model.enums.FlatType;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -105,6 +107,11 @@ public class Project {
 
     public List<String> getOfficerNrics() {
         return officerNrics;
+    }
+
+    public boolean hasAvailableFlatType(FlatType type) {
+        return flats.stream()
+                .anyMatch(flat -> flat.getType() == type && flat.getUnitsAvailable() > 0);
     }
 
     // setters
