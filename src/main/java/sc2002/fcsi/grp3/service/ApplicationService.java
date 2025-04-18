@@ -36,4 +36,15 @@ public class ApplicationService {
         }
         return false;
     }
+
+    public Application findApplication(String nric){
+        Application found = null;
+        for(Application app : db.getApplications()){
+            if(app.getApplicant().getNric().equals(nric)) {
+                found = app;
+                break;
+            }
+        }
+        return found;
+    }
 }

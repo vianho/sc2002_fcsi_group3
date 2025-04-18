@@ -9,7 +9,7 @@ public class Application {
     private final int id;
     private final Project project;
     private final User applicant;
-    private final FlatType flatType;
+    private FlatType flatType;
     private ApplicationStatus status;
     private final LocalDate submittedAt;
     private static int nextId;
@@ -70,6 +70,7 @@ public class Application {
     }
 
     // setters
+    public void setFlatType(FlatType flatType){ this.flatType = flatType; }
 
     public void setStatus(ApplicationStatus status) {
         this.status = status;

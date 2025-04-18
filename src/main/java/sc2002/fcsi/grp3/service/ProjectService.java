@@ -69,4 +69,8 @@ public class ProjectService {
 
         return List.of();
     }
+
+    public int getProjectSize(){
+        return db.getProjects().size();
+    }
 }
