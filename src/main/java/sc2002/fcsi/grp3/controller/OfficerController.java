@@ -1,10 +1,8 @@
 package sc2002.fcsi.grp3.controller;
 
+import sc2002.fcsi.grp3.model.*;
+import sc2002.fcsi.grp3.model.enums.ApplicationStatus;
 import sc2002.fcsi.grp3.view.OfficerView;
-import sc2002.fcsi.grp3.model.Application;
-import sc2002.fcsi.grp3.model.Flat;
-import sc2002.fcsi.grp3.model.Project;
-import sc2002.fcsi.grp3.model.User;
 import sc2002.fcsi.grp3.model.enums.FlatType;
 import sc2002.fcsi.grp3.service.ApplicationService;
 import sc2002.fcsi.grp3.service.RegistrationService;
@@ -83,8 +81,8 @@ public class OfficerController implements IBaseController {
             choice = view.showMenuAndGetChoice("Officer Menu", options);
             switch (choice) {
                   case 1 -> joinProject();
-//                case 2 -> registrationStatus();
-//                case 3 -> viewHandled();
+                  case 2 -> registrationStatus();
+                  case 3 -> viewHandled();
 //                case 4 -> viewEnquiries();
                   case 5 -> flatBooking();
                   case 6 -> view.showMessage("Loading...");
@@ -102,19 +100,32 @@ public class OfficerController implements IBaseController {
 
     //View Registration Status
     private void registrationStatus(){
+        User user = Session.getCurrentUser();
+        view.showMessage("Your registration for....");
+        registrationService.getProjectName(user);
+        view.showMessage("Is Currently....");
+        registrationService.getStatus(user);
+
+        registrationService.setStatus(user);
+
 
     }
 
-    //View Handled Projects
+    //View Handled Project
+    private void viewHandled(){
+        User user = Session.getCurrentUser();
+        Project Hproj = registrationService.getHandledProject(user);
+
+        view.showHandledProject(Hproj);
+    }
 
 
     //Book Flats for Applicants
     private void flatBooking(){
 
-
         do {
             view.showMessage("Enter NRIC of Applicant (Enter '0' to Exit) :");
-            nric = sc.nextLine();
+            nric = sc.next();
             found = applicationService.findApplication(nric.toUpperCase());
 
             if(found != null){
@@ -127,6 +138,12 @@ public class OfficerController implements IBaseController {
             return;
         }
 
+        //Return if APPROVED already
+        if(found.getStatus() == ApplicationStatus.SUCCESSFUL){
+            view.showMessage("Application already approved..");
+            return;
+        }
+
         //Search for flatType
         proj = found.getProject();
         List<Flat> Lftype = proj.getFlats();
@@ -134,17 +151,23 @@ public class OfficerController implements IBaseController {
 
         for(Flat flat : Lftype){
             if(flat.getType() == flatType){
+                view.showMessage("Room Type:");
                 view.showMessage(String.valueOf(flatType.getDisplayName()));
+                view.showMessage("Number of roomType: ");
                 view.showMessage(String.valueOf(flat.getUnitsAvailable()));
+                flat.reduceUnitsAvailable();
 
 
-                //flat.reduceUnitsAvailable();
+                found.setStatus(ApplicationStatus.SUCCESSFUL);
+                found.setFlatType(found.getFlatType());
+
+                view.showMessage("Application Status now: ");
+                view.showMessage(String.valueOf(found.getStatus()));
+
+                view.showMessage("Number of roomType left: ");
+                view.showMessage(String.valueOf(flat.getUnitsAvailable()));
             }
         }
-
-
-//        found.setStatus(ApplicationStatus.SUCCESSFUL);
-//        found.setFlatType(found.getFlatType());
 
     }
 
@@ -188,15 +211,15 @@ public class OfficerController implements IBaseController {
         }
 
 
-        //Checking if Officer applied to project as Applicant
+                                //Checking if Officer applied to project as Applicant
 
 
         //Create Project Registration with 'PENDING' Status
-
-        //registrationService.Join(proj, user, Now);
-
+        registrationService.Join(proj, user, Now);
 
 
+        view.showMessage("Succesfully registered for....");
+        view.showMessage(proj.getName());
 
     }
 

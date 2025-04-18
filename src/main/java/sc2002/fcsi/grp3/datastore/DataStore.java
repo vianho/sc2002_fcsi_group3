@@ -49,7 +49,8 @@ public final class DataStore {
         applications.add(application);
     }
 
+
     public void addRegistration(Registration registration){registrations.add(registration);}
 
-
+    public List<Registration> getRegistrations(){ return registrations; }
 }

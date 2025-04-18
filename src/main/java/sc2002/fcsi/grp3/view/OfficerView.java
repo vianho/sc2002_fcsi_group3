@@ -46,6 +46,28 @@ public class OfficerView {
             prompt.showTable(headers, rows);
         }
     }
+    public void showHandledProject(Project project) {
+        prompt.showTitle("Project Details");
+
+        if (project == null) {
+            prompt.showMessage("Project not found.");
+            return;
+        }
+        List<String> headers = List.of("ID", "Name", "Neighbourhood", "Flat Types", "Application Opening Date", "Application Closing Date");
+
+        List<String> row = List.of(
+                String.valueOf(project.getId()),
+                project.getName(),
+                project.getNeighbourhood(),
+                project.getFlats().stream()
+                        .map(f -> f.getType().getDisplayName())
+                        .collect(Collectors.joining(", ")),
+                project.getApplicationOpeningDate().toString(),
+                project.getApplicationClosingDate().toString()
+        );
+
+        prompt.showTable(headers, List.of(row));  // wrap single row in a List
+    }
 
 
 }
