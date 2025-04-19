@@ -7,26 +7,41 @@ public class Enquiry {
     private String title;
     private String content;
     private String reply;
-    private User createdby;
+    private User createdBy;
     private Project relatedProject;
-    private User repliedby;
+    private User repliedBy;
     private EnquiryStatus status;
     private LocalDate createdAt;
     private LocalDate lastUpdatedAt;
+    private static int nextEnquiryId;
 
-    public Enquiry(int ID, String title, String content, String reply, User createdby, Project relatedProject, User repliedby, EnquiryStatus status, LocalDate createdAt, LocalDate lastUpdatedAt){
+    public Enquiry(int ID, String title, String content, String reply, User createdBy, Project relatedProject, User repliedBy, EnquiryStatus status, LocalDate createdAt, LocalDate lastUpdatedAt){
         this.ID = ID;
         this.title = title;
         this.content = content;
         this.reply = reply;
-        this.createdAt = createdAt;
+        this.createdBy = createdBy;
         this.relatedProject = relatedProject;
-        this.repliedby = repliedby;
+        this.repliedBy = repliedBy;
         this.status = status;
         this.createdAt = createdAt;
         this.lastUpdatedAt = lastUpdatedAt;
     }
-    public int getID(){
+    public Enquiry(String title, String content, User user,Project project){
+        this.ID = ++nextEnquiryId;
+        this.title = title;
+        this.content = content;
+        this.reply = null;
+        this.createdBy = user;
+        this.relatedProject = project;
+        this.repliedBy = null;
+        this.status = EnquiryStatus.SUBMITTED;
+        this.createdAt = LocalDate.now();
+        this.lastUpdatedAt = LocalDate.now();
+    }
+
+
+    public int getId(){
         return this.ID;
     }
     public String getTitle(){
@@ -40,16 +55,16 @@ public class Enquiry {
         return this.reply;
     }
 
-    public User getCreatedby(){
-        return this.createdby;
+    public User getCreatedBy(){
+        return this.createdBy;
     }
 
     public Project getRelatedProject(){
         return this.relatedProject;
     }
 
-    public User getRepliedby(){
-        return this.repliedby;
+    public User getRepliedBy(){
+        return this.repliedBy;
     }
 
     public EnquiryStatus getStatus(){
@@ -64,7 +79,48 @@ public class Enquiry {
         return this.lastUpdatedAt;
     }
 
+    public static void setNextEnquiryId(int id) {
+        nextEnquiryId = id;
+    }
 
+    public void setTitle(String title){
+        this.title = title;
+    }
 
+    public void setContent(String content){
+        this.content = content;
+    }
+
+    public void setReply(String reply){
+        this.reply = reply;
+    }
+
+    public void setCreatedBy(User user){
+        this.createdBy = user;
+    }
+
+    public void setRelatedProject(Project project){
+        this.relatedProject = project;
+    }
+
+    public void setRepliedBy(User user){
+        this.repliedBy = user;
+    }
+
+    public void setStatus(EnquiryStatus status){
+        this.status = status;
+    }
+
+    public void setCreatedAt(LocalDate date){
+        this.createdAt = date;
+    }
+
+    public void setLastUpdatedAt(LocalDate date){
+        this.lastUpdatedAt = date;
+    }
+
+    public boolean isReplied(){
+        return reply != null && repliedBy != null;
+    }
 
 }
