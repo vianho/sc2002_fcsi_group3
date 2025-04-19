@@ -10,6 +10,7 @@ public final class DataStore {
     private List<Project> projects = new ArrayList<>();
     private List<Application> applications = new ArrayList<>();
     private List<Registration> registrations = new ArrayList<>();
+    private List<Enquiry> enquiries = new ArrayList<>();
 
     private DataStore() {
     }
@@ -49,8 +50,15 @@ public final class DataStore {
         applications.add(application);
     }
 
-
     public void addRegistration(Registration registration){registrations.add(registration);}
 
     public List<Registration> getRegistrations(){ return registrations; }
+
+    public List<Enquiry> getEnquiries() {return enquiries;}
+
+    public void setEnquiries(List<Enquiry> enquiries){ this.enquiries = enquiries;}
+
+    public void addEnquiry(Enquiry enquiry){ enquiries.add(enquiry);}
+
+    public void removeEnquiry(Enquiry enquiry){ enquiries.remove(enquiry);}
 }

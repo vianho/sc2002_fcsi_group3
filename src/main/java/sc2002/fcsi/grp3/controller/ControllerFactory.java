@@ -34,8 +34,10 @@ public class ControllerFactory {
         return switch (roleName) {
             case "Applicant" -> new ApplicantController(
                     viewInit.getApplicantView(),
+                    viewInit.getEnquiryView(),
                     new ProjectService(store),
-                    new ApplicationService(store)
+                    new ApplicationService(store),
+                    new EnquiryService(store)
             );
             case "Officer" -> new OfficerController(viewInit.getOfficerView(),
                                                     new ProjectService(store),

@@ -25,18 +25,24 @@ public class SystemInitializer {
         String usersPath = config.get("usersFile");
         String projectsPath = config.get("projectsFile");
         String applicationsPath = config.get("applicationsFile");
+        String enquiriesPath = config.get("enquiriesFile");
+
+
 
         CSVDataLoader loader = new CSVDataLoader(
                 usersPath,
                 projectsPath,
-                applicationsPath);
+                applicationsPath,
+                enquiriesPath);
         dataStore.setUsers(loader.loadUsers());
         dataStore.setProjects(loader.loadProjects());
         dataStore.setApplications(loader.loadApplications());
+        dataStore.setEnquiries(loader.loadEnquiries());
 
         System.out.println("[SystemInitializer] Loaded " + dataStore.getUsers().size() + " users.");
         System.out.println("[SystemInitializer] Loaded " + dataStore.getProjects().size() + " projects.");
         System.out.println("[SystemInitializer] Loaded " + dataStore.getApplications().size() + " applications.");
+        System.out.println("[SystemInitializer] Loaded " + dataStore.getEnquiries().size() + " enquiries.");
     }
 
     private void registerShutdownHook() {
