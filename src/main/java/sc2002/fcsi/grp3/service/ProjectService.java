@@ -69,4 +69,26 @@ public class ProjectService {
 
         return List.of();
     }
+
+    public void setProjectVisibility(Project project, boolean newVisibility){
+        project.setVisible(newVisibility);
+    }
+
+    public void createProject(Project project, String Nric){
+        //TO COMPLETE
+    }
+
+    public void deleteProject(int projectID){
+        //TO COMPLETE
+    }
+    public void updaetProject(){
+
+    } 
+
+
+
+
+        
+
+    }
 }
