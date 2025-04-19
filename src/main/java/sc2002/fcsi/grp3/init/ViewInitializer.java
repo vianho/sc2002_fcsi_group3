@@ -30,5 +30,7 @@ public class ViewInitializer {
     }
 
     public EnquiryViewApplicant getEnquiryView() { return new EnquiryViewApplicant((sharedPrompt)); }
+
+    public EnquiryViewOfficer getEnquiryViewOfficer() { return new EnquiryViewOfficer((sharedPrompt)); }
 }
 
