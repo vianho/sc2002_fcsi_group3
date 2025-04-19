@@ -52,16 +52,13 @@ public class ManagerController implements IBaseController {
 
         public void viewProjects() {
             User user = Session.getCurrentUser(); 
-            if (user == null) {
-                view.showMessage("No user is currently logged in.");
-                return;
-            }
-
-            var projects = projectService.getProjectsManagedBy(user.getNric());
+        
+            List<Project> projects = projectService.getProjectsManagedBy(user.getNric());
 
             if (projects.isEmpty()) {
                 view.showMessage("No projects found under your management.");
-            } else {
+            } 
+            else {
                 view.showProjects(projects);
             }
         }
@@ -72,10 +69,6 @@ public class ManagerController implements IBaseController {
 
     public void createProject() {
         User user = Session.getCurrentUser();
-        if (user == null) {
-            view.showMessage("No user is currently logged in.");
-            return;
-        }
 
         Project newProject = view.getProjectDetails();
        
@@ -86,38 +79,16 @@ public class ManagerController implements IBaseController {
     public void viewProjectDetails() {
         User user = Session.getCurrentUser();
        
-        var projects = projectService.getProjectsManagedBy(user.getNric());
+        List<Project> projects = projectService.getProjectsManagedBy(user.getNric());
         if (projects.isEmpty()) {
             view.showMessage("No projects found under your management.");
             return;
         }
-        var project = view.selectProject(projects);
+        Project project = view.selectProject(projects);
         view.showProjectDetails(project);
     }
     
     public void editProject() {
-        User user = Session.getCurrentUser();
-
-        var projects = projectService.getProjectsManagedBy(user.getNric());
-        if (projects.isEmpty()) {
-            view.showMessage("No projects found under your management.");
-            return;
-        }
-
-        var project = view.selectProject(projects);
-        if (project == null) {
-            view.showMessage("No project selected.");
-            return;
-        }
-
-        Project updatedProject = view.getUpdatedProjectDetails(project);
-        if (updatedProject == null) {
-            view.showMessage("Project update canceled.");
-            return;
-        }
-
-        projectService.updateProject(updatedProject);
-        view.showMessage("Project updated successfully.");
     }
 
     public void toggleProjectVisibility() {
@@ -143,7 +114,7 @@ public class ManagerController implements IBaseController {
     public void deleteProject() {
         User user = Session.getCurrentUser();
 
-        var projects = projectService.getProjectsManagedBy(user.getNric());
+        List<Project> projects = projectService.getProjectsManagedBy(user.getNric());
         if (projects.isEmpty()) {
             view.showMessage("No projects found under your management.");
             return;

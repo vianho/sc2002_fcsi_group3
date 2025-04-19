@@ -31,9 +31,10 @@ public class ProjectService {
         return visibleProjects;
     }
 
-    public List<Project> getProjectsManagedBy(String officerNric) {
-        return db.getProjects().stream()
-                .filter(project -> project.getOfficerNrics().contains(officerNric))
+    public List<Project> getProjectsManagedBy(String managerNric) {
+        return db.getProjects()
+                .stream()
+                .filter(project -> project.getManagerNric().equals(managerNric))
                 .toList();
     }
 
@@ -75,20 +76,20 @@ public class ProjectService {
     }
 
     public void createProject(Project project, String Nric){
-        //TO COMPLETE
+        project.setManagerNric(Nric);
+        db.addProject(project);
     }
 
-    public void deleteProject(int projectID){
-        //TO COMPLETE
+    public void deleteProject(int projectId){
+        List<Project> updatedProjects = db.getProjects()
+            .stream()
+            .filter(project -> project.getId() != projectId)
+            .toList();
+    db.setProjects(updatedProjects);
     }
-    public void updaetProject(){
+    public void updateProject(){
+
+        //Complex, to finish with help
 
     } 
-
-
-
-
-        
-
     }
-}
