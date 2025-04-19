@@ -6,9 +6,11 @@ import sc2002.fcsi.grp3.model.Project;
 import sc2002.fcsi.grp3.model.User;
 import sc2002.fcsi.grp3.model.enums.FlatType;
 import sc2002.fcsi.grp3.service.ApplicationService;
+import sc2002.fcsi.grp3.service.EnquiryService;
 import sc2002.fcsi.grp3.service.ProjectService;
 import sc2002.fcsi.grp3.session.Session;
 import sc2002.fcsi.grp3.view.ApplicantView;
+import sc2002.fcsi.grp3.view.EnquiryViewApplicant;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,17 +19,25 @@ import java.util.Optional;
 
 public class ApplicantController implements IBaseController {
     private final ApplicantView view;
+    private final EnquiryViewApplicant enquiryViewApplicant;
     private final ProjectService projectService;
     private final ApplicationService applicationService;
+    private final EnquiryService enquiryService;
+    private final EnquiryController enquiryController;
 
     public ApplicantController(
             ApplicantView view,
+            EnquiryViewApplicant enquiryViewApplicant,
             ProjectService projectService,
-            ApplicationService applicationService
+            ApplicationService applicationService,
+            EnquiryService enquiryService
     ) {
         this.view = view;
+        this.enquiryViewApplicant = enquiryViewApplicant;
         this.projectService = projectService;
         this.applicationService = applicationService;
+        this.enquiryService = enquiryService;
+        this.enquiryController = new EnquiryController(enquiryViewApplicant, enquiryService);
     }
 
     public void start() {
@@ -45,7 +55,7 @@ public class ApplicantController implements IBaseController {
                 case 1 -> viewProjects();
                 case 2 -> applyForProject();
                 case 3 -> viewApplications();
-//                case 4 -> viewEnquiries();
+                case 4 -> viewEnquiries();
 //                case 5 -> viewProfile();
                 case 6 -> logout();
                 default -> view.showMessage("Invalid choice.");
@@ -105,5 +115,10 @@ public class ApplicantController implements IBaseController {
     private void viewApplications() {
         User user = Session.getCurrentUser();
         view.showApplications(applicationService.getOwnApplications(user));
+    }
+
+
+    private void viewEnquiries(){
+        enquiryController.start();
     }
 }

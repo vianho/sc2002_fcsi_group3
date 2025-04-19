@@ -92,4 +92,8 @@ public class ProjectService {
         //Complex, to finish with help
 
     } 
+  
+    public int getProjectSize(){
+        return db.getProjects().size();
     }
+}

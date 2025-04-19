@@ -28,5 +28,9 @@ public class ViewInitializer {
     public ManagerView getManagerView() {
         return new ManagerView(sharedPrompt);
     }
+
+    public EnquiryViewApplicant getEnquiryView() { return new EnquiryViewApplicant((sharedPrompt)); }
+
+    public EnquiryViewOfficer getEnquiryViewOfficer() { return new EnquiryViewOfficer((sharedPrompt)); }
 }
 

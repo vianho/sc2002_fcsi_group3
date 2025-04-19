@@ -2,10 +2,7 @@ package sc2002.fcsi.grp3.controller;
 
 import sc2002.fcsi.grp3.datastore.DataStore;
 import sc2002.fcsi.grp3.model.User;
-import sc2002.fcsi.grp3.service.ApplicationService;
-import sc2002.fcsi.grp3.service.AuthService;
-import sc2002.fcsi.grp3.service.ProjectService;
-import sc2002.fcsi.grp3.service.UserService;
+import sc2002.fcsi.grp3.service.*;
 import sc2002.fcsi.grp3.init.ViewInitializer;
 
 public class ControllerFactory {
@@ -37,10 +34,17 @@ public class ControllerFactory {
         return switch (roleName) {
             case "Applicant" -> new ApplicantController(
                     viewInit.getApplicantView(),
+                    viewInit.getEnquiryView(),
                     new ProjectService(store),
-                    new ApplicationService(store)
+                    new ApplicationService(store),
+                    new EnquiryService(store)
             );
-            case "Officer" -> new OfficerController(viewInit.getOfficerView());
+            case "Officer" -> new OfficerController(viewInit.getOfficerView(),
+                                                    viewInit.getEnquiryViewOfficer(),
+                                                    new ProjectService(store),
+                                                    new ApplicationService(store),
+                                                    new RegistrationService(store),
+                                                    new EnquiryService(store));
             case "Manager" -> new ManagerController(viewInit.getManagerView());
             default -> throw new IllegalStateException("Unknown role: " + roleName);
         };
