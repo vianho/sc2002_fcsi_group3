@@ -1,4 +1,4 @@
 id,title,content,reply,createdBy,relatedProject,repliedBy,status,createdAt,lastUpdatedAt
-0,edit,edited!,byebro,S1234567A,1,T8765432F,SUBMITTED,15/02/2025,19/04/2025
-2,second person test,second person hi,,T7654321B,1,,SUBMITTED,19/04/2025,19/04/2025
-4,test add after delete again,test 2,,S1234567A,1,,SUBMITTED,19/04/2025,19/04/2025
+0,edit,edited!,byebro,S1234567A,1,T8765432F,REPLIED,15/02/2025,19/04/2025
+2,second person test,second person hi,enquiry reply test hi bro,T7654321B,1,T2109876H,REPLIED,19/04/2025,19/04/2025
+4,test add after delete again,test 2,test reply john,S1234567A,1,T2109876H,REPLIED,19/04/2025,19/04/2025

@@ -2,6 +2,8 @@ package sc2002.fcsi.grp3.controller;
 
 import sc2002.fcsi.grp3.model.*;
 import sc2002.fcsi.grp3.model.enums.ApplicationStatus;
+import sc2002.fcsi.grp3.service.EnquiryService;
+import sc2002.fcsi.grp3.view.EnquiryViewOfficer;
 import sc2002.fcsi.grp3.view.OfficerView;
 import sc2002.fcsi.grp3.model.enums.FlatType;
 import sc2002.fcsi.grp3.service.ApplicationService;
@@ -17,8 +19,10 @@ import java.time.LocalDate;
 
 public class OfficerController implements IBaseController {
     private final OfficerView view;
+    private final EnquiryViewOfficer enquiryViewOfficer;
     private final ProjectService projectService;
     private final RegistrationService registrationService;
+    private final EnquiryService enquiryService;
     private Scanner sc = new Scanner(System.in);
     private Optional<Project> optionalProject;
     private Project proj;
@@ -29,18 +33,24 @@ public class OfficerController implements IBaseController {
     private final ApplicationService applicationService;
     private FlatType flatType;
     private RegistrationStatus registrationStatus;
+    private final EnquiryControllerOfficer enquiryControllerOfficer ;
 
 
     public OfficerController(
             OfficerView view,
+            EnquiryViewOfficer enquiryViewOfficer,
             ProjectService projectService,
             ApplicationService applicationService,
-            RegistrationService registrationService
+            RegistrationService registrationService,
+            EnquiryService enquiryService
     ) {
         this.view = view;
+        this.enquiryViewOfficer = enquiryViewOfficer;
         this.projectService = projectService;
         this.applicationService = applicationService;
         this.registrationService = registrationService;
+        this.enquiryService = enquiryService;
+        this.enquiryControllerOfficer = new EnquiryControllerOfficer(enquiryViewOfficer, enquiryService);
     }
 
     @Override
@@ -83,7 +93,7 @@ public class OfficerController implements IBaseController {
                   case 1 -> joinProject();
                   case 2 -> registrationStatus();
                   case 3 -> viewHandled();
-//                case 4 -> viewEnquiries();
+                  case 4 -> viewEnquiries();
                   case 5 -> flatBooking();
                   case 6 -> view.showMessage("Loading...");
                   default -> view.showMessage("Invalid choice.");
@@ -117,6 +127,10 @@ public class OfficerController implements IBaseController {
         Project Hproj = registrationService.getHandledProject(user);
 
         view.showHandledProject(Hproj);
+    }
+
+    private void viewEnquiries(){
+        enquiryControllerOfficer.start();
     }
 
 

@@ -40,9 +40,11 @@ public class ControllerFactory {
                     new EnquiryService(store)
             );
             case "Officer" -> new OfficerController(viewInit.getOfficerView(),
+                                                    viewInit.getEnquiryViewOfficer(),
                                                     new ProjectService(store),
                                                     new ApplicationService(store),
-                                                    new RegistrationService(store));
+                                                    new RegistrationService(store),
+                                                    new EnquiryService(store));
             case "Manager" -> new ManagerController(viewInit.getManagerView());
             default -> throw new IllegalStateException("Unknown role: " + roleName);
         };
