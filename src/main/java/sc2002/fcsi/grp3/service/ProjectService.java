@@ -1,11 +1,15 @@
 package sc2002.fcsi.grp3.service;
 
 import sc2002.fcsi.grp3.datastore.DataStore;
+import sc2002.fcsi.grp3.model.Application;
 import sc2002.fcsi.grp3.model.Flat;
 import sc2002.fcsi.grp3.model.Project;
+import sc2002.fcsi.grp3.model.Registration;
 import sc2002.fcsi.grp3.model.User;
+import sc2002.fcsi.grp3.model.enums.ApplicationStatus;
 import sc2002.fcsi.grp3.model.enums.FlatType;
 import sc2002.fcsi.grp3.model.enums.MaritalStatus;
+import sc2002.fcsi.grp3.model.enums.RegistrationStatus;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -95,5 +99,63 @@ public class ProjectService {
   
     public int getProjectSize(){
         return db.getProjects().size();
+    }
+
+    // Get pending HDB Officer registrations for a specific project
+    public List<Registration> getPendingOfficerRegistrations(int projectId) {
+        return db.getRegistrations().stream()
+                .filter(reg -> reg.getProject().getId() == projectId)
+                .filter(reg -> reg.getStatus() == RegistrationStatus.PENDING)
+                .toList();
+    }
+
+    // Approve or reject an HDB Officer registration
+    public void updateOfficerRegistrationStatus(Registration registration, RegistrationStatus status) {
+        registration.setStatus(status);
+        if (status == RegistrationStatus.APPROVED) {
+            registration.getProject().assignOfficer(registration.getApplicant().getNric());
+        }
+    }
+
+    // Get pending Applicant BTO applications for a specific project
+    public List<Application> getPendingBTOApplications(int projectId) {
+        return db.getApplications().stream()
+                .filter(app -> app.getProject().getId() == projectId)
+                .filter(app -> app.getStatus() == ApplicationStatus.PENDING)
+                .toList();
+    }
+
+    // Approve or reject an Applicant BTO application
+    public boolean updateBTOApplicationStatus(Application application, ApplicationStatus status) {
+        if (status == ApplicationStatus.SUCCESSFUL) {
+            FlatType flatType = application.getFlatType();
+            Flat flat = application.getProject().getFlats().stream()
+                    .filter(f -> f.getType() == flatType && f.getUnitsAvailable() > 0)
+                    .findFirst()
+                    .orElse(null);
+
+            if (flat == null) {
+                return false; // No available units for the flat type
+            }
+
+            flat.reduceUnitsAvailable();
+        }
+        application.setStatus(status);
+        return true;
+    }
+
+    // Get pending withdrawal requests for a specific project
+    public List<Application> getPendingWithdrawalRequests(int projectId) {
+        return db.getApplications().stream()
+                .filter(app -> app.getProject().getId() == projectId)
+                .filter(app -> app.getStatus() == ApplicationStatus.WITHDRAWAL_REQUESTED)
+                .toList();
+    }
+
+    // Approve or reject an Applicant's withdrawal request
+    public void updateWithdrawalRequest(Application application, boolean approve) {
+        if (approve) {
+            application.setStatus(ApplicationStatus.WITHDRAWN);
+        }
     }
 }

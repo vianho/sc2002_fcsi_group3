@@ -1,7 +1,11 @@
 package sc2002.fcsi.grp3.controller;
 
+import sc2002.fcsi.grp3.model.Application;
 import sc2002.fcsi.grp3.model.Project;
+import sc2002.fcsi.grp3.model.Registration;
 import sc2002.fcsi.grp3.model.User;
+import sc2002.fcsi.grp3.model.enums.ApplicationStatus;
+import sc2002.fcsi.grp3.model.enums.RegistrationStatus;
 import sc2002.fcsi.grp3.service.ApplicationService;
 import sc2002.fcsi.grp3.service.ProjectService;
 import sc2002.fcsi.grp3.session.Session;
@@ -26,7 +30,9 @@ public class ManagerController implements IBaseController {
         do {
             String[] options = {
                     "View all Projects",
-                    "Approve/Reject Application",
+                    "Approve/Reject HDB Officer Registrations",
+                    "Approve/Reject Applicant BTO Applications",
+                    "Approve/Reject Applicant Withdrawal Requests",
                     "Create Project",
                     "View Project Details",
                     "Edit Project",
@@ -37,24 +43,23 @@ public class ManagerController implements IBaseController {
             choice = view.showMenuAndGetChoice("HDB Manager Menu", options);
             switch (choice) {
                 case 1 -> viewProjects();
-                case 2 -> approveProject();
-                case 3 -> createProject();
-                case 4 -> viewProjectDetails();
-                case 5 -> editProject();
-                case 6 -> deleteProject();
-                case 7 -> toggleProjectVisibility();
-                case 8 -> logout();
+                case 2 -> viewHDBOfficerRegistrations();
+                case 3 -> approveBTOApplication();
+                case 4 -> approveWithdrawalRequests();
+                case 5 -> createProject();
+                case 6 -> viewProjectDetails();
+                case 7 -> editProject();
+                case 8 -> deleteProject();
+                case 9 -> toggleProjectVisibility();
+                case 10 -> logout();
                 default -> view.showMessage("Invalid choice.");
             }
         } 
-        while (choice != 8);
+        while (choice != 10);
     }
-
+        //Show all projects 
         public void viewProjects() {
-            User user = Session.getCurrentUser(); 
-        
-            List<Project> projects = projectService.getProjectsManagedBy(user.getNric());
-
+                    List<Project> projects = projectService.getAllProjects();
             if (projects.isEmpty()) {
                 view.showMessage("No projects found under your management.");
             } 
@@ -62,84 +67,144 @@ public class ManagerController implements IBaseController {
                 view.showProjects(projects);
             }
         }
-
-        public void approveProject(){
-            
-        }
-
-    public void createProject() {
-        User user = Session.getCurrentUser();
-
-        Project newProject = view.getProjectDetails();
-       
-        projectService.createProject(newProject, user.getNric());
-        view.showMessage("Project created successfully.");
-    }
-
-    public void viewProjectDetails() {
-        User user = Session.getCurrentUser();
-       
-        List<Project> projects = projectService.getProjectsManagedBy(user.getNric());
-        if (projects.isEmpty()) {
-            view.showMessage("No projects found under your management.");
-            return;
-        }
-        Project project = view.selectProject(projects);
-        view.showProjectDetails(project);
-    }
     
-    public void editProject() {
-    }
-
-    public void toggleProjectVisibility() {
-        User user = Session.getCurrentUser();
-
-        List<Project> projects = projectService.getProjectsManagedBy(user.getNric());
-        if (projects.isEmpty()) {
-            view.showMessage("No projects found under your management.");
-            return;
+        
+        //Create a Project
+        public void createProject() {
+            User user = Session.getCurrentUser();
+            //Prompt for the Project information 
+            Project newProject = view.getProjectDetails();
+        
+            //Create the project
+            projectService.createProject(newProject, user.getNric());
+            view.showMessage("Project created successfully.");
         }
 
-        Project project = view.selectProject(projects);
-        if (project == null) {
-            view.showMessage("No project selected.");
-            return;
+        public void viewProjectDetails() {
+            User user = Session.getCurrentUser();
+        
+
+            List<Project> projects = projectService.getProjectsManagedBy(user.getNric());
+            if (projects.isEmpty()) {
+                view.showMessage("No projects found under your management.");
+                return;
+            }
+            Project project = view.selectProject(projects);
+            view.showProjectDetails(project);
+        }
+        
+        public void editProject() {
         }
 
-        boolean newVisibility = !project.isVisible();
-        projectService.setProjectVisibility(project, newVisibility);
-        view.showMessage("Project visibility has been " + (newVisibility ? "enabled." : "disabled."));
-    }
+        public void toggleProjectVisibility() {
+            User user = Session.getCurrentUser();
 
-    public void deleteProject() {
-        User user = Session.getCurrentUser();
+            List<Project> projects = projectService.getProjectsManagedBy(user.getNric());
+            if (projects.isEmpty()) {
+                view.showMessage("No projects found under your management.");
+                return;
+            }
 
-        List<Project> projects = projectService.getProjectsManagedBy(user.getNric());
-        if (projects.isEmpty()) {
-            view.showMessage("No projects found under your management.");
-            return;
+            Project project = view.selectProject(projects);
+            if (project == null) {
+                view.showMessage("No project selected.");
+                return;
+            }
+
+            boolean newVisibility = !project.isVisible();
+            projectService.setProjectVisibility(project, newVisibility);
+            view.showMessage("Project visibility has been " + (newVisibility ? "enabled." : "disabled."));
         }
 
-        Project project = view.selectProject(projects);
-        if (project == null) {
-            view.showMessage("No project selected.");
-            return;
+        public void deleteProject() {
+            User user = Session.getCurrentUser();
+
+            List<Project> projects = projectService.getProjectsManagedBy(user.getNric());
+            if (projects.isEmpty()) {
+                view.showMessage("No projects found under your management.");
+                return;
+            }
+
+            Project project = view.selectProject(projects);
+            if (project == null) {
+                view.showMessage("No project selected.");
+                return;
+            }
+
+            boolean confirm = view.confirmDeletion(project);
+            if (!confirm) {
+                view.showMessage("Project deletion canceled.");
+                return;
+            }
+
+            projectService.deleteProject(project.getId());
+            view.showMessage("Project deleted successfully.");
         }
 
-        boolean confirm = view.confirmDeletion(project);
-        if (!confirm) {
-            view.showMessage("Project deletion canceled.");
-            return;
+        public void logout() {
+            Session.logout();
+            view.showMessage("Logging out...");
+
         }
 
-        projectService.deleteProject(project.getId());
-        view.showMessage("Project deleted successfully.");
-    }
+        // View and approve/reject HDB Officer registrations
+        public void viewHDBOfficerRegistrations() {
+            User user = Session.getCurrentUser();
+            List<Project> projects = projectService.getProjectsManagedBy(user.getNric());
 
-    public void logout() {
-        Session.logout();
-        view.showMessage("Logging out...");
+            for (Project project : projects) {
+                List<Registration> registrations = projectService.getPendingOfficerRegistrations(project.getId());
+                view.showPendingOfficerRegistrations(registrations);
 
-    }
+                for (Registration registration : registrations) {
+                    String decision = view.promptApprovalDecision("Approve or Reject?");
+                    if (decision.equals("approve")) {
+                        projectService.updateOfficerRegistrationStatus(registration, RegistrationStatus.APPROVED);
+                        view.showMessage("Registration approved.");
+                    } else if (decision.equals("reject")) {
+                        projectService.updateOfficerRegistrationStatus(registration, RegistrationStatus.REJECTED);
+                        view.showMessage("Registration rejected.");
+                    }
+                }
+            }
+        }
 
+        // View and approve/reject Applicant BTO applications
+        public void approveBTOApplication() {
+            User user = Session.getCurrentUser();
+            List<Project> projects = projectService.getProjectsManagedBy(user.getNric());
+
+            for (Project project : projects) {
+                List<Application> applications = projectService.getPendingBTOApplications(project.getId());
+                view.showPendingBTOApplications(applications);
+
+                for (Application application : applications) {
+                    String decision = view.promptApprovalDecision("Approve or Reject?");
+                    if (decision.equals("approve")) {
+                        boolean success = projectService.updateBTOApplicationStatus(application, ApplicationStatus.SUCCESSFUL);
+                        view.showApprovalMessage(success, "Application approved.", "Approval failed. No available units for the selected flat type.");
+                    } else if (decision.equals("reject")) {
+                        projectService.updateBTOApplicationStatus(application, ApplicationStatus.UNSUCCESSFUL);
+                        view.showMessage("Application rejected.");
+                    }
+                }
+            }
+        }
+
+        // Approve/reject Applicant withdrawal requests
+        public void approveWithdrawalRequests() {
+            User user = Session.getCurrentUser();
+            List<Project> projects = projectService.getProjectsManagedBy(user.getNric());
+
+            for (Project project : projects) {
+                List<Application> applications = projectService.getPendingWithdrawalRequests(project.getId());
+                view.showPendingBTOApplications(applications);
+
+                for (Application application : applications) {
+                    String decision = view.promptApprovalDecision("Approve or Reject Withdrawal?");
+                    projectService.updateWithdrawalRequest(application, decision.equals("approve"));
+                    view.showMessage("Withdrawal " + (decision.equals("approve") ? "approved." : "rejected."));
+                }
+            }
+        }
 }
