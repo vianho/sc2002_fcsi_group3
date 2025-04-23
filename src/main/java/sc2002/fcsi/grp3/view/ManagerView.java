@@ -23,41 +23,48 @@ public class ManagerView {
     public int showMenuAndGetChoice(String title, String[] options) {
         return prompt.menuPrompt(title, options, "> ");
     }
-    public Project getProjectDetails() {
-    prompt.showTitle("Create New Project");
 
-    // Prompt for project details
-    String name = prompt.promptString("Enter project name: ");
-    String neighbourhood = prompt.promptString("Enter project neighbourhood: ");
-    LocalDate applicationOpeningDate = prompt.promptDate("Enter application opening date (YYYY-MM-DD): ");
-    LocalDate applicationClosingDate = prompt.promptDate("Enter application closing date (YYYY-MM-DD): ");
-    int totalOfficerSlots = prompt.promptInt("Enter total officer slots: ");
+    public String promptString(String msg) {
+        return prompt.promptString(msg);
+    }
 
-    // Prompt for flats
-    List<Flat> flats = new ArrayList<>();
-    boolean addMoreFlats;
-    do {
-        String flatTypeCode = prompt.promptString("Enter flat type (e.g., 2R, 3R): ");
-        int unitsAvailable = prompt.promptInt("Enter number of units available: ");
-        float sellingPrice = prompt.promptFloat("Enter selling price: ");
-        FlatType flatType = FlatType.fromCode(flatTypeCode);
-        flats.add(new Flat(flatType, unitsAvailable, sellingPrice));
+    public int promptInt(String msg) {
+        return prompt.promptInt(msg);
+    }
 
-        String addMore = prompt.promptString("Add another flat? (yes/no): ").trim().toLowerCase();
-        addMoreFlats = addMore.equals("yes");
-    } while (addMoreFlats);
+    public LocalDate promptDate(String msg) {
+        return prompt.promptDate(msg);
+    }
+    
+    public float promptFloat(String msg) {
+        return prompt.promptFloat(msg);
+    }
 
-    // Create and return the new project
-    return new Project(
-            0, // ID will be assigned by the system
-            name,
-            neighbourhood,
-            false, // Default visibility is false
-            applicationOpeningDate,
-            applicationClosingDate,
-            null, // Manager NRIC will be set later
-            totalOfficerSlots,
-            flats
+    
+    public Project getNewProjectDetails() {
+        prompt.showTitle("Create New Project");
+
+        // Prompt for project details
+        String name = promptString("Enter project name: ");
+        String neighbourhood = promptString("Enter project neighbourhood: ");
+        LocalDate applicationOpeningDate = promptDate("Enter application opening date (YYYY-MM-DD): ");
+        LocalDate applicationClosingDate = promptDate("Enter application closing date (YYYY-MM-DD): ");
+        int totalOfficerSlots = promptInt("Enter total officer slots: ");
+
+        // Prompt for flats
+        List<Flat> flats = getFlatDetails();
+
+        // Create and return the new project
+        return new Project(
+                0, // ID will be assigned by the system
+                name,
+                neighbourhood,
+                false, // Default visibility is false
+                applicationOpeningDate,
+                applicationClosingDate,
+                null, // Manager NRIC will be set later
+                totalOfficerSlots,
+                flats
     );
 }
     public void showProjects(List<Project> projects) {
@@ -108,7 +115,6 @@ public class ManagerView {
 
         return confirmation.equals("yes");
     }
-
 
     public void showProjectDetails(Project project) {
         if (project == null) {
@@ -215,5 +221,90 @@ public class ManagerView {
         } else {
             prompt.showMessage(failureMessage);
         }
+    }
+
+    public List<Flat> getFlatDetails() {
+        List<Flat> flats = new ArrayList<>();
+        boolean addMoreFlats = true; // Initialize to true to enter the loop
+
+        do {
+            String flatTypeCode = promptString("Enter flat type (e.g., 2R, 3R): ");
+            int unitsAvailable = promptInt("Enter number of units available: ");
+            float sellingPrice = promptFloat("Enter selling price: ");
+            FlatType flatType = FlatType.fromCode(flatTypeCode);
+
+            if (flatType == null) {
+                showMessage("Invalid flat type. Please try again.");
+                continue;
+            }
+
+            flats.add(new Flat(flatType, unitsAvailable, sellingPrice));
+
+            String addMore = promptString("Add another flat? (yes/no): ").trim().toLowerCase();
+            addMoreFlats = addMore.equals("yes");
+        } while (addMoreFlats);
+
+        return flats;
+    }
+
+    public Application selectApplication(List<Application> applications) {
+        if (applications.isEmpty()) {
+            prompt.showMessage("No applications available.");
+            return null;
+        }
+
+        String[] options = applications.stream()
+                .map(app -> "Application ID: " + app.getId() + ", Applicant: " + app.getApplicant().getName() + ", Flat Type: " + app.getFlatType())
+                .toArray(String[]::new); // Convert List<String> to String[]
+
+        int choice = prompt.menuPrompt("Select an Application", options, "Enter your choice: ");
+        if (choice < 1 || choice > applications.size()) {
+            prompt.showMessage("Invalid choice.");
+            return null;
+        }
+
+        return applications.get(choice - 1); // Return the selected application
+    }
+
+    public void showApprovedOfficerRegistrations(List<Registration> registrations) {
+        prompt.showTitle("Approved HDB Officer Registrations");
+        if (registrations.isEmpty()) {
+            prompt.showMessage("No approved registrations found.");
+        } else {
+            List<String> rows = registrations.stream()
+                    .map(reg -> "Officer Name: " + reg.getApplicant().getName() +
+                                ", Officer NRIC: " + reg.getApplicant().getNric() +
+                                ", Project Name: " + reg.getProject().getName())
+                    .toList();
+
+            String[] options = rows.toArray(String[]::new); // Convert List<String> to String[]
+
+            prompt.menuPrompt("Approved Registrations", options, "Press Enter to continue...");
+        }
+        prompt.pressEnterToContinue();
+    }
+
+    public Registration selectRegistration(List<Registration> registrations) {
+        if (registrations.isEmpty()) {
+            prompt.showMessage("No registrations available.");
+            return null;
+        }
+
+        // Display the list of registrations with details
+        String[] options = registrations.stream()
+                .map(reg -> "Registration ID: " + reg.getId() +
+                            ", Officer Name: " + reg.getApplicant().getName() +
+                            ", Officer NRIC: " + reg.getApplicant().getNric())
+                .toArray(String[]::new); // Convert List<String> to String[]
+
+        // Prompt the manager to select a registration
+        int choice = prompt.menuPrompt("Select a Registration", options, "Enter your choice: ");
+        if (choice < 1 || choice > registrations.size()) {
+            prompt.showMessage("Invalid choice.");
+            return null;
+        }
+
+        // Return the selected registration
+        return registrations.get(choice - 1);
     }
 }
