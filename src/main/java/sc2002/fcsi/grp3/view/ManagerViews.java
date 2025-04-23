@@ -1,6 +1,6 @@
 package sc2002.fcsi.grp3.view;
 
-public record ApplicantViews(
+public record ManagerViews(
         SharedView sharedView,
         ProjectView projectView,
         ApplicationView applicationView,
