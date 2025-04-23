@@ -26,6 +26,7 @@ public class SystemInitializer {
         String projectsPath = config.get("projectsFile");
         String applicationsPath = config.get("applicationsFile");
         String enquiriesPath = config.get("enquiriesFile");
+        String bookingsPath = config.get("bookingsFile");
 
 
 
@@ -33,16 +34,19 @@ public class SystemInitializer {
                 usersPath,
                 projectsPath,
                 applicationsPath,
-                enquiriesPath);
+                enquiriesPath,
+                bookingsPath);
         dataStore.setUsers(loader.loadUsers());
         dataStore.setProjects(loader.loadProjects());
         dataStore.setApplications(loader.loadApplications());
         dataStore.setEnquiries(loader.loadEnquiries());
+        dataStore.setBookings(loader.loadBookings());
 
         System.out.println("[SystemInitializer] Loaded " + dataStore.getUsers().size() + " users.");
         System.out.println("[SystemInitializer] Loaded " + dataStore.getProjects().size() + " projects.");
         System.out.println("[SystemInitializer] Loaded " + dataStore.getApplications().size() + " applications.");
         System.out.println("[SystemInitializer] Loaded " + dataStore.getEnquiries().size() + " enquiries.");
+        System.out.println("[SystemInitializer] Loaded " + dataStore.getBookings().size() + " bookings.");
     }
 
     private void registerShutdownHook() {

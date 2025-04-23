@@ -1,10 +1,7 @@
 package sc2002.fcsi.grp3.io;
 
 import sc2002.fcsi.grp3.model.*;
-import sc2002.fcsi.grp3.parser.ApplicationParser;
-import sc2002.fcsi.grp3.parser.ProjectParser;
-import sc2002.fcsi.grp3.parser.UserParser;
-import sc2002.fcsi.grp3.parser.EnquiryParser;
+import sc2002.fcsi.grp3.parser.*;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -20,6 +17,7 @@ public class CSVDataLoader implements IDataLoader {
     private final String projectFilePath;
     private final String applicationFilePath;
     private final String enquiryFilePath;
+    private final String bookingFilePath;
     private final static DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private List<Project> projects;
     private static Map<Integer, Project> projectMap;
@@ -27,17 +25,20 @@ public class CSVDataLoader implements IDataLoader {
     private Map<String, User> userMap;
     private List<Application> applications;
     private List<Enquiry> enquiries;
+    private List<Booking> bookings;
 
     public CSVDataLoader(
             String userFilePath,
             String projectFilePath,
             String applicationFilePath,
-            String enquiryFilePath
+            String enquiryFilePath,
+            String bookingFilePath
     ) {
         this.userFilePath = userFilePath;
         this.projectFilePath = projectFilePath;
         this.applicationFilePath = applicationFilePath;
         this.enquiryFilePath = enquiryFilePath;
+        this.bookingFilePath = bookingFilePath;
     }
 
     protected static void readCSVLines(String filepath, Consumer<String[]> rowHandler) {
@@ -306,7 +307,6 @@ public class CSVDataLoader implements IDataLoader {
         return enquiries;
 
     }
-
     public static void saveEnquiries(String filePath, List<Enquiry> enquiries){
         String tmpFile = filePath + ".tmp";
         try(FileWriter writer = new FileWriter(tmpFile)){
@@ -328,6 +328,57 @@ public class CSVDataLoader implements IDataLoader {
             }
         }catch(IOException e){
             System.out.println("Failed to save enquiries! " + e.getMessage());
+            new java.io.File(tmpFile).delete();
+            return;
+        }
+        try {
+            Files.move(Paths.get(tmpFile), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            System.out.println("Failed to move temp file to final destination: " + e.getMessage());
+        }
+    }
+
+
+    public List<Booking> loadBookings(){
+        this.bookings = new ArrayList<>();
+        BookingParser bookingParser = new BookingParser(projectMap, userMap);
+
+        readCSVLines(bookingFilePath, tokens->{
+            try{
+                Booking booking = bookingParser.parse(tokens);
+                if (booking != null){
+                    bookings.add(booking);
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid booking row: " + Arrays.toString(tokens));
+                System.out.println(e.getMessage());
+                throw e;
+            }
+        });
+
+        int maxBookingId = bookings.stream()
+                .mapToInt(Booking::getId)
+                .max()
+                .orElse(0);
+        Booking.setNextBookingId(maxBookingId);
+
+        return bookings;
+    }
+    public static void saveBookings(String filePath, List<Booking> bookings){
+        String tmpFile = filePath + ".tmp";
+        try(FileWriter writer = new FileWriter(tmpFile)){
+            writer.write("id,flatType,projectId,applicantNric,officerNric,bookingDate\n");
+            for (Booking book : bookings){
+                writer.write(String.format("%d,%s,%d,%s,%s,%s\n",
+                        book.getId(),
+                        book.getFlatType().getType().getCode(),
+                        book.getProjectId().getId(),
+                        book.getApplicant().getNric(),
+                        book.getOfficer().getNric(),
+                        book.getBookingDate().format(dtFormatter)));
+            }
+        }catch(IOException e){
+            System.out.println("Failed to save bookings! " + e.getMessage());
             new java.io.File(tmpFile).delete();
             return;
         }

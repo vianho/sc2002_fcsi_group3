@@ -6,4 +6,5 @@ public enum ApplicationStatus {
     UNSUCCESSFUL,
     BOOKED,
     WITHDRAWN,
+    WITHDRAWAL_REQUESTED
 }

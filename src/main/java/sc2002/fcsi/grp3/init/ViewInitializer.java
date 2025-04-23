@@ -29,8 +29,10 @@ public class ViewInitializer {
         return new ManagerView(sharedPrompt);
     }
 
-    public EnquiryViewApplicant getEnquiryView() { return new EnquiryViewApplicant((sharedPrompt)); }
+    public EnquiryViewApplicant getEnquiryView() { return new EnquiryViewApplicant(sharedPrompt); }
 
-    public EnquiryViewOfficer getEnquiryViewOfficer() { return new EnquiryViewOfficer((sharedPrompt)); }
+    public EnquiryViewOfficer getEnquiryViewOfficer() { return new EnquiryViewOfficer(sharedPrompt); }
+
+    public EnquiryViewManager getEnquiryViewManager() { return new EnquiryViewManager(sharedPrompt); }
 }
 

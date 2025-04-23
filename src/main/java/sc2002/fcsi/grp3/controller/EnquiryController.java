@@ -7,12 +7,13 @@ import sc2002.fcsi.grp3.model.User;
 import sc2002.fcsi.grp3.session.Session;
 import sc2002.fcsi.grp3.view.EnquiryViewApplicant;
 import sc2002.fcsi.grp3.service.EnquiryService;
+import sc2002.fcsi.grp3.util.Validator;
 
 
 import java.util.List;
 import java.util.Optional;
 
-public class EnquiryController {
+public class EnquiryController implements IBaseController{
     private final EnquiryViewApplicant view;
     private final EnquiryService service;
 
@@ -52,7 +53,17 @@ public class EnquiryController {
             return;
         }
         String title = view.promptTitle();
+        if (!Validator.isNonEmpty(title)){
+            view.showError("Title cannot be empty.");
+            return;
+        }
+
         String content = view.promptContent();
+
+        if (!Validator.isNonEmpty(content)){
+            view.showError("Content cannot be empty.");
+            return;
+        }
 
         boolean success = service.createEnquiry(user, project.get(), title, content);
         if(success){
@@ -89,7 +100,17 @@ public class EnquiryController {
             return;
         }
         String newTitle = view.promptTitle();
+        if (!Validator.isNonEmpty(newTitle)){
+            view.showError("Title cannot be empty.");
+            return;
+        }
         String newContent = view.promptContent();
+
+        if (!Validator.isNonEmpty(newContent)){
+            view.showError("Content cannot be empty.");
+            return;
+        }
+
         boolean success = service.editEnquiry(enquiry, newTitle, newContent);
         if (success){
             view.showMessage("Enquiry updated.");

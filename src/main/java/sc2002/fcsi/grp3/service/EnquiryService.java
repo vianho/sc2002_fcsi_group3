@@ -54,6 +54,26 @@ public class EnquiryService {
                 .filter(e -> !e.isReplied())
                 .findFirst();
     }
+    public List<Enquiry> getAllEnquiriesManager(User manager) {
+        return db.getEnquiries();
+    }
+
+    public List<Enquiry> getUnrepliedEnquiriesHandledByManager(User manager){
+        return db.getEnquiries()
+                .stream()
+                .filter(e -> e.getRelatedProject().getManagerNric().equals(manager.getNric()))
+                .filter(e -> !e.isReplied())
+                .collect(Collectors.toList());
+    }
+
+    public Optional<Enquiry> getUnrepliedEnquiriesHandledByManagerById(User manager, int id ){
+        return db.getEnquiries()
+                .stream()
+                .filter(e -> e.getId() == id)
+                .filter(e -> e.getRelatedProject().getManagerNric().equals(manager.getNric()))
+                .filter(e -> !e.isReplied())
+                .findFirst();
+    }
 
     public Optional<Enquiry> getOwnEnquiryById(User user, int id) {
         return db.getEnquiries()
