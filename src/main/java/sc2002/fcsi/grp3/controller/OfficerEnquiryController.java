@@ -1,39 +1,43 @@
 package sc2002.fcsi.grp3.controller;
 import sc2002.fcsi.grp3.model.Enquiry;
-import sc2002.fcsi.grp3.model.Project;
 import sc2002.fcsi.grp3.model.User;
 import sc2002.fcsi.grp3.service.EnquiryService;
+import sc2002.fcsi.grp3.service.result.ActionResult;
 import sc2002.fcsi.grp3.session.Session;
 import sc2002.fcsi.grp3.util.Validator;
-import sc2002.fcsi.grp3.view.EnquiryViewOfficer;
+import sc2002.fcsi.grp3.view.EnquiryView;
+import sc2002.fcsi.grp3.view.SharedView;
 
-import javax.swing.text.html.Option;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-public class EnquiryControllerOfficer implements IBaseController{
-    private final EnquiryViewOfficer view;
+public class OfficerEnquiryController implements IBaseController {
+    private final SharedView sharedView;
+    private final EnquiryView view;
     private final EnquiryService service;
 
 
-    public EnquiryControllerOfficer(EnquiryViewOfficer view, EnquiryService service) {
+    public OfficerEnquiryController(SharedView sharedView, EnquiryView view, EnquiryService service) {
+        this.sharedView = sharedView;
         this.view = view;
         this.service = service;
     }
 
     public void start(){
         int choice;
+        String[] options  = {
+                "View Assigned Project Enquiries",
+                "Reply to Enquiry",
+                "Back"
+        };
         do{
-            choice = view.showEnquiryMenuAndGetChoice();
+            choice = sharedView.showMenuAndGetChoice("Officer Enquiry Menu", options);
             switch(choice){
                 case 1 -> viewAssignedEnquiries();
                 case 2 -> replyEnquiry();
-                case 3 -> {}
                 default -> view.showError("Invalid choice!");
             }
-        }while (choice != 3);
+        } while (choice != options.length);
     }
 
     private void viewAssignedEnquiries(){

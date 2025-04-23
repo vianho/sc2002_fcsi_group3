@@ -20,6 +20,7 @@ public class ControllerFactory {
 
     public MainMenuController createMainMenuController() {
         return new MainMenuController(
+                viewInit.getSharedView(),
                 viewInit.getMainMenuView(),
                 createLoginController(),
                 this
@@ -51,14 +52,19 @@ public class ControllerFactory {
             case "Officer" ->{
                 OfficerApplicationPermission appPermission = new OfficerApplicationPermission();
                 yield new OfficerController(
-                    viewInit.getOfficerView(),
+                    viewInit.getOfficerViews(),
                     new ProjectService(store),
                     new ApplicationService(appPermission, store),
-                    new RegistrationService(store));
+                    new RegistrationService(store),
+                    new EnquiryService(store)
+                );
             }
             case "Manager" -> {
                 ManagerApplicationPermission appPermission = new ManagerApplicationPermission();
-                yield new ManagerController(viewInit.getManagerView());
+                yield new ManagerController(
+                        viewInit.getManagerView(),
+                        new ProjectService(store)
+                );
             }
             default -> throw new IllegalStateException("Unknown role: " + roleName);
         };
