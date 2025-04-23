@@ -1,18 +1,11 @@
 package sc2002.fcsi.grp3.service;
 
 import sc2002.fcsi.grp3.datastore.DataStore;
-import sc2002.fcsi.grp3.model.Application;
-import sc2002.fcsi.grp3.model.Flat;
-import sc2002.fcsi.grp3.model.Project;
-import sc2002.fcsi.grp3.model.Registration;
-import sc2002.fcsi.grp3.model.User;
-import sc2002.fcsi.grp3.model.enums.ApplicationStatus;
-import sc2002.fcsi.grp3.model.enums.FlatType;
-import sc2002.fcsi.grp3.model.enums.MaritalStatus;
-import sc2002.fcsi.grp3.model.enums.RegistrationStatus;
+import sc2002.fcsi.grp3.model.*;
+import sc2002.fcsi.grp3.model.enums.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ProjectService {
     private final DataStore db;
@@ -35,24 +28,46 @@ public class ProjectService {
         return visibleProjects;
     }
 
-    protected List<Project> filterProjects(List<Project> projects, HashMap<String, String> filters) {
-        return projects.stream().filter(project -> {
-            boolean matches = true;
+    public List<Project> filterProjects(User user, List<Project> projects, ProjectFilter filter, ProjectSortOption sortOption) {
+        Stream<Project> stream = projects.stream()
+                .filter(p -> filter.getNeighbourhood() == null ||
+                        p.getNeighbourhood().equalsIgnoreCase(filter.getNeighbourhood()))
 
-            String neighbourhood = filters.get("neighbourhood");
-            if (neighbourhood != null) {
-                matches &= project.getNeighbourhood().equals(neighbourhood);
-            }
+                .filter(p -> filter.getApplicationOpeningAfter() == null ||
+                        !p.getApplicationOpeningDate().isAfter(filter.getApplicationOpeningAfter()))
 
-            String flatType = filters.get("flatType");
-            if (flatType != null) {
-                matches &= project.hasAvailableFlatType(FlatType.valueOf(flatType));
-            }
+                .filter(p -> filter.getApplicationClosingBefore() == null ||
+                        !p.getApplicationClosingDate().isBefore(filter.getApplicationClosingBefore()))
 
-            return matches;
-        })
-        .sorted(Comparator.comparing(Project::getName))
-        .toList();
+                .filter(p -> filter.getMinSellingPrice() == null ||
+                        p.getFlats().stream().anyMatch(f -> f.getSellingPrice() >= filter.getMinSellingPrice()))
+
+                .filter(p -> filter.getMaxSellingPrice() == null ||
+                        p.getFlats().stream().anyMatch(f -> f.getSellingPrice() <= filter.getMaxSellingPrice()))
+
+                .filter(p -> p.getFlats().stream().anyMatch(f ->
+                        // Flat must be of a selected type (or no type selected)
+                        (filter.getflatTypes() == null || filter.getflatTypes().isEmpty() || filter.getflatTypes().contains(f.getType()))
+                                // user must be eligible for flat
+                                && f.getType().isEligible(user)
+                                // price filter
+                                && (filter.getMinSellingPrice() == null || f.getSellingPrice() >= filter.getMinSellingPrice())
+                                && (filter.getMaxSellingPrice() == null || f.getSellingPrice() <= filter.getMaxSellingPrice())
+                        )
+                );
+        Comparator<Project> comparator = switch (sortOption.getKey()) {
+            case NAME -> Comparator.comparing(Project::getName);
+            case APPLICATION_OPENING_DATE -> Comparator.comparing(Project::getApplicationOpeningDate);
+            case APPLICATION_CLOSING_DATE -> Comparator.comparing(Project::getApplicationClosingDate);
+            case PRICE -> Comparator.comparing(p ->
+                    p.getFlats().stream()
+                            .map(Flat::getSellingPrice)
+                            .min(Float::compare)
+                            .orElse(Float.MAX_VALUE)
+            );
+        };
+
+        return stream.sorted(sortOption.applyTo(comparator)).toList();
     }
 
     public List<Project> getProjectsManagedBy(String officerNric) {

@@ -42,6 +42,10 @@ public class Session {
         return null;
     }
 
+    public static void set(String key, Object value) {
+        sessionData.put(key, value);
+    }
+
     @SuppressWarnings("unchecked")
     public static <T> List<T> getList(String key, Class<T> type) {
         Object value = sessionData.get(key);

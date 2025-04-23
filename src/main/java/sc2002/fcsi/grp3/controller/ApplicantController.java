@@ -42,50 +42,23 @@ public class ApplicantController implements IBaseController {
     public void start() {
         int choice;
         String[] options = {
-                "View Available Projects",
-                "Apply for a Project",
-                "View Applications",
-                "Withdraw Application",
-                "View My Enquiries",
+                "View available projects",
+                "Applications",
+                "My Enquiries",
                 "My Account",
                 "Logout"
         };
-        User user = Session.getCurrentUser();
         do {
             choice = views.sharedView().showMenuAndGetChoice("Applicant Menu", options);
             switch (choice) {
-                case 1 -> viewProjects(user);
-                case 2 -> applyForProject(user);
-                case 3 -> viewApplications(user);
-                case 4 -> withdrawApplication(user);
-                case 5 -> viewEnquiries(user);
-                case 6 -> accountSettings();
-                case 7 -> logout();
+                case 1 -> viewProjects();
+                case 2 -> applicationActions();
+                case 3 -> viewEnquiries();
+                case 4 -> accountSettings();
+                case 5 -> logout();
                 default -> views.sharedView().showInvalidChoice();
             }
         } while (choice != options.length);
-    }
-
-    private List<Project> getVisibleProjects(User user) {
-        List<Project> projects = Session.getList("visibleProjects", Project.class);
-
-        if (projects == null) {
-            projects = projectService.getVisibleProjects(user);
-            Session.put("visibleProjects", projects);
-        }
-
-        if (projects.isEmpty()) {
-            views.sharedView().showMessage("No projects found.");
-        }
-        return projects;
-    }
-
-    private void viewProjects(User user) {
-        views.sharedView().showTitle("Projects");
-        List<Project> projects = getVisibleProjects(user);
-        List<ProjectFlatRow> rows = ProjectViewUtils.flattenEligibleFlats(projects, user);
-        views.projectView().showProjectFlats(rows);
-        views.sharedView().pressEnterToContinue();
     }
 
     private void logout() {
@@ -93,122 +66,24 @@ public class ApplicantController implements IBaseController {
         views.sharedView().showMessage("Logging out...");
     }
 
-    private Optional<Integer> getProjectId(User user) {
-        // prompt for project id
-        boolean isValidProjectId;
-        String projectId;
-        do {
-            projectId = views.applicationView().promptProjectId().trim();
-            if (projectId.isEmpty()) {
-                return Optional.empty();
-            }
-            isValidProjectId = Validator.isNumeric(projectId);
-            views.sharedView().showMessage(String.valueOf(isValidProjectId));
-            if (!isValidProjectId) {
-                views.sharedView().showError("Invalid project ID.");
-            }
-        } while (!isValidProjectId);
-
-        return Optional.of(Integer.parseInt(projectId));
+    private void viewProjects() {
+        ProjectViewerController projectViewerController = new ProjectViewerController(
+                views.sharedView(),
+                views.projectView(),
+                projectService
+        );
+        projectViewerController.start();
     }
 
-    private void applyForProject(User user) {
-        // check if user has an active application
-        Application activeApplication = getActiveApplication(user);
-        if (activeApplication != null) {
-            views.sharedView().showError("You can only apply for one project at a time.");
-            views.sharedView().showMessage("Please withdraw your active application before applying for a new project.");
-            views.sharedView().showMessage("Your active application:");
-            views.applicationView().showApplications(List.of(activeApplication));
-            return;
-        }
-
-        // Show eligible projects
-        views.sharedView().showTitle("Eligible Projects");
-        List<Project> eligibleProjects = getVisibleProjects(user);
-        List<ProjectFlatRow> rows = ProjectViewUtils.flattenEligibleFlats(eligibleProjects, user);
-        views.projectView().showProjectFlats(rows);
-
-        // prompt and select project
-        Optional<Integer> projectId = getProjectId(user);
-        if (projectId.isEmpty()) {
-            views.sharedView().showMessage("Application cancelled.");
-            return;
-        }
-
-        Optional<Project> project = projectService.getProjectById(projectId.get());
-        if (project.isEmpty()) {
-            views.sharedView().showMessage("Project not found.");
-            return;
-        }
-
-        // list flats that are available for user under the project
-        List<Flat> availableFlats = projectService.getAvailableFlats(user, project.get());
-
-        if (availableFlats.isEmpty()) {
-            views.sharedView().showMessage("No available flats.");
-            return;
-        }
-
-        views.applicationView().showFlatOptions(availableFlats);
-
-        int chosenFlatType = views.applicationView().getFlatChoice();
-        if (chosenFlatType == 0 || chosenFlatType > availableFlats.size()) {
-            return;
-        }
-
-        ActionResult<Application> result = applicationService.apply(user, project.get(), availableFlats.get(chosenFlatType-1).getType());
-        if (result.isSuccess()) {
-            views.sharedView().showMessage(result.getMessage());
-        } else {
-            views.sharedView().showError(result.getMessage());
-        }
-    }
-
-    private void viewApplications(User user) {
-        views.sharedView().showTitle("Applications");
-        views.applicationView().showApplications(applicationService.getApplicationsFor(user));
-        views.sharedView().pressEnterToContinue();
-    }
-
-    private Application getActiveApplication(User user) {
-        Application application = Session.get("activeApplication", Application.class);
-        if (application == null) {
-            Optional<Application> activeApplication = applicationService.getActiveApplicationFor(user);
-            if (activeApplication.isPresent()) {
-                Session.put("activeApplication", activeApplication);
-                return activeApplication.get();
-            } else {
-                return null;
-            }
-        }
-        return application;
-    }
-
-    private void withdrawApplication(User user) {
-        // check if user has an active application
-        Application activeApplication = getActiveApplication(user);
-        if (activeApplication == null) {
-            views.sharedView().showError("You do not have any active application.");
-            return;
-        }
-        views.sharedView().showMessage("This is your active application: ");
-        views.applicationView().showApplications(List.of(activeApplication));
-        boolean confirm = views.sharedView().getConfirmation("Are you sure you want to withdraw your application? ");
-        if (confirm) {
-            ActionResult<Application> result = applicationService.withdraw(user, activeApplication);
-            if (result.isSuccess()) {
-                views.sharedView().showMessage(result.getMessage());
-                Session.remove("activeApplication");
-                return;
-            }
-            views.sharedView().showError(result.getMessage());
-            return;
-        }
-        views.sharedView().showMessage("Withdrawal cancelled.");
-    }
-
-    private void viewEnquiries(User user) {
+    private void applicationActions() {
+        ApplicationController applicationController = new ApplicationController(
+                views.sharedView(),
+                views.applicationView(),
+                views.projectView(),
+                projectService,
+                applicationService
+        );
+        applicationController.start();
     }
 
     private void accountSettings() {
@@ -220,9 +95,12 @@ public class ApplicantController implements IBaseController {
         accountController.start();
     }
 
-
     private void viewEnquiries(){
-        EnquiryController enquiryController = new EnquiryController(views.enquiryView(), enquiryService);
+        ApplicantEnquiryController enquiryController = new ApplicantEnquiryController(
+                views.sharedView(),
+                views.enquiryView(),
+                enquiryService
+        );
         enquiryController.start();
     }
 }

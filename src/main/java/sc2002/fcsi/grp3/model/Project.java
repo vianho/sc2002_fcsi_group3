@@ -3,6 +3,7 @@ package sc2002.fcsi.grp3.model;
 import sc2002.fcsi.grp3.model.enums.FlatType;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class Project {
