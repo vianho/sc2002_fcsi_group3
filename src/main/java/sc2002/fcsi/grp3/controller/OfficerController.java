@@ -2,13 +2,11 @@ package sc2002.fcsi.grp3.controller;
 
 import sc2002.fcsi.grp3.model.*;
 import sc2002.fcsi.grp3.model.enums.ApplicationStatus;
-import sc2002.fcsi.grp3.service.EnquiryService;
+import sc2002.fcsi.grp3.service.*;
+import sc2002.fcsi.grp3.view.ApplicantView;
 import sc2002.fcsi.grp3.view.EnquiryViewOfficer;
 import sc2002.fcsi.grp3.view.OfficerView;
 import sc2002.fcsi.grp3.model.enums.FlatType;
-import sc2002.fcsi.grp3.service.ApplicationService;
-import sc2002.fcsi.grp3.service.RegistrationService;
-import sc2002.fcsi.grp3.service.ProjectService;
 import sc2002.fcsi.grp3.session.Session;
 import sc2002.fcsi.grp3.model.enums.RegistrationStatus;
 
@@ -22,10 +20,15 @@ public class OfficerController implements IBaseController {
     private final EnquiryViewOfficer enquiryViewOfficer;
     private final ProjectService projectService;
     private final RegistrationService registrationService;
+    private final BookingService bookingService;
     private final EnquiryService enquiryService;
+    private final UserService userService;
     private Scanner sc = new Scanner(System.in);
     private Optional<Project> optionalProject;
+    private Optional<User> optionalUser;
     private Project proj;
+    private User Auser;
+    private Flat flatVar;
     private LocalDate closingDate, openingDate;
     private final LocalDate Now = LocalDate.now();
     private Application found = null;
@@ -33,7 +36,8 @@ public class OfficerController implements IBaseController {
     private final ApplicationService applicationService;
     private FlatType flatType;
     private RegistrationStatus registrationStatus;
-    private final EnquiryControllerOfficer enquiryControllerOfficer ;
+    private final EnquiryControllerOfficer enquiryControllerOfficer;
+
 
 
     public OfficerController(
@@ -42,7 +46,9 @@ public class OfficerController implements IBaseController {
             ProjectService projectService,
             ApplicationService applicationService,
             RegistrationService registrationService,
-            EnquiryService enquiryService
+            EnquiryService enquiryService,
+            BookingService bookingService,
+            UserService userService
     ) {
         this.view = view;
         this.enquiryViewOfficer = enquiryViewOfficer;
@@ -50,6 +56,9 @@ public class OfficerController implements IBaseController {
         this.applicationService = applicationService;
         this.registrationService = registrationService;
         this.enquiryService = enquiryService;
+        this.bookingService = bookingService;
+        this.userService = userService;
+
         this.enquiryControllerOfficer = new EnquiryControllerOfficer(enquiryViewOfficer, enquiryService);
     }
 
@@ -60,8 +69,7 @@ public class OfficerController implements IBaseController {
             String[] options = {
                     "View as an Applicant",
                     "View as an Officer",
-                    "Logout",
-                    "Test"};
+                    "Logout"};
             choice = view.showMenuAndGetChoice("Menu", options);
             switch (choice) {
 //                case 1 -> viewProjects();
@@ -134,16 +142,24 @@ public class OfficerController implements IBaseController {
     }
 
 
+
     //Book Flats for Applicants
     private void flatBooking(){
 
+        User user = Session.getCurrentUser();
         do {
             view.showMessage("Enter NRIC of Applicant (Enter '0' to Exit) :");
+
             nric = sc.next();
+            optionalUser = userService.findByNRIC(nric);
             found = applicationService.findApplication(nric.toUpperCase());
 
             if(found != null){
+                view.showMessage("NRIC Found");
                 break;
+            }
+            else{
+                view.showMessage("Not found");
             }
 
         }while(!(nric.equals("0")));
@@ -153,34 +169,67 @@ public class OfficerController implements IBaseController {
         }
 
         //Return if APPROVED already
-        if(found.getStatus() == ApplicationStatus.SUCCESSFUL){
-            view.showMessage("Application already approved..");
+        if(found.getStatus() == ApplicationStatus.BOOKED){
+            view.showMessage("Application already booked..");
             return;
         }
 
-        //Search for flatType
-        proj = found.getProject();
-        List<Flat> Lftype = proj.getFlats();
-        flatType = found.getFlatType();
+        if(found.getStatus() == ApplicationStatus.SUCCESSFUL) {
 
-        for(Flat flat : Lftype){
-            if(flat.getType() == flatType){
-                view.showMessage("Room Type:");
-                view.showMessage(String.valueOf(flatType.getDisplayName()));
-                view.showMessage("Number of roomType: ");
-                view.showMessage(String.valueOf(flat.getUnitsAvailable()));
-                flat.reduceUnitsAvailable();
+            //Search for flatType
+            proj = found.getProject();
+            List<Flat> Lftype = proj.getFlats();
+            flatType = found.getFlatType();
+
+            for (Flat flat : Lftype) {
+                if (flat.getType() == flatType) {
+//                    view.showMessage("Room Type:");
+//                    view.showMessage(String.valueOf(flatType.getDisplayName()));
+//                    view.showMessage("Number of roomType: ");
+//                    view.showMessage(String.valueOf(flat.getUnitsAvailable()));
+
+                    if(flat.getUnitsAvailable() <= 0){
+                        view.showMessage("No Available flats left, Returning to menu.....");
+                        break;
+                    }
+                    else {
+                        flat.reduceUnitsAvailable();
+
+                        found.setStatus(ApplicationStatus.BOOKED);
+                        found.setFlatType(found.getFlatType());
+
+//                        view.showMessage("Application Status now: ");
+//                        view.showMessage(String.valueOf(found.getStatus()));
 
 
-                found.setStatus(ApplicationStatus.SUCCESSFUL);
-                found.setFlatType(found.getFlatType());
+                        System.out.println("Application Status now: " + String.valueOf(found.getStatus()));
 
-                view.showMessage("Application Status now: ");
-                view.showMessage(String.valueOf(found.getStatus()));
+//                        view.showMessage("Number of roomType left: ");
+//                        view.showMessage(String.valueOf(flat.getUnitsAvailable()));
 
-                view.showMessage("Number of roomType left: ");
-                view.showMessage(String.valueOf(flat.getUnitsAvailable()));
+                        System.out.println("Number of roomType left: " + String.valueOf(flat.getUnitsAvailable()));
+
+                        flatVar = flat;
+                        break;
+                    }
+
+                }
+                else{
+                    view.showMessage("Application from NRIC not found");
+                }
             }
+
+            //Create a Booking for applicant
+
+            if (optionalUser.isPresent()){
+                Auser = optionalUser.get();
+            }
+            else {
+                view.showMessage("No Such User");
+            }
+
+            bookingService.addBooking(flatVar, proj, Auser, user);
+
         }
 
     }
@@ -241,14 +290,15 @@ public class OfficerController implements IBaseController {
 
 
     private void test(){
-        User user = Session.getCurrentUser();
-        if(Session.isLoggedIn()) {
-            String str = user.getNric();
-            view.showMessage(str);
-        }
-        else {
-            view.showMessage("lost");
-        }
+//        User user = Session.getCurrentUser();
+//        if(Session.isLoggedIn()) {
+//            String str = user.getNric();
+//            view.showMessage(str);
+//        }
+//        else {
+//            view.showMessage("lost");
+//        }
+        view.showBooking(bookingService.getBookings());
     }
 
 }
