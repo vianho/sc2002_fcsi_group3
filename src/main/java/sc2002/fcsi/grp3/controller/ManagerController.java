@@ -9,10 +9,12 @@ import sc2002.fcsi.grp3.model.enums.RegistrationStatus;
 import sc2002.fcsi.grp3.model.enums.MaritalStatus;
 import sc2002.fcsi.grp3.model.enums.FlatType;
 import sc2002.fcsi.grp3.service.ApplicationService;
+import sc2002.fcsi.grp3.service.EnquiryService;
 import sc2002.fcsi.grp3.service.ProjectService;
 import sc2002.fcsi.grp3.session.Session;
 import sc2002.fcsi.grp3.view.ApplicantView;
 import sc2002.fcsi.grp3.view.ManagerView;
+import sc2002.fcsi.grp3.view.EnquiryViewManager;
 
 import java.util.List;
 
@@ -20,11 +22,16 @@ import java.util.List;
 public class ManagerController implements IBaseController {
     private final ManagerView view;
     private final ProjectService projectService;
+    private final EnquiryService enquiryService;
+    private final EnquiryViewManager enquiryView;
 
-    public ManagerController(ManagerView view, ProjectService projectService) {
+    public ManagerController(ManagerView view, ProjectService projectService, EnquiryService enquiryService, EnquiryViewManager enquiryView) {
         this.view = view;
-        this.projectService = projectService;      
+        this.projectService = projectService;
+        this.enquiryService = enquiryService;
+        this.enquiryView = enquiryView;
     }
+
 
     @Override
     public void start() {
@@ -34,6 +41,7 @@ public class ManagerController implements IBaseController {
                     "Manage Projects",
                     "Manage Applications",
                     "Manage Registrations",
+                    "Manage Enquiries",
                     "Logout"
             };
 
@@ -42,10 +50,11 @@ public class ManagerController implements IBaseController {
                 case 1 -> manageProjects();
                 case 2 -> manageApplications();
                 case 3 -> manageRegistrations();
-                case 4 -> logout();
+                case 4 -> manageEnquiries();
+                case 5 -> logout();
                 default -> view.showMessage("Invalid choice.");
             }
-        } while (choice != 4); // Loop until the user chooses to logout
+        } while (choice != 5); // Loop until the user chooses to logout
     }
         //Show all projects 
         public void viewProjects() {
@@ -467,4 +476,9 @@ public class ManagerController implements IBaseController {
                 }
             }
         }
+        private void manageEnquiries(){
+            EnquiryControllerManager enquiryController = new EnquiryControllerManager(enquiryView, enquiryService);
+            enquiryController.start();
+        }
+
 }

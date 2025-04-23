@@ -4,40 +4,51 @@ import java.time.LocalDate;
 
 public class Booking {
     private int id;
-    private Flat flat;
-    private User applicant;
-    private User officer ; 
-    private Application application;
+    private Flat flatType;
+    private Project projectId;
+    private User applicantNric;
+    private User officerNric;
     private LocalDate bookingDate;
+    private static int nextBookingId;
 
 
-    public Booking(int id, Flat flat, User applicant, User officer, Application application, LocalDate bookingDate){
+    public Booking(int id, Flat flatType, Project projectId, User applicantNric, User officerNric, LocalDate bookingDate){
         this.id = id;
-        this.flat = flat;
-        this.applicant = applicant;
-        this.officer = officer;
-        this.application = application;
+        this.flatType = flatType;
+        this.projectId = projectId;
+        this.applicantNric = applicantNric;
+        this.officerNric = officerNric;
         this.bookingDate = bookingDate;
+    }
+    public Booking(Flat flatType, Project projectId, User applicantNric, User officerNric){
+        this.id = ++nextBookingId;
+        this.flatType = flatType;
+        this.projectId = projectId;
+        this.applicantNric = applicantNric;
+        this.officerNric = officerNric;
+        this.bookingDate = LocalDate.now();
     }
 
     public int getId(){
         return this.id;
     }
 
-    public Flat getFlat(){
-        return this.flat;
+    public Flat getFlatType(){
+        return this.flatType;
     }
 
+    public Project getProjectId(){ return this.projectId;}
+
     public User getApplicant(){
-        return this.applicant;
+        return this.applicantNric;
     }
 
     public User getOfficer(){
-        return this.officer;
+        return this.officerNric;
     }
 
-    public Application getApplication(){
-        return this.application;
+    public static void setNextBookingId(int id) {
+        nextBookingId = id;
     }
 
     public LocalDate getBookingDate(){

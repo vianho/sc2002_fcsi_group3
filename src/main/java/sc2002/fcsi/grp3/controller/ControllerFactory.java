@@ -45,7 +45,10 @@ public class ControllerFactory {
                                                     new ApplicationService(store),
                                                     new RegistrationService(store),
                                                     new EnquiryService(store));
-            case "Manager" -> new ManagerController(viewInit.getManagerView());
+            case "Manager" -> new ManagerController(viewInit.getManagerView(),
+                                                    new ProjectService(store),
+                                                    new EnquiryService(store),
+                                                    viewInit.getEnquiryViewManager());
             default -> throw new IllegalStateException("Unknown role: " + roleName);
         };
     }

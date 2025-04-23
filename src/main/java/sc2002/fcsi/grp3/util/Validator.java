@@ -5,6 +5,10 @@ public class Validator {
         return nric != null && nric.matches("^[ST]\\d{7}[A-Z]$");
     }
 
+    public static boolean isNonEmpty(String input) {
+        return input != null && !input.trim().isEmpty();
+    }
+
     // Add more as needed
 }
 

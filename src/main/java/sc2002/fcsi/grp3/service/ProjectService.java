@@ -153,7 +153,7 @@ public class ProjectService {
         return db.getApplications().stream()
                 .filter(app -> app.getProject().getId() == projectId)
                 .filter(app -> app.getStatus() == ApplicationStatus.WITHDRAWAL_REQUESTED)
-                .toList();
+               .toList();
     }
 
     // Approve or reject an Applicant's withdrawal request
