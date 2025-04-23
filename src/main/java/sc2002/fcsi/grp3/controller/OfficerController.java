@@ -3,9 +3,9 @@ package sc2002.fcsi.grp3.controller;
 import sc2002.fcsi.grp3.model.*;
 import sc2002.fcsi.grp3.model.enums.ApplicationStatus;
 import sc2002.fcsi.grp3.service.*;
-import sc2002.fcsi.grp3.view.ApplicantView;
-import sc2002.fcsi.grp3.view.EnquiryViewOfficer;
-import sc2002.fcsi.grp3.view.OfficerView;
+import sc2002.fcsi.grp3.service.EnquiryService;
+import sc2002.fcsi.grp3.util.ProjectViewUtils;
+import sc2002.fcsi.grp3.view.OfficerViews;
 import sc2002.fcsi.grp3.model.enums.FlatType;
 import sc2002.fcsi.grp3.session.Session;
 import sc2002.fcsi.grp3.model.enums.RegistrationStatus;
@@ -16,8 +16,7 @@ import java.util.Scanner;
 import java.time.LocalDate;
 
 public class OfficerController implements IBaseController {
-    private final OfficerView view;
-    private final EnquiryViewOfficer enquiryViewOfficer;
+    private final OfficerViews views;
     private final ProjectService projectService;
     private final RegistrationService registrationService;
     private final BookingService bookingService;
@@ -37,13 +36,11 @@ public class OfficerController implements IBaseController {
     private final ApplicationService applicationService;
     private FlatType flatType;
     private RegistrationStatus registrationStatus;
-    private final EnquiryControllerOfficer enquiryControllerOfficer;
-
+    private final OfficerEnquiryController enquiryControllerOfficer ;
 
 
     public OfficerController(
-            OfficerView view,
-            EnquiryViewOfficer enquiryViewOfficer,
+            OfficerViews views,
             ProjectService projectService,
             ApplicationService applicationService,
             RegistrationService registrationService,
@@ -51,8 +48,7 @@ public class OfficerController implements IBaseController {
             BookingService bookingService,
             UserService userService
     ) {
-        this.view = view;
-        this.enquiryViewOfficer = enquiryViewOfficer;
+        this.views = views;
         this.projectService = projectService;
         this.applicationService = applicationService;
         this.registrationService = registrationService;
@@ -60,7 +56,7 @@ public class OfficerController implements IBaseController {
         this.bookingService = bookingService;
         this.userService = userService;
 
-        this.enquiryControllerOfficer = new EnquiryControllerOfficer(enquiryViewOfficer, enquiryService);
+        this.enquiryControllerOfficer = new OfficerEnquiryController(views.sharedView(), views.enquiryView(), enquiryService);
     }
 
     @Override
@@ -70,20 +66,16 @@ public class OfficerController implements IBaseController {
                 "View as an Applicant",
                 "View as an Officer",
                 "Logout",
-                "Test"};
+        };
         do {
-            String[] options = {
-                    "View as an Applicant",
-                    "View as an Officer",
-                    "Logout"};
-            choice = view.showMenuAndGetChoice("Menu", options);
+            choice = views.sharedView().showMenuAndGetChoice("Menu", options);
             switch (choice) {
 //                case 1 -> viewProjects();
                   case 2 -> officerMenu();
                   case 3 -> logout();
                   case 4 -> test();
 
-                default -> view.showMessage("Invalid choice.");
+                default -> views.sharedView().showMessage("Invalid choice.");
             }
         } while (choice != 3);
 
@@ -102,15 +94,15 @@ public class OfficerController implements IBaseController {
                     "View/Reply Enquiries",
                     "Flat Booking",
                     "Previous"};
-            choice = view.showMenuAndGetChoice("Officer Menu", options);
+            choice = views.sharedView().showMenuAndGetChoice("Officer Menu", options);
             switch (choice) {
                   case 1 -> joinProject();
                   case 2 -> registrationStatus();
                   case 3 -> viewHandled();
                   case 4 -> viewEnquiries();
                   case 5 -> flatBooking();
-                  case 6 -> view.showMessage("Loading...");
-                  default -> view.showMessage("Invalid choice.");
+                  case 6 -> views.sharedView().showMessage("Loading...");
+                  default -> views.sharedView().showMessage("Invalid choice.");
             }
         } while (choice != 6);
     }
@@ -119,7 +111,7 @@ public class OfficerController implements IBaseController {
     //Logout from User
     private void logout() {
         Session.logout();
-        view.showMessage("Logging out...");
+        views.sharedView().showMessage("Logging out...");
     }
 
     //View Registration Status
@@ -144,7 +136,7 @@ public class OfficerController implements IBaseController {
         User user = Session.getCurrentUser();
         Project Hproj = registrationService.getHandledProject(user.getNric());
 
-        view.showHandledProject(Hproj);
+        views.projectView().showProjectDetailsTable(Hproj);
     }
 
     private void viewEnquiries(){
@@ -158,18 +150,17 @@ public class OfficerController implements IBaseController {
 
         User user = Session.getCurrentUser();
         do {
-            view.showMessage("Enter NRIC of Applicant (Enter '0' to Exit) :");
-
+            views.sharedView().showMessage("Enter NRIC of Applicant (Enter '0' to Exit) :");
             nric = sc.next();
             optionalUser = userService.findByNRIC(nric);
             found = applicationService.findApplication(nric.toUpperCase());
 
             if(found != null){
-                view.showMessage("NRIC Found");
+                views.sharedView().showMessage("NRIC Found");
                 break;
             }
             else{
-                view.showMessage("Not found");
+                views.sharedView().showMessage("Not found");
             }
 
         }while(!(nric.equals("0")));
@@ -180,7 +171,7 @@ public class OfficerController implements IBaseController {
 
         //Return if APPROVED already
         if(found.getStatus() == ApplicationStatus.BOOKED){
-            view.showMessage("Application already booked..");
+            views.sharedView().showMessage("Application already booked..");
             return;
         }
 
@@ -193,13 +184,13 @@ public class OfficerController implements IBaseController {
 
             for (Flat flat : Lftype) {
                 if (flat.getType() == flatType) {
-//                    view.showMessage("Room Type:");
-//                    view.showMessage(String.valueOf(flatType.getDisplayName()));
-//                    view.showMessage("Number of roomType: ");
-//                    view.showMessage(String.valueOf(flat.getUnitsAvailable()));
+//                    views.sharedView().showMessage("Room Type:");
+//                    views.sharedView().showMessage(String.valueOf(flatType.getDisplayName()));
+//                    views.sharedView().showMessage("Number of roomType: ");
+//                    views.sharedView().showMessage(String.valueOf(flat.getUnitsAvailable()));
 
                     if(flat.getUnitsAvailable() <= 0){
-                        view.showMessage("No Available flats left, Returning to menu.....");
+                        views.sharedView().showMessage("No Available flats left, Returning to menu.....");
                         break;
                     }
                     else {
@@ -208,14 +199,14 @@ public class OfficerController implements IBaseController {
                         found.setStatus(ApplicationStatus.BOOKED);
                         found.setFlatType(found.getFlatType());
 
-//                        view.showMessage("Application Status now: ");
-//                        view.showMessage(String.valueOf(found.getStatus()));
+//                        views.sharedView().showMessage("Application Status now: ");
+//                        views.sharedView().showMessage(String.valueOf(found.getStatus()));
 
 
                         System.out.println("Application Status now: " + String.valueOf(found.getStatus()));
 
-//                        view.showMessage("Number of roomType left: ");
-//                        view.showMessage(String.valueOf(flat.getUnitsAvailable()));
+//                        views.sharedView().showMessage("Number of roomType left: ");
+//                        views.sharedView().showMessage(String.valueOf(flat.getUnitsAvailable()));
 
                         System.out.println("Number of roomType left: " + String.valueOf(flat.getUnitsAvailable()));
 
@@ -225,7 +216,7 @@ public class OfficerController implements IBaseController {
 
                 }
                 else{
-                    view.showMessage("Application from NRIC not found");
+                    views.sharedView().showMessage("Application from NRIC not found");
                 }
             }
 
@@ -235,7 +226,7 @@ public class OfficerController implements IBaseController {
                 Auser = optionalUser.get();
             }
             else {
-                view.showMessage("No Such User");
+                views.sharedView().showMessage("No Such User");
             }
 
             bookingService.addBooking(flatVar, proj, Auser, user);
@@ -249,11 +240,12 @@ public class OfficerController implements IBaseController {
     //Join project as Officer
     private void joinProject(){
         User user = Session.getCurrentUser();
-        view.showProjects(projectService.getVisibleProjects(user));
+        List<Project> projects = projectService.getVisibleProjects(user);
+        views.projectView().showProjectFlats(ProjectViewUtils.flattenEligibleFlats(projects, user));
         int choice;
         //int num = projectService.getProjectSize();
         do{
-            view.showMessage("Select project from list by ID (0 to exit):");
+            views.sharedView().showMessage("Select project from list by ID (0 to exit):");
             choice = sc.nextInt();
             if(choice == 0) return;
             optionalProject = projectService.getProjectById(choice);
@@ -262,14 +254,14 @@ public class OfficerController implements IBaseController {
                 break;
             }
             else {
-                view.showMessage("No Such Project");
+                views.sharedView().showMessage("No Such Project");
             }
 
         } while (true);
 
         //Checking OfficerSlots
         if(proj.getOfficerCount() == 0){
-            view.showMessage("No Officer Slot Left");
+            views.sharedView().showMessage("No Officer Slot Left");
             return;
         }
 
@@ -288,7 +280,7 @@ public class OfficerController implements IBaseController {
         closingDate = proj.getApplicationClosingDate();
 
         if(Now.isBefore(openingDate) || Now.isAfter(closingDate)){
-            view.showMessage("Unable to join due to not within application period");
+            views.sharedView().showMessage("Unable to join due to not within application period");
             return;
         }
 
@@ -307,9 +299,8 @@ public class OfficerController implements IBaseController {
         //Create Project Registration with 'PENDING' Status
         registrationService.Join(proj, user, Now);
 
-
-        view.showMessage("Succesfully registered for....");
-        view.showMessage(proj.getName());
+        views.sharedView().showMessage("Succesfully registered for....");
+        views.sharedView().showMessage(proj.getName());
 
     }
 
@@ -320,12 +311,12 @@ public class OfficerController implements IBaseController {
 //        User user = Session.getCurrentUser();
 //        if(Session.isLoggedIn()) {
 //            String str = user.getNric();
-//            view.showMessage(str);
+//            views.sharedView().showMessage(str);
 //        }
 //        else {
-//            view.showMessage("lost");
+//            views.sharedView().showMessage("lost");
 //        }
-        view.showBooking(bookingService.getBookings());
+        views.bookingView().showBooking(bookingService.getBookings());
     }
 
 }

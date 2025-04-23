@@ -110,11 +110,6 @@ public class Prompter {
         }
     }
 
-    public String promptString(String msg) {
-        System.out.print(msg);
-        return sc.nextLine().trim();
-    }
-
     public float promptFloat(String msg) {
         return promptWithRetry(() ->
                         Float.parseFloat(promptString(msg)),

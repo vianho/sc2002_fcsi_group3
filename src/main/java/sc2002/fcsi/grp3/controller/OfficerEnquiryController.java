@@ -42,7 +42,7 @@ public class OfficerEnquiryController implements IBaseController {
 
     private void viewAssignedEnquiries(){
         User officer = Session.getCurrentUser();
-        view.showEnquiries(service.getEnquiriesHandledByOfficer(officer));
+        view.showEnquiriesOfficerManager(service.getEnquiriesHandledByOfficer(officer));
     }
 
     private void replyEnquiry(){
@@ -66,12 +66,12 @@ public class OfficerEnquiryController implements IBaseController {
             view.showError("Reply cannot be empty.");
             return;
         }
-        boolean success = service.replyToEnquiry(enquiryOpt.get(), officer, reply);
-        if (success){
-            view.showMessage("Reply submitted successfully!");
+        ActionResult<Enquiry> result = service.replyToEnquiry(enquiryOpt.get(), officer, reply);
+        if (result.isSuccess()){
+            view.showMessage(result.getMessage());
         }
         else{
-            view.showError("Failed to reply to enquiry.");
+            view.showError(result.getMessage());
         }
     }
 

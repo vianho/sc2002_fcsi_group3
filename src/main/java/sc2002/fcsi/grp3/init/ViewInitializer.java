@@ -6,6 +6,10 @@ import sc2002.fcsi.grp3.view.helper.Prompter;
 public class ViewInitializer {
     private final Prompter sharedPrompt = new Prompter();
 
+    public SharedView getSharedView() {
+        return new SharedView(sharedPrompt);
+    }
+
     public MainMenuView getMainMenuView() {
         return new MainMenuView(sharedPrompt);
     }
@@ -19,24 +23,28 @@ public class ViewInitializer {
                 new SharedView(sharedPrompt),
                 new ProjectView(sharedPrompt),
                 new ApplicationView(sharedPrompt),
+                new EnquiryView(sharedPrompt),
                 new AccountView(sharedPrompt)
         );
     }
 
-    public OfficerView getOfficerView() {
-        return new OfficerView(sharedPrompt);
+    public OfficerViews getOfficerViews() {
+        return new OfficerViews(
+            new SharedView(sharedPrompt),
+            new ProjectView(sharedPrompt),
+            new ApplicationView(sharedPrompt),
+            new EnquiryView(sharedPrompt),
+            new AccountView(sharedPrompt),
+            new BookingView(sharedPrompt)
+        );
     }
 
     public ManagerView getManagerView() {
         return new ManagerView(sharedPrompt);
     }
 
-    public EnquiryViewApplicant getEnquiryView() { return new EnquiryViewApplicant(sharedPrompt); }
-
-    public EnquiryViewOfficer getEnquiryViewOfficer() { return new EnquiryViewOfficer(sharedPrompt); }
-
-    public EnquiryViewManager getEnquiryViewManager() { return new EnquiryViewManager(sharedPrompt); }
-
-    public ProjectView getProjectView() { return new ProjectView(sharedPrompt); }
+    public EnquiryView getEnquiryView() {
+        return new EnquiryView(sharedPrompt);
+    }
 }
 

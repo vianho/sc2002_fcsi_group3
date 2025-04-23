@@ -5,5 +5,6 @@ public record OfficerViews(
         ProjectView projectView,
         ApplicationView applicationView,
         EnquiryView enquiryView,
-        AccountView accountView
+        AccountView accountView,
+        BookingView bookingView
 ) {}

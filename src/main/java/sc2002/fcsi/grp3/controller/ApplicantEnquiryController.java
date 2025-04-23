@@ -48,7 +48,7 @@ public class ApplicantEnquiryController {
     }
 
     public void viewEnquiries(User user){
-        view.showEnquiries(service.getOwnEnquiries(user));
+        view.showEnquiriesApplicant(service.getOwnEnquiries(user));
     }
 
     private void addEnquiry(User user){
@@ -91,7 +91,7 @@ public class ApplicantEnquiryController {
         }
 
         view.showMessage("Available Enquiries:");
-        view.showAvailableEnquiries(service.getOwnEnquiries(user));
+        view.showAvailableEnquiriesApplicant(service.getOwnEnquiries(user));
         int id = view.promptEnquiryId();
         Optional<Enquiry> enquiryOpt = service.getOwnEnquiryById(user, id);
 
@@ -135,7 +135,7 @@ public class ApplicantEnquiryController {
 
 
         view.showMessage("Available Enquiries:");
-        view.showAvailableEnquiries(service.getOwnEnquiries(user));
+        view.showAvailableEnquiriesApplicant(service.getOwnEnquiries(user));
         int id = view.promptEnquiryId();
 
         Optional<Enquiry> enquiryOpt = service.getOwnEnquiryById(user, id);

@@ -16,7 +16,7 @@ import java.util.Scanner;
  *     <li>Showing success and error messages</li>
  * </ul>
  *
- * <p>It uses the {@link SharedPromptView} utility to render the CLI interface components.</p>
+ * <p>It uses the {@link Prompter} utility to render the CLI interface components.</p>
  */
 public class EnquiryView extends BaseView {
     /**
@@ -31,7 +31,7 @@ public class EnquiryView extends BaseView {
      * Displays the table of all of the applicant's past enquiries
      * @param enquiries A list of {@link Enquiry } to be displayed.
      */
-    public void showEnquiries(List<Enquiry> enquiries) {
+    public void showEnquiriesApplicant(List<Enquiry> enquiries) {
         if (enquiries.isEmpty()) {
             showMessage("You have no enquiries.");
         } else {
@@ -54,13 +54,41 @@ public class EnquiryView extends BaseView {
         prompt.pressEnterToContinue();
     }
 
+    /**
+     * Displays the table of all enquiries submitted.
+     * @param enquiries A list of {@link Enquiry } to be displayed.
+     */
+    public void showEnquiriesOfficerManager(List<Enquiry> enquiries) {
+        if (enquiries.isEmpty()) {
+            prompt.showMessage("There are no enquiries.");
+        } else {
+            List<String> headers = List.of("ID", "Title", "Content", "Created By", "Reply","Replied By", "Status", "Related Project", "Created At", "Last Updated");
+            List<List<String>> rows = enquiries.stream().map(e ->
+                    List.of(
+                            String.valueOf(e.getId()),
+                            truncate(e.getTitle(), 30),
+                            truncate(e.getContent(), 30),
+                            e.getCreatedBy().getName(),
+                            e.getReply() == null || e.getReply().isBlank()? "(no reply)" : truncate(e.getReply(), 30),
+                            e.getRepliedBy() == null ? "(not replied)" : e.getRepliedBy().getName(),
+                            e.getStatus().toString(),
+                            e.getRelatedProject().getName(),
+                            e.getCreatedAt().toString(),
+                            e.getLastUpdatedAt().toString()
+                    )
+            ).toList();
+            prompt.showTable(headers, rows);
+        }
+        prompt.pressEnterToContinue();
+    }
+
 
     /**
      * Displays a compacted table of enquiries from the user. This is used to display enquiries for the edit and delete
      * portion of the enquiry.
      * @param enquiries A list of {@link Enquiry } to be displayed.
      */
-    public void showAvailableEnquiries(List<Enquiry> enquiries) {
+    public void showAvailableEnquiriesApplicant(List<Enquiry> enquiries) {
         if (enquiries.isEmpty()) {
             prompt.showMessage("You have no enquiries.");
         } else {
@@ -70,6 +98,31 @@ public class EnquiryView extends BaseView {
                             String.valueOf(e.getId()),
                             truncate(e.getTitle(), 30),
                             truncate(e.getContent(), 30),
+                            e.getReply() == null || e.getReply().isBlank()? "(no reply)" : truncate(e.getReply(), 30),
+                            e.getRepliedBy() == null ? "(not replied)" : e.getRepliedBy().getName(),
+                            e.getLastUpdatedAt().toString()
+                    )
+            ).toList();
+            prompt.showTable(headers, rows);
+        }
+    }
+
+    /**
+     * Displays the table of enquiries pending replies for the manager to choose from.
+     * These enquiries are based off the project that the manager is handling only.
+     * @param enquiries A list of {@link Enquiry } to be displayed.
+     */
+    public void showAvailableEnquiriesOfficerManager(List<Enquiry> enquiries) {
+        if (enquiries.isEmpty()) {
+            prompt.showMessage("There are no enquiries.");
+        } else {
+            List<String> headers = List.of("ID", "Title", "Content", "Created By", "Reply","Replied By", "Last Updated");
+            List<List<String>> rows = enquiries.stream().map(e ->
+                    List.of(
+                            String.valueOf(e.getId()),
+                            truncate(e.getTitle(), 30),
+                            truncate(e.getContent(), 30),
+                            e.getCreatedBy().getName(),
                             e.getReply() == null || e.getReply().isBlank()? "(no reply)" : truncate(e.getReply(), 30),
                             e.getRepliedBy() == null ? "(not replied)" : e.getRepliedBy().getName(),
                             e.getLastUpdatedAt().toString()

@@ -3,7 +3,6 @@ package sc2002.fcsi.grp3.controller;
 import sc2002.fcsi.grp3.datastore.DataStore;
 import sc2002.fcsi.grp3.model.User;
 import sc2002.fcsi.grp3.model.permission.ApplicantApplicationPermission;
-import sc2002.fcsi.grp3.model.permission.IApplicationPermission;
 import sc2002.fcsi.grp3.model.permission.ManagerApplicationPermission;
 import sc2002.fcsi.grp3.model.permission.OfficerApplicationPermission;
 import sc2002.fcsi.grp3.service.*;
@@ -56,14 +55,19 @@ public class ControllerFactory {
                     new ProjectService(store),
                     new ApplicationService(appPermission, store),
                     new RegistrationService(store),
-                    new EnquiryService(store)
+                    new EnquiryService(store),
+                    new BookingService(store),
+                    new UserService(store.getUsers())
                 );
             }
             case "Manager" -> {
                 ManagerApplicationPermission appPermission = new ManagerApplicationPermission();
                 yield new ManagerController(
                         viewInit.getManagerView(),
-                        new ProjectService(store)
+                        viewInit.getSharedView(),
+                        viewInit.getEnquiryView(),
+                        new ProjectService(store),
+                        new EnquiryService(store)
                 );
             }
             default -> throw new IllegalStateException("Unknown role: " + roleName);

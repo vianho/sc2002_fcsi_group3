@@ -19,17 +19,11 @@ import java.util.List;
  * <p>It uses the {@link SharedPromptView} utility to render the CLI interface components.</p>
  */
 
-public class EnquiryViewManager {
-
-
-    private final SharedPromptView prompt;
-
-
+public class EnquiryViewManager extends BaseView {
     /**
      * Constructs an {@code EnquiryViewManager} instance using SharedPromptView
      * @param prompt the SharedPromptView for displaying messages, errors and tables.
      */
-
     public EnquiryViewManager(SharedPromptView prompt) {
         this.prompt = prompt;
     }

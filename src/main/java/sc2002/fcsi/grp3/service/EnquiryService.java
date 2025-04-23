@@ -6,7 +6,9 @@ import sc2002.fcsi.grp3.model.Enquiry;
 import sc2002.fcsi.grp3.model.Project;
 import sc2002.fcsi.grp3.model.User;
 import sc2002.fcsi.grp3.model.enums.EnquiryStatus;
+import sc2002.fcsi.grp3.service.result.ActionResult;
 
+import javax.swing.*;
 import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.util.List;
@@ -117,15 +119,15 @@ public class EnquiryService {
 
     }
 
-    public boolean replyToEnquiry(Enquiry enquiry, User repliedBy, String replyText){
-        if (enquiry.isReplied()) return false;
+    public ActionResult<Enquiry> replyToEnquiry(Enquiry enquiry, User repliedBy, String replyText) {
+        if (enquiry.isReplied()) return ActionResult.failure("Failed to reply to enquiry.");
 
         enquiry.setReply(replyText);
         enquiry.setRepliedBy(repliedBy);
         enquiry.setStatus(EnquiryStatus.REPLIED);
         enquiry.setLastUpdatedAt(LocalDate.now());
 
-        return true;
+        return ActionResult.success("Reply submitted successfully!");
     }
 
     public Optional<Project> getProjectById(int id) {

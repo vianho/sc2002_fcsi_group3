@@ -184,6 +184,7 @@ public class CSVDataLoader implements IDataLoader {
                         project.getApplicationClosingDate().format(dtFormatter),
                         project.getManagerNric(),
                         project.getTotalOfficerSlots(),
+                        // todo: String.join() returns error from project.getOfficerNrics is empty
                         String.join(";", project.getOfficerNrics())));
             }
         } catch (IOException e) {

@@ -6,32 +6,30 @@ import sc2002.fcsi.grp3.model.Registration;
 import sc2002.fcsi.grp3.model.User;
 import sc2002.fcsi.grp3.model.enums.ApplicationStatus;
 import sc2002.fcsi.grp3.model.enums.RegistrationStatus;
-import sc2002.fcsi.grp3.model.enums.MaritalStatus;
-import sc2002.fcsi.grp3.model.enums.FlatType;
-import sc2002.fcsi.grp3.service.ApplicationService;
 import sc2002.fcsi.grp3.service.EnquiryService;
 import sc2002.fcsi.grp3.service.ProjectService;
 import sc2002.fcsi.grp3.session.Session;
-import sc2002.fcsi.grp3.view.ApplicantView;
 import sc2002.fcsi.grp3.view.ManagerView;
-import sc2002.fcsi.grp3.view.EnquiryViewManager;
+import sc2002.fcsi.grp3.view.EnquiryView;
+import sc2002.fcsi.grp3.view.SharedView;
 
 import java.util.List;
 
 
 public class ManagerController implements IBaseController {
     private final ManagerView view;
+    private final SharedView sharedView;
+    private final EnquiryView enquiryView;
     private final ProjectService projectService;
     private final EnquiryService enquiryService;
-    private final EnquiryViewManager enquiryView;
 
-    public ManagerController(ManagerView view, ProjectService projectService, EnquiryService enquiryService, EnquiryViewManager enquiryView) {
+    public ManagerController(ManagerView view, SharedView sharedView, EnquiryView enquiryView, ProjectService projectService, EnquiryService enquiryService) {
         this.view = view;
+        this.sharedView = sharedView;
+        this.enquiryView = enquiryView;
         this.projectService = projectService;
         this.enquiryService = enquiryService;
-        this.enquiryView = enquiryView;
     }
-
 
     @Override
     public void start() {
@@ -501,7 +499,7 @@ public class ManagerController implements IBaseController {
             }
         }
         private void manageEnquiries(){
-            EnquiryControllerManager enquiryController = new EnquiryControllerManager(enquiryView, enquiryService);
+            EnquiryControllerManager enquiryController = new EnquiryControllerManager(sharedView, enquiryView, enquiryService);
             enquiryController.start();
         }
 

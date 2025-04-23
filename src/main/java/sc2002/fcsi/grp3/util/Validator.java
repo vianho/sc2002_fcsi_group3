@@ -14,11 +14,6 @@ public class Validator {
         return str != null && str.trim().matches("\\d+");
     }
 
-    public static boolean isValidDateFormat(String dateStr) {
-        // dd/mm/yyyy
-        return dateStr != null && dateStr.matches("^\\d{2}/\\d{2}/\\d{4}$");
-    }
-
     public static boolean isStrongPassword(String password) {
         if (password == null || password.length() < 8) return false;
 
