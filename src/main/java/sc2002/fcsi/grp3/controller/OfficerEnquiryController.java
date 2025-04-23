@@ -53,7 +53,7 @@ public class OfficerEnquiryController implements IBaseController {
             return;
         }
 
-        view.showAvailableEnquiries(notReplied);
+        view.showAvailableEnquiriesOfficerManager(notReplied);
         int id = view.promptEnquiryId();
         Optional<Enquiry> enquiryOpt = service.getUnrepliedEnquiriesHandledByOfficerById(officer, id);
 
