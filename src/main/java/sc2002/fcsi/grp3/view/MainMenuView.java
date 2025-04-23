@@ -8,10 +8,10 @@ public class MainMenuView extends BaseView {
     }
 
     public void showExitMessage() {
-        prompt.showMessage("Thank you for using the BTO system.");
+        showMessage("Thank you for using the BTO system.");
     }
 
     public void showUnknownRole() {
-        prompt.showError("You have not been assigned a role. Please contact the HDB office to resolve this.");
+        showError("You have not been assigned a role. Please contact the HDB office to resolve this.");
     }
 }

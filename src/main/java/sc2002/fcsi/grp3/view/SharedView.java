@@ -26,4 +26,8 @@ public class SharedView extends BaseView {
     public boolean getConfirmation(String msg) {
         return prompt.confirm(msg);
     }
+
+    public void clear() {
+        prompt.clear();
+    }
 }

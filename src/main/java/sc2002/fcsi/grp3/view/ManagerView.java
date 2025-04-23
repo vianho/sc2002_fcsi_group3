@@ -12,18 +12,16 @@ import java.util.List;
 
 import sc2002.fcsi.grp3.view.helper.Prompter;
 
-public class ManagerView {
-    private final Prompter prompt;
-
+public class ManagerView extends BaseView {
     public ManagerView(Prompter prompt) {
-        this.prompt = prompt;
+        super(prompt);
     }
     public void showMessage(String msg) {
         System.out.println(msg);
     }
 
     public int showMenuAndGetChoice(String title, String[] options) {
-        return prompt.menuPrompt(title, options, "> ");
+        return prompt.menuPromptInt(title, options, "> ");
     }
 
     public String promptString(String msg) {
