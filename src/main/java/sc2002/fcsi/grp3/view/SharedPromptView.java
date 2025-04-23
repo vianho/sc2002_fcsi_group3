@@ -2,6 +2,9 @@ package sc2002.fcsi.grp3.view;
 
 import sc2002.fcsi.grp3.view.helper.TablePrinter;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -54,7 +57,29 @@ public class SharedPromptView {
             }
         }
     }
+    public float promptFloat(String msg) {
+        while (true) {
+            try {
+                System.out.print(msg);
+                return Float.parseFloat(sc.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid number. Please enter a valid floating-point number.");
+            }
+        }
+    }
 
+    public LocalDate promptDate(String msg) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        while (true) {
+            try {
+                System.out.print(msg);
+                String input = sc.nextLine().trim();
+                return LocalDate.parse(input, formatter);
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid date format. Please enter the date in YYYY-MM-DD format.");
+            }
+        }
+    }
     public String promptString(String msg) {
         System.out.print(msg);
         return sc.nextLine().trim();
