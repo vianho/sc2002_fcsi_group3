@@ -8,14 +8,8 @@ import sc2002.fcsi.grp3.model.enums.MaritalStatus;
 
 public class ApplicantApplicationPermission implements IApplicationPermission {
     @Override
-    public boolean canCreateApplication(User user, Project project) {
-        if (user.getAge() >= 35 && user.getMaritalStatus() == MaritalStatus.SINGLE) {
-            boolean hasEligibleFlat = project.getFlats()
-                    .stream()
-                    .anyMatch(flat -> flat.getType().equals(FlatType.TWO_ROOM));
-            return hasEligibleFlat && project.isVisible();
-        }
-        return project.isVisible() && user.getAge() >= 21 && user.getMaritalStatus() == MaritalStatus.MARRIED;
+    public boolean canApplyForFlat(User user, Project project, FlatType flatType) {
+        return project.isVisible() && project.hasAvailableFlatType(flatType) && flatType.isEligible(user);
     };
 
     @Override

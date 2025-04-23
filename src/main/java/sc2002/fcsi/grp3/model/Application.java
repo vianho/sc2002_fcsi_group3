@@ -79,4 +79,8 @@ public class Application {
     public static void setNextId(int id) {
         nextId = id;
     }
+
+    public boolean isActive() {
+        return status == ApplicationStatus.PENDING || status == ApplicationStatus.SUCCESSFUL;
+    }
 }
