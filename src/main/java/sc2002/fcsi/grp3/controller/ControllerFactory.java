@@ -44,7 +44,9 @@ public class ControllerFactory {
                                                     new ProjectService(store),
                                                     new ApplicationService(store),
                                                     new RegistrationService(store),
-                                                    new EnquiryService(store));
+                                                    new EnquiryService(store),
+                                                    new BookingService(store),
+                                                    new UserService(store.getUsers()));
             case "Manager" -> new ManagerController(viewInit.getManagerView(),
                                                     new ProjectService(store),
                                                     new EnquiryService(store),
