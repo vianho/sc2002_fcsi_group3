@@ -21,15 +21,16 @@ public class MainMenuController implements IBaseController {
 
     public void start() {
         int choice;
+        String[] options = { "Login", "Exit" };
         do {
-            choice = view.showMainMenuAndGetChoice();
+            choice = view.showMenuAndGetChoice("BTO Management System", options);
 
             switch (choice) {
                 case 1 -> handleLogin();
                 case 2 -> view.showExitMessage();
                 default -> view.showInvalidChoice();
             }
-        } while (choice != 2);
+        } while (choice != options.length);
     }
 
     private void handleLogin() {

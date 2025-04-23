@@ -66,6 +66,11 @@ public class OfficerController implements IBaseController {
     @Override
     public void start() {
         int choice;
+        String[] options = {
+                "View as an Applicant",
+                "View as an Officer",
+                "Logout",
+                "Test"};
         do {
             String[] options = {
                     "View as an Applicant",

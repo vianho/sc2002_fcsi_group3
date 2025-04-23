@@ -1,24 +1,26 @@
 package sc2002.fcsi.grp3.init;
 
 import sc2002.fcsi.grp3.view.*;
+import sc2002.fcsi.grp3.view.helper.Prompter;
 
 public class ViewInitializer {
-    private final SharedPromptView sharedPrompt = new SharedPromptView();
-
-    public SharedPromptView getSharedPrompt() {
-        return sharedPrompt;
-    }
+    private final Prompter sharedPrompt = new Prompter();
 
     public MainMenuView getMainMenuView() {
         return new MainMenuView(sharedPrompt);
     }
 
-    public LoginView getLoginView() {
-        return new LoginView(sharedPrompt);
+    public AuthView getAuthView() {
+        return new AuthView(sharedPrompt);
     }
 
-    public ApplicantView getApplicantView() {
-        return new ApplicantView(sharedPrompt);
+    public ApplicantViews getApplicantViews() {
+        return new ApplicantViews(
+                new SharedView(sharedPrompt),
+                new ProjectView(sharedPrompt),
+                new ApplicationView(sharedPrompt),
+                new AccountView(sharedPrompt)
+        );
     }
 
     public OfficerView getOfficerView() {
@@ -34,5 +36,7 @@ public class ViewInitializer {
     public EnquiryViewOfficer getEnquiryViewOfficer() { return new EnquiryViewOfficer(sharedPrompt); }
 
     public EnquiryViewManager getEnquiryViewManager() { return new EnquiryViewManager(sharedPrompt); }
+
+    public ProjectView getProjectView() { return new ProjectView(sharedPrompt); }
 }
 

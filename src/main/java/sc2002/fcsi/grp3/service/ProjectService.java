@@ -35,10 +35,30 @@ public class ProjectService {
         return visibleProjects;
     }
 
-    public List<Project> getProjectsManagedBy(String managerNric) {
+    protected List<Project> filterProjects(List<Project> projects, HashMap<String, String> filters) {
+        return projects.stream().filter(project -> {
+            boolean matches = true;
+
+            String neighbourhood = filters.get("neighbourhood");
+            if (neighbourhood != null) {
+                matches &= project.getNeighbourhood().equals(neighbourhood);
+            }
+
+            String flatType = filters.get("flatType");
+            if (flatType != null) {
+                matches &= project.hasAvailableFlatType(FlatType.valueOf(flatType));
+            }
+
+            return matches;
+        })
+        .sorted(Comparator.comparing(Project::getName))
+        .toList();
+    }
+
+    public List<Project> getProjectsManagedBy(String officerNric) {
         return db.getProjects()
                 .stream()
-                .filter(project -> project.getManagerNric().equals(managerNric))
+                .filter(project -> project.getOfficerNrics().contains(officerNric))
                 .toList();
     }
 

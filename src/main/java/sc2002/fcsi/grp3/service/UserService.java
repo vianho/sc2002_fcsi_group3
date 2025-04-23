@@ -14,7 +14,6 @@ public class UserService {
 
     public Optional<User> findByNRIC(String nric) {
         if (nric == null) return Optional.empty();
-        System.out.println("Searching for NRIC: '" + nric + "'");
 
         return users.stream()
                 .filter(u -> u.getNric().equalsIgnoreCase(nric))
