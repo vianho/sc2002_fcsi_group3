@@ -198,14 +198,16 @@ public class OfficerController implements IBaseController {
                         found.setStatus(ApplicationStatus.BOOKED);
                         found.setFlatType(found.getFlatType());
 
-                        view.showMessage("Application Status now: ");
-                        view.showMessage(String.valueOf(found.getStatus()));
+//                        view.showMessage("Application Status now: ");
+//                        view.showMessage(String.valueOf(found.getStatus()));
 
 
                         System.out.println("Application Status now: " + String.valueOf(found.getStatus()));
 
-                        view.showMessage("Number of roomType left: ");
-                        view.showMessage(String.valueOf(flat.getUnitsAvailable()));
+//                        view.showMessage("Number of roomType left: ");
+//                        view.showMessage(String.valueOf(flat.getUnitsAvailable()));
+
+                        System.out.println("Number of roomType left: " + String.valueOf(flat.getUnitsAvailable()));
 
                         flatVar = flat;
                         break;
