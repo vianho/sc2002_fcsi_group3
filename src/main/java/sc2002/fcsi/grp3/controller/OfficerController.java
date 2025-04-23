@@ -201,6 +201,8 @@ public class OfficerController implements IBaseController {
                         view.showMessage("Application Status now: ");
                         view.showMessage(String.valueOf(found.getStatus()));
 
+                        System.out.println("Application Status now: " + String.valueOf(found.getStatus()));
+
                         view.showMessage("Number of roomType left: ");
                         view.showMessage(String.valueOf(flat.getUnitsAvailable()));
 
