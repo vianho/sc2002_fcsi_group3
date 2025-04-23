@@ -260,6 +260,7 @@ public class CSVDataLoader implements IDataLoader {
                 .mapToInt(Application::getId)
                 .max()
                 .orElse(1);
+        maxApplicationId = maxApplicationId + 1;
         Application.setNextId(maxApplicationId);
 
         return applications;

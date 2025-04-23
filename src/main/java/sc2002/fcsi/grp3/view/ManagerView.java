@@ -10,10 +10,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ManagerView {
-    private final SharedPromptView prompt;
+import sc2002.fcsi.grp3.view.helper.Prompter;
 
-    public ManagerView(SharedPromptView prompt) {
+public class ManagerView {
+    private final Prompter prompt;
+
+    public ManagerView(Prompter prompt) {
         this.prompt = prompt;
     }
     public void showMessage(String msg) {

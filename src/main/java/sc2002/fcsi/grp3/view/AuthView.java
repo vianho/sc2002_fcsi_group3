@@ -1,12 +1,12 @@
 package sc2002.fcsi.grp3.view;
 
 import sc2002.fcsi.grp3.model.User;
+import sc2002.fcsi.grp3.view.helper.Prompter;
 
-public class LoginView {
-    private final SharedPromptView prompt;
 
-    public LoginView(SharedPromptView prompt) {
-        this.prompt = prompt;
+public class AuthView extends BaseView {
+    public AuthView(Prompter prompt) {
+        super(prompt);
     }
 
     public void showHeader() {
@@ -21,11 +21,11 @@ public class LoginView {
         return prompt.promptString("Enter Password: ");
     }
 
-    public void showSuccess(User user) {
+    public void showLoginSuccess(User user) {
         prompt.showMessage("Login successful. Welcome, " + user.getName() + "!");
     }
 
-    public void showFailure() {
+    public void showLoginFailure() {
         prompt.showError("Invalid NRIC or password.");
     }
 }

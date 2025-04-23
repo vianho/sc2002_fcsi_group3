@@ -1,17 +1,16 @@
-package sc2002.fcsi.grp3.view;
-
-import sc2002.fcsi.grp3.view.helper.TablePrinter;
+package sc2002.fcsi.grp3.view.helper;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.io.Console;
 import java.util.List;
 import java.util.Scanner;
 
-public class SharedPromptView {
+public class Prompter {
     private final Scanner sc;
 
-    public SharedPromptView() {
+    public Prompter() {
         this.sc = new Scanner(System.in);
     }
 
@@ -39,7 +38,7 @@ public class SharedPromptView {
         System.out.println(border);
     }
 
-    public int menuPrompt(String title, String[] options, String prompt) {
+    public int menuPromptInt(String title, String[] options, String prompt) {
         showTitle(title);
         for (int i = 0; i < options.length; i++) {
             System.out.printf("(%d). %s\n", i+1, options[i]);
@@ -85,8 +84,22 @@ public class SharedPromptView {
         return sc.nextLine().trim();
     }
 
+    public String promptHiddenInput(String msg) {
+        Console console = System.console();
+        if (console == null) {
+            showWarning("WARNING: Your password will be visible as you type.");
+            return promptString(msg);
+        }
+        char[] chars = console.readPassword(msg);
+        return new String(chars);
+    }
+
     public void showMessage(String msg) {
         System.out.println(msg);
+    }
+
+    public void showWarning(String msg) {
+        System.out.println("[Warning] " + msg);
     }
 
     public void showError(String msg) {
@@ -96,5 +109,20 @@ public class SharedPromptView {
     public void pressEnterToContinue() {
         System.out.println("\nPress Enter to continue...");
         sc.nextLine();
+    }
+
+    public boolean confirm(String msg) {
+        while (true) {
+            System.out.print(msg + " (y/n): ");
+            String input = new Scanner(System.in).nextLine().trim().toLowerCase();
+
+            if (input.equals("y")) {
+                return true;
+            } else if (input.equals("n")) {
+                return false;
+            } else {
+                System.out.println("Invalid input. Please enter 'y' or 'n'.");
+            }
+        }
     }
 }

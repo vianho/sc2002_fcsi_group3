@@ -2,21 +2,21 @@ package sc2002.fcsi.grp3.view;
 
 import sc2002.fcsi.grp3.model.Booking;
 import sc2002.fcsi.grp3.model.Project;
-import sc2002.fcsi.grp3.model.enums.RegistrationStatus;
+import sc2002.fcsi.grp3.view.helper.Prompter;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class OfficerView {
-    private final SharedPromptView prompt;
+    private final Prompter prompt;
 
-    public OfficerView(SharedPromptView prompt) {
+    public OfficerView(Prompter prompt) {
         this.prompt = prompt;
     }
 
     //Show Menu and Get Choice
     public int showMenuAndGetChoice(String title, String[] options) {
-        return prompt.menuPrompt(title, options, "> ");
+        return prompt.menuPromptInt(title, options, "> ");
     }
 
     //Print Message
