@@ -136,6 +136,13 @@ public class CSVDataLoader implements IDataLoader {
 
         projectMap = projects.stream()
                 .collect(Collectors.toMap(Project::getId, p -> p));
+
+
+        int maxProjectId = projects.stream()
+                .mapToInt(Project::getId)
+                .max()
+                .orElse(1);
+        Project.setNextProjectId(maxProjectId);
         return projects;
     }
 

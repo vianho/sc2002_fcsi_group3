@@ -1,7 +1,6 @@
 package sc2002.fcsi.grp3.model;
 
 import sc2002.fcsi.grp3.model.enums.FlatType;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -16,9 +15,10 @@ public class Project {
     private int totalOfficerSlots;
     private List<Flat> flats;
     private List<String> officerNrics;
+    
+    private static int nextProjectId = 1 ;
 
     public Project(
-            int id,
             String name,
             String neighbourhood,
             boolean isVisible,
@@ -29,7 +29,7 @@ public class Project {
             List<Flat> flats,
             List<String> officerNrics
     ) {
-        this.id = id;
+        this.id = nextProjectId++;
         this.name = name;
         this.neighbourhood = neighbourhood;
         this.isVisible = isVisible;
@@ -150,6 +150,10 @@ public class Project {
 
     public void setOfficerNrics(List<String> officerNrics) {
         this.officerNrics = officerNrics;
+    }
+
+    public static void setNextProjectId(int id) {
+        nextProjectId = id;
     }
 
     public boolean assignOfficer(String nric) {
