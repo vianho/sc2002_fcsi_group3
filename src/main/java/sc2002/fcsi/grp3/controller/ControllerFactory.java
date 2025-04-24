@@ -3,7 +3,6 @@ package sc2002.fcsi.grp3.controller;
 import sc2002.fcsi.grp3.datastore.DataStore;
 import sc2002.fcsi.grp3.model.User;
 import sc2002.fcsi.grp3.model.permission.ApplicantApplicationPermission;
-import sc2002.fcsi.grp3.model.permission.ManagerApplicationPermission;
 import sc2002.fcsi.grp3.model.permission.OfficerApplicationPermission;
 import sc2002.fcsi.grp3.service.*;
 import sc2002.fcsi.grp3.init.ViewInitializer;
@@ -45,27 +44,31 @@ public class ControllerFactory {
                     new AuthService(userService),
                     new ProjectService(store),
                     new ApplicationService(appPermission, store),
-                    new EnquiryService(store)
+                    new EnquiryService(store),
+                    new BookingService(store)
                 );
             }
             case "Officer" ->{
                 OfficerApplicationPermission appPermission = new OfficerApplicationPermission();
                 yield new OfficerController(
                     viewInit.getOfficerViews(),
+                    new AuthService(userService),
                     new ProjectService(store),
                     new ApplicationService(appPermission, store),
                     new RegistrationService(store),
                     new EnquiryService(store),
                     new BookingService(store),
-                    new UserService(store.getUsers())
+                    userService
                 );
             }
             case "Manager" -> {
-                ManagerApplicationPermission appPermission = new ManagerApplicationPermission();
                 yield new ManagerController(
                         viewInit.getManagerView(),
                         viewInit.getSharedView(),
+                        viewInit.getAccountView(),
                         viewInit.getEnquiryView(),
+                        new AuthService(userService),
+                        new BookingService(store),
                         new ProjectService(store),
                         new EnquiryService(store)
                 );

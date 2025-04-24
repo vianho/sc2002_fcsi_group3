@@ -54,6 +54,7 @@ public class ApplicationController implements IBaseController {
                 case 1 -> applyForProject(user);
                 case 2 -> viewApplications(user);
                 case 3 -> withdrawApplication(user);
+                case 4 -> {}
                 default -> sharedView.showInvalidChoice();
             }
         } while (choice != options.length);

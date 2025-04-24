@@ -7,5 +7,4 @@ public enum ApplicationStatus {
     BOOKED,
     WITHDRAWAL_REQUESTED,
     WITHDRAWN,
-    WITHDRAWAL_REQUESTED
 }

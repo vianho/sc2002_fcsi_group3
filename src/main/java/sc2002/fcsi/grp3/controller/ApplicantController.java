@@ -1,21 +1,8 @@
 package sc2002.fcsi.grp3.controller;
 
-import sc2002.fcsi.grp3.dto.ProjectFlatRow;
-import sc2002.fcsi.grp3.model.Application;
-import sc2002.fcsi.grp3.model.Flat;
-import sc2002.fcsi.grp3.model.Project;
-import sc2002.fcsi.grp3.model.User;
-import sc2002.fcsi.grp3.service.ApplicationService;
-import sc2002.fcsi.grp3.service.EnquiryService;
-import sc2002.fcsi.grp3.service.AuthService;
-import sc2002.fcsi.grp3.service.ProjectService;
-import sc2002.fcsi.grp3.service.result.ActionResult;
+import sc2002.fcsi.grp3.service.*;
 import sc2002.fcsi.grp3.session.Session;
-import sc2002.fcsi.grp3.util.ProjectViewUtils;
-import sc2002.fcsi.grp3.util.Validator;
 import sc2002.fcsi.grp3.view.ApplicantViews;
-
-import java.util.*;
 
 public class ApplicantController implements IBaseController {
     private final ApplicantViews views;
@@ -24,26 +11,29 @@ public class ApplicantController implements IBaseController {
     private final ProjectService projectService;
     private final ApplicationService applicationService;
     private final EnquiryService enquiryService;
+    private final BookingService bookingService;
 
     public ApplicantController(
             ApplicantViews views,
             AuthService authService,
             ProjectService projectService,
             ApplicationService applicationService,
-            EnquiryService enquiryService
+            EnquiryService enquiryService,
+            BookingService bookingService
     ) {
         this.views = views;
         this.authService = authService;
         this.projectService = projectService;
         this.applicationService = applicationService;
         this.enquiryService = enquiryService;
+        this.bookingService = bookingService;
     }
 
     public void start() {
         int choice;
         String[] options = {
                 "View available projects",
-                "Applications",
+                "My Applications",
                 "My Enquiries",
                 "My Account",
                 "Logout"
@@ -89,6 +79,8 @@ public class ApplicantController implements IBaseController {
     private void accountSettings() {
         AccountController accountController = new AccountController(
                 authService,
+                projectService,
+                bookingService,
                 views.sharedView(),
                 views.accountView()
         );

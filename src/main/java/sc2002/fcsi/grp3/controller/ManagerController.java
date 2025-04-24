@@ -6,9 +6,12 @@ import sc2002.fcsi.grp3.model.Registration;
 import sc2002.fcsi.grp3.model.User;
 import sc2002.fcsi.grp3.model.enums.ApplicationStatus;
 import sc2002.fcsi.grp3.model.enums.RegistrationStatus;
+import sc2002.fcsi.grp3.service.AuthService;
+import sc2002.fcsi.grp3.service.BookingService;
 import sc2002.fcsi.grp3.service.EnquiryService;
 import sc2002.fcsi.grp3.service.ProjectService;
 import sc2002.fcsi.grp3.session.Session;
+import sc2002.fcsi.grp3.view.AccountView;
 import sc2002.fcsi.grp3.view.ManagerView;
 import sc2002.fcsi.grp3.view.EnquiryView;
 import sc2002.fcsi.grp3.view.SharedView;
@@ -19,14 +22,29 @@ import java.util.List;
 public class ManagerController implements IBaseController {
     private final ManagerView view;
     private final SharedView sharedView;
+    private final AccountView accountView;
     private final EnquiryView enquiryView;
+    private final AuthService authService;
+    private final BookingService bookingService;
     private final ProjectService projectService;
     private final EnquiryService enquiryService;
 
-    public ManagerController(ManagerView view, SharedView sharedView, EnquiryView enquiryView, ProjectService projectService, EnquiryService enquiryService) {
+    public ManagerController(
+            ManagerView view,
+            SharedView sharedView,
+            AccountView accountView,
+            EnquiryView enquiryView,
+            AuthService authService,
+            BookingService bookingService,
+            ProjectService projectService,
+            EnquiryService enquiryService
+    ) {
         this.view = view;
         this.sharedView = sharedView;
+        this.accountView = accountView;
         this.enquiryView = enquiryView;
+        this.authService = authService;
+        this.bookingService = bookingService;
         this.projectService = projectService;
         this.enquiryService = enquiryService;
     }
@@ -34,25 +52,27 @@ public class ManagerController implements IBaseController {
     @Override
     public void start() {
         int choice;
-        do {
-            String[] options = {
-                    "Manage Projects",
-                    "Manage Applications",
-                    "Manage Registrations",
-                    "Manage Enquiries",
-                    "Logout"
-            };
+        String[] options = {
+                "Manage Projects",
+                "Manage Applications",
+                "Manage Registrations",
+                "Manage Enquiries",
+                "My Account",
+                "Logout"
+        };
 
+        do {
             choice = view.showMenuAndGetChoice("HDB Manager Menu", options);
             switch (choice) {
                 case 1 -> manageProjects();
                 case 2 -> manageApplications();
                 case 3 -> manageRegistrations();
                 case 4 -> manageEnquiries();
-                case 5 -> logout();
+                case 5 -> accountSettings();
+                case 6 -> logout();
                 default -> view.showMessage("Invalid choice.");
             }
-        } while (choice != 5); // Loop until the user chooses to logout
+        } while (choice != options.length); // Loop until the user chooses to logout
     }
         //Show all projects 
         public void viewProjects() {
@@ -88,7 +108,7 @@ public class ManagerController implements IBaseController {
             }
         }
     
-        
+
         //Create a Project
         public void createProject() {
             User user = Session.getCurrentUser(); // Get the current manager
@@ -238,6 +258,17 @@ public class ManagerController implements IBaseController {
             } else {
                 view.showMessage("Failed to delete project. Please try again.");
             }
+        }
+
+        private void accountSettings() {
+            AccountController accountController = new AccountController(
+                    authService,
+                    projectService,
+                    bookingService,
+                    sharedView,
+                    accountView
+            );
+            accountController.start();
         }
 
         public void logout() {
@@ -499,7 +530,11 @@ public class ManagerController implements IBaseController {
             }
         }
         private void manageEnquiries(){
-            EnquiryControllerManager enquiryController = new EnquiryControllerManager(sharedView, enquiryView, enquiryService);
+            ManagerEnquiryController enquiryController = new ManagerEnquiryController(
+                    sharedView,
+                    enquiryView,
+                    enquiryService
+            );
             enquiryController.start();
         }
 

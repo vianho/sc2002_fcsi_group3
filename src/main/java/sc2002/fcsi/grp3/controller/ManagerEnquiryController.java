@@ -13,12 +13,12 @@ import sc2002.fcsi.grp3.view.SharedView;
 import java.util.List;
 import java.util.Optional;
 
-public class EnquiryControllerManager implements IBaseController{
+public class ManagerEnquiryController implements IBaseController{
     private final SharedView sharedView;
     private final EnquiryView view;
     private final EnquiryService service;
 
-    public EnquiryControllerManager(SharedView sharedView, EnquiryView view, EnquiryService service) {
+    public ManagerEnquiryController(SharedView sharedView, EnquiryView view, EnquiryService service) {
         this.sharedView = sharedView;
         this.view = view;
         this.service = service;

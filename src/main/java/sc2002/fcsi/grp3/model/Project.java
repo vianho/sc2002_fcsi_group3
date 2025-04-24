@@ -85,6 +85,10 @@ public class Project {
         return isVisible;
     }
 
+    public boolean isApplicationOpen() {
+        return applicationClosingDate.isAfter(LocalDate.now());
+    }
+
     public List<Flat> getFlats() {
         return flats;
     }

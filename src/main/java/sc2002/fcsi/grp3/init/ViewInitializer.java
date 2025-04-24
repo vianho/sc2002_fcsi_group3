@@ -46,5 +46,7 @@ public class ViewInitializer {
     public EnquiryView getEnquiryView() {
         return new EnquiryView(sharedPrompt);
     }
+
+    public AccountView getAccountView() { return new AccountView(sharedPrompt); }
 }
 

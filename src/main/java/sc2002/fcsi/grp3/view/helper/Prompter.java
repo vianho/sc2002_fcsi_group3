@@ -99,16 +99,6 @@ public class Prompter {
             }
         }
     }
-    public float promptFloat(String msg) {
-        while (true) {
-            try {
-                System.out.print(msg);
-                return Float.parseFloat(sc.nextLine().trim());
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid number. Please enter a valid floating-point number.");
-            }
-        }
-    }
 
     public float promptFloat(String msg) {
         return promptWithRetry(() ->

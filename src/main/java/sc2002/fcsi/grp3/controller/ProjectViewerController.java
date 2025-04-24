@@ -38,7 +38,7 @@ public class ProjectViewerController implements IBaseController {
                 "Clear filter",
                 "Sort projects",
                 "Back to project view",
-                "Back to main menu"
+                "Back"
         };
         User user = Session.getCurrentUser();
 

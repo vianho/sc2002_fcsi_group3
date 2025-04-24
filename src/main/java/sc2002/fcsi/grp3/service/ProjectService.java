@@ -18,14 +18,25 @@ public class ProjectService {
         List<Project> visibleProjects = db.getProjects()
                 .stream()
                 .filter(Project::isVisible)
+                .filter(Project::isApplicationOpen)
                 .toList();
+
         if (user.isEligibleFor2R()) {
-            return visibleProjects
+            visibleProjects = visibleProjects
                     .stream()
                     .filter(p -> p.hasAvailableFlatType(FlatType.TWO_ROOM))
                     .toList();
         }
-        return visibleProjects;
+
+        List<Project> appliedProjects = db.getApplications().stream()
+                .filter(app -> app.getApplicant().equals(user))
+                .map(Application::getProject)
+                .distinct()
+                .toList();
+
+        return Stream.concat(visibleProjects.stream(), appliedProjects.stream())
+                .distinct()
+                .toList();
     }
 
     public List<Project> filterProjects(User user, List<Project> projects, ProjectFilter filter, ProjectSortOption sortOption) {
@@ -70,10 +81,17 @@ public class ProjectService {
         return stream.sorted(sortOption.applyTo(comparator)).toList();
     }
 
-    public List<Project> getProjectsManagedBy(String officerNric) {
+    public List<Project> getProjectsManagedByOfficer(String officerNric) {
         return db.getProjects()
                 .stream()
                 .filter(project -> project.getOfficerNrics().contains(officerNric))
+                .toList();
+    }
+
+    public List<Project> getProjectsManagedBy(String managerNric) {
+        return db.getProjects()
+                .stream()
+                .filter(project -> project.getManagerNric().equals(managerNric))
                 .toList();
     }
 

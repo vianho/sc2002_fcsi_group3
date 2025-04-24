@@ -268,7 +268,7 @@ public class ManagerView extends BaseView {
                 .toArray(String[]::new); // Convert List<String> to String[]
 
         // Prompt the manager to select an application
-        int choice = prompt.menuPrompt("Select an Application", options, "Enter your choice (1-" + applications.size() + "): ");
+        int choice = super.prompt.menuPrompt("Select an Application", options, "Enter your choice (1-" + applications.size() + "): ");
         if (choice < 1 || choice > applications.size()) {
             prompt.showMessage("Invalid choice. Please select a valid application.");
             return null;
@@ -291,7 +291,7 @@ public class ManagerView extends BaseView {
 
             String[] options = rows.toArray(String[]::new); // Convert List<String> to String[]
 
-            prompt.menuPrompt("Approved Registrations", options, "Press Enter to continue...");
+            super.prompt.menuPromptInt("Approved Registrations", options, "Press Enter to continue...");
         }
         prompt.pressEnterToContinue();
     }
@@ -310,7 +310,7 @@ public class ManagerView extends BaseView {
                 .toArray(String[]::new); // Convert List<String> to String[]
 
         // Prompt the manager to select a registration
-        int choice = prompt.menuPrompt("Select a Registration", options, "Enter your choice: ");
+        int choice = super.prompt.menuPromptInt("Select a Registration", options, "Enter your choice: ");
         if (choice < 1 || choice > registrations.size()) {
             prompt.showMessage("Invalid choice.");
             return null;

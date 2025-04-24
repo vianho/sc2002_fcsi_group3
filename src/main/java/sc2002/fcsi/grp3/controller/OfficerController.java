@@ -17,11 +17,13 @@ import java.time.LocalDate;
 
 public class OfficerController implements IBaseController {
     private final OfficerViews views;
+    private final AuthService authService;
     private final ProjectService projectService;
     private final RegistrationService registrationService;
     private final BookingService bookingService;
     private final EnquiryService enquiryService;
     private final UserService userService;
+
     private Scanner sc = new Scanner(System.in);
     private Optional<Project> optionalProject;
     private Optional<User> optionalUser;
@@ -41,6 +43,7 @@ public class OfficerController implements IBaseController {
 
     public OfficerController(
             OfficerViews views,
+            AuthService authService,
             ProjectService projectService,
             ApplicationService applicationService,
             RegistrationService registrationService,
@@ -49,6 +52,7 @@ public class OfficerController implements IBaseController {
             UserService userService
     ) {
         this.views = views;
+        this.authService = authService;
         this.projectService = projectService;
         this.applicationService = applicationService;
         this.registrationService = registrationService;
@@ -65,22 +69,83 @@ public class OfficerController implements IBaseController {
         String[] options = {
                 "View as an Applicant",
                 "View as an Officer",
+                "Account Settings",
                 "Logout",
         };
         do {
             choice = views.sharedView().showMenuAndGetChoice("Menu", options);
             switch (choice) {
-//                case 1 -> viewProjects();
-                  case 2 -> officerMenu();
-                  case 3 -> logout();
-                  case 4 -> test();
-
+                case 1 -> applicantActions();
+                case 2 -> officerMenu();
+                case 3 -> accountSettings();
+                case 4 -> logout();
                 default -> views.sharedView().showMessage("Invalid choice.");
             }
-        } while (choice != 3);
+        } while (choice != options.length);
 
     }
 
+    private void applicantActions() {
+        int choice;
+        String[] options = {
+                "View available projects",
+                "My Applications",
+                "My Enquiries",
+                "Back"
+        };
+
+        do {
+            choice = views.sharedView().showMenuAndGetChoice("Applicant Menu", options);
+            switch (choice) {
+                case 1 -> viewProjects();
+                case 2 -> applicationActions();
+                case 3 -> viewEnquiriesAsApplicant();
+                case 4 -> {}
+                default -> views.sharedView().showInvalidChoice();
+            }
+        } while (choice != options.length);
+
+    }
+
+    private void viewProjects() {
+        ProjectViewerController projectViewerController = new ProjectViewerController(
+                views.sharedView(),
+                views.projectView(),
+                projectService
+        );
+        projectViewerController.start();
+    }
+
+    private void applicationActions() {
+        ApplicationController applicationController = new ApplicationController(
+                views.sharedView(),
+                views.applicationView(),
+                views.projectView(),
+                projectService,
+                applicationService
+        );
+        applicationController.start();
+    }
+
+    private void viewEnquiriesAsApplicant(){
+        ApplicantEnquiryController enquiryController = new ApplicantEnquiryController(
+                views.sharedView(),
+                views.enquiryView(),
+                enquiryService
+        );
+        enquiryController.start();
+    }
+
+    private void accountSettings() {
+        AccountController accountController = new AccountController(
+                authService,
+                projectService,
+                bookingService,
+                views.sharedView(),
+                views.accountView()
+        );
+        accountController.start();
+    }
 
 
     //Menu for Officers

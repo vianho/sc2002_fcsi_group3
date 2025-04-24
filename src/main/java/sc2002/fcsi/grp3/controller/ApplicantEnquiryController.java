@@ -42,6 +42,7 @@ public class ApplicantEnquiryController {
                 case 2 -> addEnquiry(user);
                 case 3 -> editEnquiry(user);
                 case 4 -> deleteEnquiry(user);
+                case 5 -> {}
                 default -> sharedView.showInvalidChoice();
             }
         }while (choice != options.length);
