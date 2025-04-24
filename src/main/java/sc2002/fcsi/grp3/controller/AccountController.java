@@ -111,6 +111,7 @@ public class AccountController implements IBaseController {
     private void changePassword(User user) {
         sharedView.showTitle("Change Password");
 
+        
         String currentPassword = accountView.promptPassword("Enter current password: ");
 
         if (currentPassword.isEmpty()) {
