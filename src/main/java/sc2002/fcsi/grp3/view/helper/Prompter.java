@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import sc2002.fcsi.grp3.model.enums.FlatType;
+import sc2002.fcsi.grp3.model.enums.MaritalStatus;
 
 import java.io.Console;
 import java.time.LocalDate;
@@ -87,12 +88,12 @@ public class Prompter {
 
     public Integer promptIntOptional(String msg) {
         while (true) {
+            System.out.print(msg);
             String input = sc.nextLine().trim();
 
             if (input.isBlank()) return null;
 
             try {
-                System.out.print(msg);
                 return Integer.parseInt(input);
             } catch (NumberFormatException e) {
                 System.out.println("Invalid number. Please try again.");
@@ -178,6 +179,28 @@ public class Prompter {
         return promptWithRetry(() ->
                         FlatType.fromCode(promptString(msg).trim()),
                 "Invalid flat type.");
+    }
+
+    public MaritalStatus promptMaritalStatusOptional(String msg) {
+        System.out.print(msg);
+        MaritalStatus maritalStatus;
+        String input = sc.nextLine().trim();
+
+        if (input.isBlank()) return null;
+
+        try {
+            maritalStatus = MaritalStatus.fromString(input.trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid marital status: " + input.trim());
+            return promptMaritalStatusOptional(msg); // retry entire input
+        }
+        return maritalStatus;
+    }
+
+    public MaritalStatus promptMaritalStatus(String msg) {
+        return promptWithRetry(() ->
+                        MaritalStatus.fromString(promptString(msg).trim()),
+                "Invalid marital status.");
     }
 
     public void showMessage(String msg) {
