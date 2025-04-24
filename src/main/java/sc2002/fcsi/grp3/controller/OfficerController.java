@@ -26,6 +26,7 @@ public class OfficerController implements IBaseController {
     private Scanner sc = new Scanner(System.in);
     private Optional<Project> optionalProject;
     private Optional<User> optionalUser;
+    private List<String> projOfficers;
     private Project proj;
     private User Auser;
     private Flat flatVar;
@@ -119,20 +120,24 @@ public class OfficerController implements IBaseController {
     //View Registration Status
     private void registrationStatus(){
         User user = Session.getCurrentUser();
-        view.showMessage("Your registration for....");
-        registrationService.getProjectName(user);
-        view.showMessage("Is Currently....");
-        registrationService.getStatus(user);
+//        view.showMessage("Your registration for....");
+//        registrationService.getProjectName(user);
 
-        registrationService.setStatus(user);
+        System.out.println("Your registration: " + registrationService.getProjectName(user));
 
+//        view.showMessage("Is Currently....");
+//        registrationService.getStatus(user);
+
+        System.out.println("Status: " + registrationService.getStatus(user));
+
+        //registrationService.setStatus(user);
 
     }
 
     //View Handled Project
     private void viewHandled(){
         User user = Session.getCurrentUser();
-        Project Hproj = registrationService.getHandledProject(user);
+        Project Hproj = registrationService.getHandledProject(user.getNric());
 
         view.showHandledProject(Hproj);
     }
@@ -263,6 +268,15 @@ public class OfficerController implements IBaseController {
             return;
         }
 
+        projOfficers = proj.getOfficerNrics();
+
+        for (String nric : projOfficers){
+            if(user.getNric().equals(nric)){
+                view.showMessage("You are already handling this project");
+                return;
+            }
+        }
+
 
         //Checking Application Period
         openingDate = proj.getApplicationOpeningDate();
@@ -275,6 +289,14 @@ public class OfficerController implements IBaseController {
 
 
                                 //Checking if Officer applied to project as Applicant
+        found = applicationService.findApplication(user.getNric());
+        if (found != null) {
+            if (found.getProject().getId() == proj.getId()) {
+                view.showMessage("You currently have an application for this project.");
+                return;
+            }
+
+        }
 
 
         //Create Project Registration with 'PENDING' Status

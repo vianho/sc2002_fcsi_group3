@@ -19,5 +19,7 @@ public class SystemSaver {
         CSVDataLoader.saveApplications(config.get("applicationsFile"), dataStore.getApplications());
         CSVDataLoader.saveEnquiries(config.get("enquiriesFile"), dataStore.getEnquiries());
         CSVDataLoader.saveBookings(config.get("bookingsFile"), dataStore.getBookings());
+        CSVDataLoader.saveRegistrations(config.get("registrationsFile"), dataStore.getRegistrations());
+
     }
 }
