@@ -256,7 +256,7 @@ public class OfficerController implements IBaseController {
 
                     if(flat.getUnitsAvailable() <= 0){
                         views.sharedView().showMessage("No Available flats left, Returning to menu.....");
-                        break;
+                        return;
                     }
                     else {
                         flat.reduceUnitsAvailable();
@@ -273,7 +273,7 @@ public class OfficerController implements IBaseController {
 //                        views.sharedView().showMessage("Number of roomType left: ");
 //                        views.sharedView().showMessage(String.valueOf(flat.getUnitsAvailable()));
 
-                        System.out.println("Number of roomType left: " + String.valueOf(flat.getUnitsAvailable()));
+                        //System.out.println("Number of roomType left: " + String.valueOf(flat.getUnitsAvailable()));
 
                         flatVar = flat;
                         break;
@@ -295,6 +295,15 @@ public class OfficerController implements IBaseController {
             }
 
             bookingService.addBooking(flatVar, proj, Auser, user);
+
+
+            views.sharedView().showMessage("\n\nProject Booking Receipts");
+            System.out.println("Name: " + Auser.getName() +
+                                "\nNRIC: " +Auser.getNric() +
+                                "\nAge: " + Auser.getAge() +
+                                "\nMarital Status: " + Auser.getMaritalStatus() +
+                                "\nFlat Type: " + flatVar.getType());
+            views.projectView().showProjectDetailsTable(proj);
 
         }
 
