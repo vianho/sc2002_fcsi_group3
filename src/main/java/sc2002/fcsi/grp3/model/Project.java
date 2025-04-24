@@ -40,8 +40,6 @@ public class Project {
         this.applicationClosingDate = applicationClosingDate;
         this.managerNric = managerNric;
         this.totalOfficerSlots = totalOfficerSlots;
-//        this.officerNrics = officerNrics;
-
         this.officerNrics = new ArrayList<>(officerNrics);
     }
 
@@ -54,7 +52,8 @@ public class Project {
             LocalDate applicationClosingDate,
             String managerNric,
             int totalOfficerSlots,
-            List<Flat> flats
+            List<Flat> flats,
+            List<String> officerNrics
     ) {
         this.id = id;
         this.name = name;
@@ -65,6 +64,7 @@ public class Project {
         this.applicationClosingDate = applicationClosingDate;
         this.managerNric = managerNric;
         this.totalOfficerSlots = totalOfficerSlots;
+        this.officerNrics = officerNrics;
     }
 
     // getters

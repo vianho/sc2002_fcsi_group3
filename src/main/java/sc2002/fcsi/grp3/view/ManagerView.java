@@ -268,7 +268,7 @@ public class ManagerView extends BaseView {
                 .toArray(String[]::new); // Convert List<String> to String[]
 
         // Prompt the manager to select an application
-        int choice = super.prompt.menuPrompt("Select an Application", options, "Enter your choice (1-" + applications.size() + "): ");
+        int choice = super.prompt.menuPromptInt("Select an Application", options, "Enter your choice (1-" + applications.size() + "): ");
         if (choice < 1 || choice > applications.size()) {
             prompt.showMessage("Invalid choice. Please select a valid application.");
             return null;

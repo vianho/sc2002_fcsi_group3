@@ -334,7 +334,7 @@ public class OfficerController implements IBaseController {
 
         for (String nric : projOfficers){
             if(user.getNric().equals(nric)){
-                view.showMessage("You are already handling this project");
+                views.sharedView().showMessage("You are already handling this project");
                 return;
             }
         }
@@ -354,7 +354,7 @@ public class OfficerController implements IBaseController {
         found = applicationService.findApplication(user.getNric());
         if (found != null) {
             if (found.getProject().getId() == proj.getId()) {
-                view.showMessage("You currently have an application for this project.");
+                views.sharedView().showMessage("You currently have an application for this project.");
                 return;
             }
 
