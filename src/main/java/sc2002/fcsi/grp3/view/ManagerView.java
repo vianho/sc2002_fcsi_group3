@@ -10,18 +10,18 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ManagerView {
-    private final SharedPromptView prompt;
+import sc2002.fcsi.grp3.view.helper.Prompter;
 
-    public ManagerView(SharedPromptView prompt) {
-        this.prompt = prompt;
+public class ManagerView extends BaseView {
+    public ManagerView(Prompter prompt) {
+        super(prompt);
     }
     public void showMessage(String msg) {
         System.out.println(msg);
     }
 
     public int showMenuAndGetChoice(String title, String[] options) {
-        return prompt.menuPrompt(title, options, "> ");
+        return prompt.menuPromptInt(title, options, "> ");
     }
 
     public String promptString(String msg) {
@@ -268,7 +268,7 @@ public class ManagerView {
                 .toArray(String[]::new); // Convert List<String> to String[]
 
         // Prompt the manager to select an application
-        int choice = prompt.menuPrompt("Select an Application", options, "Enter your choice (1-" + applications.size() + "): ");
+        int choice = super.prompt.menuPromptInt("Select an Application", options, "Enter your choice (1-" + applications.size() + "): ");
         if (choice < 1 || choice > applications.size()) {
             prompt.showMessage("Invalid choice. Please select a valid application.");
             return null;
@@ -291,7 +291,7 @@ public class ManagerView {
 
             String[] options = rows.toArray(String[]::new); // Convert List<String> to String[]
 
-            prompt.menuPrompt("Approved Registrations", options, "Press Enter to continue...");
+            super.prompt.menuPromptInt("Approved Registrations", options, "Press Enter to continue...");
         }
         prompt.pressEnterToContinue();
     }
@@ -310,7 +310,7 @@ public class ManagerView {
                 .toArray(String[]::new); // Convert List<String> to String[]
 
         // Prompt the manager to select a registration
-        int choice = prompt.menuPrompt("Select a Registration", options, "Enter your choice: ");
+        int choice = super.prompt.menuPromptInt("Select a Registration", options, "Enter your choice: ");
         if (choice < 1 || choice > registrations.size()) {
             prompt.showMessage("Invalid choice.");
             return null;

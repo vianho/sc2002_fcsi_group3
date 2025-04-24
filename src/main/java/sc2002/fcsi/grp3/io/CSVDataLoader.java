@@ -184,6 +184,7 @@ public class CSVDataLoader implements IDataLoader {
                         project.getApplicationClosingDate().format(dtFormatter),
                         project.getManagerNric(),
                         project.getTotalOfficerSlots(),
+                        // todo: String.join() returns error from project.getOfficerNrics is empty
                         String.join(";", project.getOfficerNrics())));
             }
         } catch (IOException e) {
@@ -260,6 +261,7 @@ public class CSVDataLoader implements IDataLoader {
                 .mapToInt(Application::getId)
                 .max()
                 .orElse(1);
+        maxApplicationId = maxApplicationId + 1;
         Application.setNextId(maxApplicationId);
 
         return applications;

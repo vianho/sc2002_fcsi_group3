@@ -3,6 +3,7 @@ package sc2002.fcsi.grp3.model;
 import sc2002.fcsi.grp3.model.enums.FlatType;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class Project {
@@ -39,8 +40,6 @@ public class Project {
         this.applicationClosingDate = applicationClosingDate;
         this.managerNric = managerNric;
         this.totalOfficerSlots = totalOfficerSlots;
-//        this.officerNrics = officerNrics;
-
         this.officerNrics = new ArrayList<>(officerNrics);
     }
 
@@ -53,7 +52,8 @@ public class Project {
             LocalDate applicationClosingDate,
             String managerNric,
             int totalOfficerSlots,
-            List<Flat> flats
+            List<Flat> flats,
+            List<String> officerNrics
     ) {
         this.id = id;
         this.name = name;
@@ -64,6 +64,7 @@ public class Project {
         this.applicationClosingDate = applicationClosingDate;
         this.managerNric = managerNric;
         this.totalOfficerSlots = totalOfficerSlots;
+        this.officerNrics = officerNrics;
     }
 
     // getters
@@ -82,6 +83,10 @@ public class Project {
 
     public boolean isVisible() {
         return isVisible;
+    }
+
+    public boolean isApplicationOpen() {
+        return applicationClosingDate.isAfter(LocalDate.now());
     }
 
     public List<Flat> getFlats() {

@@ -1,50 +1,58 @@
 package sc2002.fcsi.grp3.controller;
 
-import sc2002.fcsi.grp3.datastore.DataStore;
 import sc2002.fcsi.grp3.model.Enquiry;
 import sc2002.fcsi.grp3.model.Project;
 import sc2002.fcsi.grp3.model.User;
 import sc2002.fcsi.grp3.session.Session;
-import sc2002.fcsi.grp3.view.EnquiryViewApplicant;
+import sc2002.fcsi.grp3.view.EnquiryView;
 import sc2002.fcsi.grp3.service.EnquiryService;
 import sc2002.fcsi.grp3.util.Validator;
+import sc2002.fcsi.grp3.view.SharedView;
 
 
 import java.util.List;
 import java.util.Optional;
 
-public class EnquiryController implements IBaseController{
-    private final EnquiryViewApplicant view;
+public class ApplicantEnquiryController {
+    private final SharedView sharedView;
+    private final EnquiryView view;
     private final EnquiryService service;
 
 
-    public EnquiryController(EnquiryViewApplicant view, EnquiryService service) {
+    public ApplicantEnquiryController(SharedView sharedView, EnquiryView view, EnquiryService service) {
+        this.sharedView = sharedView;
         this.view = view;
         this.service = service;
     }
 
     public void start(){
         int choice;
+        String[] options = {
+                "View All Enquiries",
+                "Add New Enquiry",
+                "Edit Enquiry",
+                "Delete Enquiry",
+                "Back to Main Menu"
+        };
+        User user = Session.getCurrentUser();
         do{
-            choice = view.showEnquiryMenuAndGetChoice();
+            choice = sharedView.showMenuAndGetChoice("Enquiry Menu", options);
             switch(choice){
-                case 1 -> viewEnquiries();
-                case 2 -> addEnquiry();
-                case 3 -> editEnquiry();
-                case 4 -> deleteEnquiry();
+                case 1 -> viewEnquiries(user);
+                case 2 -> addEnquiry(user);
+                case 3 -> editEnquiry(user);
+                case 4 -> deleteEnquiry(user);
                 case 5 -> {}
-                default -> view.showMessage("Invalid choice.");
+                default -> sharedView.showInvalidChoice();
             }
-        }while (choice != 5);
+        }while (choice != options.length);
     }
 
-    public void viewEnquiries(){
-        User user = Session.getCurrentUser();
-        view.showEnquiries(service.getOwnEnquiries(user));
+    public void viewEnquiries(User user){
+        view.showEnquiriesApplicant(service.getOwnEnquiries(user));
     }
 
-    private void addEnquiry(){
-        User user = Session.getCurrentUser();
+    private void addEnquiry(User user){
         int projectid = view.promptProjectId();
         Optional<Project> project = service.getProjectById(projectid);
 
@@ -75,8 +83,7 @@ public class EnquiryController implements IBaseController{
 
     }
 
-    private void editEnquiry() {
-        User user = Session.getCurrentUser();
+    private void editEnquiry(User user) {
         List<Enquiry> ownEnquiries = service.getOwnEnquiries(user);
 
         if (ownEnquiries.isEmpty()) {
@@ -84,9 +91,8 @@ public class EnquiryController implements IBaseController{
             return;
         }
 
-
         view.showMessage("Available Enquiries:");
-        view.showAvailableEnquiries(service.getOwnEnquiries(user));
+        view.showAvailableEnquiriesApplicant(service.getOwnEnquiries(user));
         int id = view.promptEnquiryId();
         Optional<Enquiry> enquiryOpt = service.getOwnEnquiryById(user, id);
 
@@ -118,11 +124,9 @@ public class EnquiryController implements IBaseController{
         else{
             view.showMessage("Failed to update Enquiry!");
         }
-
     }
 
-    private void deleteEnquiry() {
-        User user = Session.getCurrentUser();
+    private void deleteEnquiry(User user) {
         List<Enquiry> ownEnquiries = service.getOwnEnquiries(user);
 
         if (ownEnquiries.isEmpty()) {
@@ -132,7 +136,7 @@ public class EnquiryController implements IBaseController{
 
 
         view.showMessage("Available Enquiries:");
-        view.showAvailableEnquiries(service.getOwnEnquiries(user));
+        view.showAvailableEnquiriesApplicant(service.getOwnEnquiries(user));
         int id = view.promptEnquiryId();
 
         Optional<Enquiry> enquiryOpt = service.getOwnEnquiryById(user, id);

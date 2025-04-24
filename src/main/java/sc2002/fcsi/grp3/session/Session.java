@@ -3,6 +3,7 @@ package sc2002.fcsi.grp3.session;
 import sc2002.fcsi.grp3.model.User;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Session {
@@ -24,11 +25,12 @@ public class Session {
 
     public static void logout() {
         currentUser = null;
+        sessionData.clear();
     }
 
     // session data management
 
-    public static void put(String key, String value) {
+    public static void put(String key, Object value) {
         sessionData.put(key, value);
     }
 
@@ -36,6 +38,35 @@ public class Session {
         Object value = sessionData.get(key);
         if (type.isInstance(value)) {
             return type.cast(value);
+        }
+        return null;
+    }
+
+    public static void set(String key, Object value) {
+        sessionData.put(key, value);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> List<T> getList(String key, Class<T> type) {
+        Object value = sessionData.get(key);
+        if (value instanceof List<?> rawList) {
+            if (rawList.stream().allMatch(type::isInstance)) {
+                return (List<T>) rawList;
+            }
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <K, V> Map<K, V> getMap(String key, Class<K> keyType, Class<V> valueType) {
+        Object value = sessionData.get(key);
+        if (value instanceof Map<?, ?> map) {
+            boolean valid = map.entrySet().stream().allMatch(entry ->
+                    keyType.isInstance(entry.getKey()) && valueType.isInstance(value)
+            );
+            if (valid) {
+                return (Map<K, V>) map;
+            }
         }
         return null;
     }

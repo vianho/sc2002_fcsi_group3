@@ -3,10 +3,11 @@ package sc2002.fcsi.grp3.model.permission;
 import sc2002.fcsi.grp3.model.Application;
 import sc2002.fcsi.grp3.model.Project;
 import sc2002.fcsi.grp3.model.User;
+import sc2002.fcsi.grp3.model.enums.FlatType;
 
 public class ManagerApplicationPermission implements IApplicationPermission {
     @Override
-    public boolean canCreateApplication(User user, Project project) {
+    public boolean canApplyForFlat(User user, Project project, FlatType flatType) {
         return false;
     };
 

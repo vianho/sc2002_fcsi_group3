@@ -1,15 +1,17 @@
 package sc2002.fcsi.grp3.view;
 
-public class ViewTemplate {
-    private final SharedPromptView prompt;
+import sc2002.fcsi.grp3.view.helper.Prompter;
 
-    public ViewTemplate(SharedPromptView prompt) {
+public class ViewTemplate {
+    private final Prompter prompt;
+
+    public ViewTemplate(Prompter prompt) {
         this.prompt = prompt;
     }
 
     public int showMainMenuAndGetChoice() {
         String[] options = {"Option 1","Option 2","Logout"};
-        return prompt.menuPrompt("NewRole Menu", options, "> ");
+        return prompt.menuPromptInt("NewRole Menu", options, "> ");
     }
 
     // Add specific prompt methods here

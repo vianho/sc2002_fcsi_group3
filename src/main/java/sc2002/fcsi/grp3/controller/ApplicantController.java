@@ -1,124 +1,98 @@
 package sc2002.fcsi.grp3.controller;
 
-import sc2002.fcsi.grp3.model.Application;
-import sc2002.fcsi.grp3.model.Flat;
-import sc2002.fcsi.grp3.model.Project;
-import sc2002.fcsi.grp3.model.User;
-import sc2002.fcsi.grp3.model.enums.FlatType;
-import sc2002.fcsi.grp3.service.ApplicationService;
-import sc2002.fcsi.grp3.service.EnquiryService;
-import sc2002.fcsi.grp3.service.ProjectService;
+import sc2002.fcsi.grp3.service.*;
 import sc2002.fcsi.grp3.session.Session;
-import sc2002.fcsi.grp3.view.ApplicantView;
-import sc2002.fcsi.grp3.view.EnquiryViewApplicant;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import sc2002.fcsi.grp3.view.ApplicantViews;
 
 public class ApplicantController implements IBaseController {
-    private final ApplicantView view;
-    private final EnquiryViewApplicant enquiryViewApplicant;
+    private final ApplicantViews views;
+
+    private final AuthService authService;
     private final ProjectService projectService;
     private final ApplicationService applicationService;
     private final EnquiryService enquiryService;
-    private final EnquiryController enquiryController;
+    private final BookingService bookingService;
 
     public ApplicantController(
-            ApplicantView view,
-            EnquiryViewApplicant enquiryViewApplicant,
+            ApplicantViews views,
+            AuthService authService,
             ProjectService projectService,
             ApplicationService applicationService,
-            EnquiryService enquiryService
+            EnquiryService enquiryService,
+            BookingService bookingService
     ) {
-        this.view = view;
-        this.enquiryViewApplicant = enquiryViewApplicant;
+        this.views = views;
+        this.authService = authService;
         this.projectService = projectService;
         this.applicationService = applicationService;
         this.enquiryService = enquiryService;
-        this.enquiryController = new EnquiryController(enquiryViewApplicant, enquiryService);
+        this.bookingService = bookingService;
     }
 
     public void start() {
         int choice;
+        String[] options = {
+                "View available projects",
+                "My Applications",
+                "My Enquiries",
+                "My Account",
+                "Logout"
+        };
         do {
-            String[] options = {
-                    "View Available Projects",
-                    "Apply for a Project",
-                    "View My Applications",
-                    "View My Enquiries",
-                    "View Profile",
-                    "Logout"};
-            choice = view.showMenuAndGetChoice("Applicant Menu", options);
+            choice = views.sharedView().showMenuAndGetChoice("Applicant Menu", options);
             switch (choice) {
                 case 1 -> viewProjects();
-                case 2 -> applyForProject();
-                case 3 -> viewApplications();
-                case 4 -> viewEnquiries();
-//                case 5 -> viewProfile();
-                case 6 -> logout();
-                default -> view.showMessage("Invalid choice.");
+                case 2 -> applicationActions();
+                case 3 -> viewEnquiries();
+                case 4 -> accountSettings();
+                case 5 -> logout();
+                default -> views.sharedView().showInvalidChoice();
             }
-        } while (choice != 6);
-    }
-
-    private void viewProjects() {
-        User user = Session.getCurrentUser();
-        view.showProjects(projectService.getVisibleProjects(user));
+        } while (choice != options.length);
     }
 
     private void logout() {
         Session.logout();
-        view.showMessage("Logging out...");
+        views.sharedView().showMessage("Logging out...");
     }
 
-    private void applyForProject() {
-        int projectId = view.promptProjectId();
-        User user = Session.getCurrentUser();
-        Optional<Project> project = projectService.getProjectById(projectId);
-
-        if (project.isEmpty()) {
-            view.showMessage("Project not found.");
-            return;
-        }
-
-        List<Flat> availableFlats = projectService.getAvailableFlats(user, project.get());
-
-        if (availableFlats.isEmpty()) {
-            view.showMessage("No available flats.");
-            return;
-        }
-
-        view.showFlatOptions(availableFlats);
-
-        int chosenFlatType = view.getFlatChoice();
-        if (chosenFlatType == 0 || chosenFlatType > availableFlats.size()) {
-            return;
-        }
-
-        if (user.getRole()
-                .getApplicationPermission()
-                .canCreateApplication(user, project.get())) {
-
-            boolean success = applicationService.apply(user, project.get(), availableFlats.get(chosenFlatType-1).getType());
-            if (success) {
-                view.showApplicationSuccess();
-            } else {
-                view.showApplicationFailure("Unable to apply for project.");
-            }
-        } else {
-            view.showMessage("You do not have permission to apply for this project.");
-        }
+    private void viewProjects() {
+        ProjectViewerController projectViewerController = new ProjectViewerController(
+                views.sharedView(),
+                views.projectView(),
+                projectService
+        );
+        projectViewerController.start();
     }
 
-    private void viewApplications() {
-        User user = Session.getCurrentUser();
-        view.showApplications(applicationService.getOwnApplications(user));
+    private void applicationActions() {
+        ApplicationController applicationController = new ApplicationController(
+                views.sharedView(),
+                views.applicationView(),
+                views.projectView(),
+                projectService,
+                applicationService
+        );
+        applicationController.start();
     }
 
+    private void accountSettings() {
+        AccountController accountController = new AccountController(
+                authService,
+                projectService,
+                bookingService,
+                views.sharedView(),
+                views.accountView()
+        );
+        accountController.start();
+    }
 
     private void viewEnquiries(){
+        ApplicantEnquiryController enquiryController = new ApplicantEnquiryController(
+                views.sharedView(),
+                views.enquiryView(),
+                enquiryService
+        );
         enquiryController.start();
     }
 }

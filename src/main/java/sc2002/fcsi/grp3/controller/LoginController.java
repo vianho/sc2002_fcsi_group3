@@ -3,15 +3,15 @@ package sc2002.fcsi.grp3.controller;
 import sc2002.fcsi.grp3.model.User;
 import sc2002.fcsi.grp3.service.AuthService;
 import sc2002.fcsi.grp3.session.Session;
-import sc2002.fcsi.grp3.view.LoginView;
+import sc2002.fcsi.grp3.view.AuthView;
 
 import java.util.Optional;
 
 public class LoginController {
     private final AuthService authService;
-    private final LoginView view;
+    private final AuthView view;
 
-    public LoginController(AuthService authService, LoginView view) {
+    public LoginController(AuthService authService, AuthView view) {
         this.authService = authService;
         this.view = view;
     }
@@ -26,10 +26,10 @@ public class LoginController {
         if (result.isPresent()) {
             User user = result.get();
             Session.setCurrentUser(user);
-            view.showSuccess(user);
+            view.showLoginSuccess(user);
             return true;
         } else {
-            view.showFailure();
+            view.showLoginFailure();
             return false;
         }
 

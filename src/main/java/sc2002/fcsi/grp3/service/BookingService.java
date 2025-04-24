@@ -2,10 +2,9 @@ package sc2002.fcsi.grp3.service;
 
 import sc2002.fcsi.grp3.datastore.DataStore;
 import sc2002.fcsi.grp3.model.*;
-import sc2002.fcsi.grp3.model.enums.FlatType;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 public class BookingService {
     private final DataStore db;
@@ -16,6 +15,12 @@ public class BookingService {
 
     public List<Booking> getBookings() {
         return db.getBookings();
+    }
+
+    public Optional<Booking> getBookingByUser(User user) {
+        return db.getBookings().stream()
+                .filter(b -> b.getApplicant().getNric().equals(user.getNric()))
+                .findFirst();
     }
 
     public void addBooking(Flat flatType, Project id, User Anric, User Onric){

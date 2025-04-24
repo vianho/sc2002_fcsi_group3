@@ -3,6 +3,8 @@ package sc2002.fcsi.grp3.model;
 import sc2002.fcsi.grp3.model.enums.MaritalStatus;
 import sc2002.fcsi.grp3.model.role.IRole;
 
+import java.util.Objects;
+
 public class User {
     private final String nric;
     private String name;
@@ -85,5 +87,18 @@ public class User {
 
     public void setRole(IRole role) {
         this.role = role;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(nric, user.nric);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nric);
     }
 }
