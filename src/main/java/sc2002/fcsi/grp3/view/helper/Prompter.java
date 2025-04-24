@@ -15,31 +15,44 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.function.Supplier;
 
+/**
+ * Utility class for prompting and displaying user input/output in the CLI.
+ * Includes support for typed and optional input, menus, tables, and formatting.
+ */
 public class Prompter {
     private final Scanner sc;
     final static DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
-
+    /**
+     * Constructs a {@code Prompter} using standard input.
+     */
     public Prompter() {
         this.sc = new Scanner(System.in);
     }
 
+    /**
+     * Attempts to clear the console screen.
+     */
     public void clear() {
-        // not sure how to clear screen yet :(((((
         System.out.print("\033[H\033[2J");
         System.out.flush();
     }
 
     /**
-     * Utility method to show a table in CLI.
+     * Displays a CLI table using headers and rows.
      *
-     * @param headers list of column headers
-     * @param rows    list of rows, each row a list of strings
+     * @param headers the column headers
+     * @param rows    the table rows
      */
     public void showTable(List<String> headers, List<List<String>> rows) {
         TablePrinter.printTable(headers, rows);
     }
 
+    /**
+     * Displays a stylized title with borders.
+     *
+     * @param title the title to display
+     */
     public void showTitle(String title) {
         System.out.print("\n");
         String border = "=".repeat(title.length() + 4);
@@ -48,6 +61,14 @@ public class Prompter {
         System.out.println(border);
     }
 
+    /**
+     * Prompts the user with a menu and returns the selected option index.
+     *
+     * @param title  the menu title
+     * @param options the list of option strings
+     * @param prompt the prompt message
+     * @return the selected option index (1-based)
+     */
     public int menuPromptInt(String title, String[] options, String prompt) {
         showTitle(title);
         for (int i = 0; i < options.length; i++) {
@@ -56,11 +77,23 @@ public class Prompter {
         return promptInt(prompt);
     }
 
+    /**
+     * Prompts for a string input.
+     *
+     * @param msg the message to display
+     * @return the trimmed input string
+     */
     public String promptString(String msg) {
         System.out.print(msg);
         return sc.nextLine().trim();
     }
 
+    /**
+     * Prompts for an optional string input (returns null if blank).
+     *
+     * @param msg the message to display
+     * @return the trimmed input or null
+     */
     public String prompStringOptional(String msg) {
         String res = promptString(msg);
         if (res.isBlank()) {
@@ -69,6 +102,14 @@ public class Prompter {
         return res;
     }
 
+    /**
+     * Repeatedly prompts until a valid result is returned from the supplier.
+     *
+     * @param promptFn the supplier that may throw
+     * @param errorMsg the error message to show on failure
+     * @return the result from the supplier
+     * @param <T> the return type
+     */
     public <T> T promptWithRetry(Supplier<T> promptFn, String errorMsg) {
         while (true) {
             try {
@@ -79,6 +120,12 @@ public class Prompter {
         }
     }
 
+    /**
+     * Prompts for an integer input with retry on invalid input.
+     *
+     * @param msg the message to display
+     * @return the valid integer input
+     */
     public int promptInt(String msg) {
         return promptWithRetry(() ->
                         Integer.parseInt(promptString(msg)),
@@ -86,6 +133,12 @@ public class Prompter {
         );
     }
 
+    /**
+     * Prompts for an optional integer input (returns null if blank).
+     *
+     * @param msg the message to display
+     * @return the valid integer input or null if the input is blank
+     */
     public Integer promptIntOptional(String msg) {
         while (true) {
             System.out.print(msg);
@@ -101,6 +154,12 @@ public class Prompter {
         }
     }
 
+    /**
+     * Prompts for a float input with retry on invalid input.
+     *
+     * @param msg the message to display
+     * @return the valid float input
+     */
     public float promptFloat(String msg) {
         return promptWithRetry(() ->
                         Float.parseFloat(promptString(msg)),
@@ -108,6 +167,12 @@ public class Prompter {
         );
     }
 
+    /**
+     * Prompts for an optional float input (returns null if blank).
+     *
+     * @param msg the message to display
+     * @return the valid float input or null if the input is blank
+     */
     public Float promptFloatOptional(String msg) {
         while (true) {
             System.out.print(msg);
@@ -123,6 +188,12 @@ public class Prompter {
         }
     }
 
+    /**
+     * Prompts for a date input in the format DD-MM-YYYY with retry on invalid input.
+     *
+     * @param msg the message to display
+     * @return the valid LocalDate object
+     */
     public LocalDate promptDate(String msg) {
         return promptWithRetry(() ->
                 LocalDate.parse(promptString(msg), dtFormatter),
@@ -130,6 +201,12 @@ public class Prompter {
         );
     }
 
+    /**
+     * Prompts for an optional date input in the format DD-MM-YYYY (returns null if blank).
+     *
+     * @param msg the message to display
+     * @return the valid LocalDate object or null if the input is blank or invalid
+     */
     public LocalDate promptDateOptional(String msg) {
         while (true) {
             System.out.print(msg);
@@ -145,6 +222,13 @@ public class Prompter {
         }
     }
 
+    /**
+     * Prompts for a password-like hidden input.
+     * Warns if console is unavailable and falls back to visible input.
+     *
+     * @param msg the prompt message
+     * @return the entered string
+     */
     public String promptHiddenInput(String msg) {
         Console console = System.console();
         if (console == null) {
@@ -155,6 +239,13 @@ public class Prompter {
         return new String(chars);
     }
 
+    /**
+     * Prompts for a comma-separated list of optional flat types.
+     * Returns null if the input is blank. Retries on invalid flat type input.
+     *
+     * @param msg the message to display
+     * @return a List of {@link FlatType} or null if input is blank
+     */
     public List<FlatType> promptFlatTypesOptional(String msg) {
         System.out.print(msg);
         String input = sc.nextLine().trim();
@@ -175,12 +266,25 @@ public class Prompter {
         return types;
     }
 
+    /**
+     * Prompts for a single {@link FlatType} with retry on invalid input.
+     *
+     * @param msg the message to display
+     * @return the valid {@link FlatType}
+     */
     public FlatType promptFlatType(String msg) {
         return promptWithRetry(() ->
                         FlatType.fromCode(promptString(msg).trim()),
                 "Invalid flat type.");
     }
 
+    /**
+     * Prompts for an optional {@link MaritalStatus} (returns null if blank).
+     * Retries on invalid marital status input.
+     *
+     * @param msg the message to display
+     * @return the valid {@link MaritalStatus} or null if input is blank
+     */
     public MaritalStatus promptMaritalStatusOptional(String msg) {
         System.out.print(msg);
         MaritalStatus maritalStatus;
@@ -197,33 +301,69 @@ public class Prompter {
         return maritalStatus;
     }
 
+    /**
+     * Prompts for a single {@link MaritalStatus} with retry on invalid input.
+     *
+     * @param msg the message to display
+     * @return the valid {@link MaritalStatus}
+     */
     public MaritalStatus promptMaritalStatus(String msg) {
         return promptWithRetry(() ->
                         MaritalStatus.fromString(promptString(msg).trim()),
                 "Invalid marital status.");
     }
 
+    /**
+     * Displays a simple message to the user.
+     *
+     * @param msg the message to display
+     */
     public void showMessage(String msg) {
         System.out.println(msg);
     }
 
+    /**
+     * Displays a formatted message to the user.
+     *
+     * @param format the format string (as in {@link String#format(String, Object...)})
+     * @param args   the arguments to the format string
+     */
     public void showMessagef(String format, Object ... args) {
         System.out.printf(format + "\n", args);
     }
 
+    /**
+     * Displays a warning message to the user, prefixed with "[Warning]".
+     *
+     * @param msg the warning message to display
+     */
     public void showWarning(String msg) {
         System.out.println("[Warning] " + msg);
     }
 
+    /**
+     * Displays an error message to the user, prefixed with "[Error]".
+     *
+     * @param msg the error message to display
+     */
     public void showError(String msg) {
         System.out.println("[Error] " + msg);
     }
 
+    /**
+     * Prompts the user to press Enter to continue.
+     */
     public void pressEnterToContinue() {
         System.out.println("\nPress Enter to continue...");
         sc.nextLine();
     }
 
+    /**
+     * Asks the user for confirmation with a yes/no prompt.
+     *
+     * @param msg the confirmation message
+     * @return true if user confirms with 'y', false if 'n'
+     */
     public boolean confirm(String msg) {
         while (true) {
             System.out.print(msg + " (y/n): ");
