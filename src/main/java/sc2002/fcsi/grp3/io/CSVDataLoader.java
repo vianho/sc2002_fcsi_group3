@@ -429,6 +429,7 @@ public class CSVDataLoader implements IDataLoader {
                 })
                 .max()
                 .orElse(0);
+        Registration.setNextRegistrationId(maxRegistrationId);
         return registrations;
     }
 
