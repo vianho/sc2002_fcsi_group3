@@ -41,7 +41,7 @@ public class ManagerView {
     }
 
     
-    public Project getNewProjectDetails() {
+    public Project  getNewProjectDetails(String managerNric) {
         prompt.showTitle("Create New Project");
 
         // Prompt for project details
@@ -56,23 +56,22 @@ public class ManagerView {
 
         // Create and return the new project
         return new Project(
-                0, // ID will be assigned by the system
                 name,
                 neighbourhood,
                 false, // Default visibility is false
                 applicationOpeningDate,
                 applicationClosingDate,
-                null, // Manager NRIC will be set later
+                managerNric, // Set the manager's NRIC
                 totalOfficerSlots,
-                flats
-    );
-}
-    public void showProjects(List<Project> projects) {
-        prompt.showTitle("All Projects");
+                flats, List.of()
+        );
+    }
+    public void showProjects(String title, List<Project> projects) {
+        prompt.showTitle(title); // Use the provided title
         if (projects.isEmpty()) {
             prompt.showMessage("No projects available.");
         } else {
-            List<String> headers = List.of("ID", "Name", "Neighbourhood", "Visible", "Manager NRIC", "Application Open", "Application Close");
+            List<String> headers = List.of("ID", "Name", "Neighbourhood", "Visible", "Manager NRIC", "Application Open", "Application Close", "Officer Slots");
             List<List<String>> rows = projects.stream()
                     .map(project -> List.of(
                             String.valueOf(project.getId()),
@@ -81,7 +80,8 @@ public class ManagerView {
                             project.isVisible() ? "Yes" : "No",
                             project.getManagerNric(),
                             project.getApplicationOpeningDate().toString(),
-                            project.getApplicationClosingDate().toString()
+                            project.getApplicationClosingDate().toString(),
+                            project.getOfficerNrics().size() + "/" + project.getTotalOfficerSlots() // Display current/total officer slots
                     ))
                     .toList();
             prompt.showTable(headers, rows);
@@ -96,7 +96,7 @@ public class ManagerView {
             return null;
         }
 
-        showProjects(projects);
+        showProjects("Your Projects",projects);
 
         int projectId = prompt.promptInt("Enter the ID of the project to select: ");
         return projects.stream()
@@ -122,32 +122,39 @@ public class ManagerView {
             return;
         }
 
+        // Display project details in a structured format
         prompt.showTitle("Project Details");
-        prompt.showMessage("ID: " + project.getId());
-        prompt.showMessage("Name: " + project.getName());
-        prompt.showMessage("Neighbourhood: " + project.getNeighbourhood());
-        prompt.showMessage("Visible: " + (project.isVisible() ? "Yes" : "No"));
-        prompt.showMessage("Manager NRIC: " + project.getManagerNric());
-        prompt.showMessage("Application Opening Date: " + project.getApplicationOpeningDate());
-        prompt.showMessage("Application Closing Date: " + project.getApplicationClosingDate());
-        prompt.showMessage("Total Officer Slots: " + project.getTotalOfficerSlots());
-        prompt.showMessage("Assigned Officers: " + String.join(", ", project.getOfficerNrics()));
+        StringBuilder details = new StringBuilder();
+        details.append("ID: ").append(project.getId()).append("\n")
+               .append("Name: ").append(project.getName()).append("\n")
+               .append("Neighbourhood: ").append(project.getNeighbourhood()).append("\n")
+               .append("Visible: ").append(project.isVisible() ? "Yes" : "No").append("\n")
+               .append("Manager NRIC: ").append(project.getManagerNric()).append("\n")
+               .append("Application Opening Date: ").append(project.getApplicationOpeningDate()).append("\n")
+               .append("Application Closing Date: ").append(project.getApplicationClosingDate()).append("\n")
+               .append("Officer Slots: ").append(project.getOfficerNrics().size()).append("/")
+               .append(project.getTotalOfficerSlots()).append("\n")
+               .append("Assigned Officers: ").append(
+                       project.getOfficerNrics().isEmpty() ? "None" : String.join(", ", project.getOfficerNrics())
+               ).append("\n");
 
+        // Display flat details if available
         if (project.getFlats() != null && !project.getFlats().isEmpty()) {
-            prompt.showMessage("Flats:");
-            List<String> headers = List.of("Flat Type", "Units Available", "Selling Price");
-            List<List<String>> rows = project.getFlats().stream()
-                    .map(flat -> List.of(
-                            flat.getType().getDisplayName(),
-                            String.valueOf(flat.getUnitsAvailable()),
-                            String.format("%.2f", flat.getSellingPrice())
-                    ))
-                    .toList();
-            prompt.showTable(headers, rows);
+            details.append("\nFlats:\n");
+            details.append(String.format("%-15s %-20s %-15s\n", "Flat Type", "Units Available", "Selling Price"));
+            details.append("----------------------------------------------------------\n");
+            project.getFlats().forEach(flat -> {
+                details.append(String.format("%-15s %-20d $%-15.2f\n",
+                        flat.getType().getDisplayName(),
+                        flat.getUnitsAvailable(),
+                        flat.getSellingPrice()));
+            });
         } else {
-            prompt.showMessage("No flats available for this project.");
+            details.append("\nNo flats available for this project.\n");
         }
 
+        // Display the formatted details
+        prompt.showMessage(details.toString());
         prompt.pressEnterToContinue();
     }
 
@@ -253,17 +260,22 @@ public class ManagerView {
             return null;
         }
 
+        // Display the list of applications with details
         String[] options = applications.stream()
-                .map(app -> "Application ID: " + app.getId() + ", Applicant: " + app.getApplicant().getName() + ", Flat Type: " + app.getFlatType())
+                .map(app -> "Application ID: " + app.getId() +
+                            ", Applicant: " + app.getApplicant().getName() +
+                            ", Flat Type: " + app.getFlatType().getDisplayName()) // Ensure FlatType is displayed correctly
                 .toArray(String[]::new); // Convert List<String> to String[]
 
-        int choice = prompt.menuPrompt("Select an Application", options, "Enter your choice: ");
+        // Prompt the manager to select an application
+        int choice = prompt.menuPrompt("Select an Application", options, "Enter your choice (1-" + applications.size() + "): ");
         if (choice < 1 || choice > applications.size()) {
-            prompt.showMessage("Invalid choice.");
+            prompt.showMessage("Invalid choice. Please select a valid application.");
             return null;
         }
 
-        return applications.get(choice - 1); // Return the selected application
+        // Return the selected application
+        return applications.get(choice - 1);
     }
 
     public void showApprovedOfficerRegistrations(List<Registration> registrations) {

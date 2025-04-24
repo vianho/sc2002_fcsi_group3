@@ -31,7 +31,7 @@ public class SharedPromptView {
     }
 
     public void showTitle(String title) {
-        clear();
+        // clear();
         System.out.print("\n");
         String border = "=".repeat(title.length() + 4);
         System.out.println(border);

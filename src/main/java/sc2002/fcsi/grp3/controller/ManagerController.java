@@ -71,9 +71,9 @@ public class ManagerController implements IBaseController {
                     // View all projects
                     List<Project> allProjects = projectService.getAllProjects();
                     if (allProjects.isEmpty()) {
-                        view.showMessage("No projects available.");
+                        view.showMessage("No projects available."); 
                     } else {
-                        view.showProjects(allProjects);
+                        view.showProjects("All Projects",allProjects);
                     }
                 }
                 case 2 -> {
@@ -83,7 +83,7 @@ public class ManagerController implements IBaseController {
                     if (managedProjects.isEmpty()) {
                         view.showMessage("No projects found under your management.");
                     } else {
-                        view.showProjects(managedProjects);
+                        view.showProjects("Your Projects",managedProjects);
                     }
                 }
                 default -> view.showMessage("Invalid choice.");
@@ -93,23 +93,27 @@ public class ManagerController implements IBaseController {
         
         //Create a Project
         public void createProject() {
-            User user = Session.getCurrentUser();
-            Project newProject = view.getNewProjectDetails();
+            User user = Session.getCurrentUser(); // Get the current manager
+            String managerNric = user.getNric(); // Get the manager's NRIC
+
+            // Get new project details from the view
+            Project newProject = view.getNewProjectDetails(managerNric);
 
             // Check for overlapping application periods
-            boolean hasOverlap = projectService.getProjectsManagedBy(user.getNric()).stream()
-                    .anyMatch(project -> 
-                        !newProject.getApplicationClosingDate().isBefore(project.getApplicationOpeningDate()) &&
-                        !newProject.getApplicationOpeningDate().isAfter(project.getApplicationClosingDate())
+            boolean hasOverlap = projectService.getProjectsManagedBy(managerNric).stream()
+                    .anyMatch(project ->
+                            !newProject.getApplicationClosingDate().isBefore(project.getApplicationOpeningDate()) &&
+                            !newProject.getApplicationOpeningDate().isAfter(project.getApplicationClosingDate())
                     );
-            //If Overlap happens, creation is unsuccessful
+
             if (hasOverlap) {
                 view.showMessage("Cannot create project. Overlapping application periods detected.");
                 return;
             }
-            //Otherwise creation is successful, ManagerNRIC set, and added to db
-            projectService.createProject(newProject, user.getNric());
-            view.showMessage("Project created successfully.");
+
+            // Create the project
+            projectService.createProject(newProject, managerNric);
+            view.showMessage("Project created successfully with ID: " +newProject.getId());
         }
 
         public void viewProjectDetails() {
@@ -162,6 +166,13 @@ public class ManagerController implements IBaseController {
                     case 5 -> project.setFlats(view.getFlatDetails());
                     case 6 -> {
                         int newSlots = view.promptInt("Enter new total officer slots (max 10): ");
+                        int currentOfficers = project.getOfficerNrics().size();
+
+                        if (newSlots < currentOfficers) {
+                            view.showMessage("Invalid number of officer slots. The new value cannot be lower than the current number of registered officers (" + currentOfficers + ").");
+                            break;
+                        }
+
                         boolean success = projectService.updateTotalOfficerSlots(project, newSlots);
                         if (!success) {
                             view.showMessage("Invalid number of officer slots. Must be between 0 and 10.");
@@ -328,6 +339,10 @@ public class ManagerController implements IBaseController {
         public void approveWithdrawalRequests() {
             User user = Session.getCurrentUser();
             List<Project> projects = projectService.getProjectsManagedBy(user.getNric());
+            if (projects.isEmpty()) {
+                view.showMessage("No projects found under your management.");
+                return;
+            }
 
             for (Project project : projects) {
                 List<Application> applications = projectService.getPendingWithdrawalRequests(project.getId());
@@ -388,7 +403,6 @@ public class ManagerController implements IBaseController {
                     "Create Project",
                     "Edit Project",
                     "Delete Project",
-                    "Toggle Project Visibility",
                     "View Project Details",
                     "Back to Main Menu"
             };
@@ -405,7 +419,7 @@ public class ManagerController implements IBaseController {
                     case 6 -> view.showMessage("Returning to main menu...");
                     default -> view.showMessage("Invalid choice.");
                 }
-            } while (choice != 7); // Exit submenu when "Back to Main Menu" is selected
+            } while (choice != 6); // Exit submenu when "Back to Main Menu" is selected
         }
 
         
@@ -438,8 +452,18 @@ public class ManagerController implements IBaseController {
 
                 String decision = view.promptApprovalDecision("Approve or Reject?");
                 if (decision.equals("approve")) {
-                    projectService.updateOfficerRegistrationStatus(registration, RegistrationStatus.APPROVED);
-                    view.showMessage("Registration approved.");
+                    boolean success = projectService.updateOfficerRegistrationStatus(registration, RegistrationStatus.APPROVED);
+                    if (success) {
+                        // Add the officer's NRIC to the project's officerNrics list
+                        boolean added = project.assignOfficer(registration.getApplicant().getNric());
+                        if (added) {
+                            view.showMessage("Registration approved, and officer added to the project.");
+                        } else {
+                            view.showMessage("Registration approved, but officer could not be added (e.g., duplicate NRIC or max slots reached).");
+                        }
+                    } else {
+                        view.showMessage("Registration approval failed.");
+                    }
                 } else if (decision.equals("reject")) {
                     projectService.updateOfficerRegistrationStatus(registration, RegistrationStatus.REJECTED);
                     view.showMessage("Registration rejected.");

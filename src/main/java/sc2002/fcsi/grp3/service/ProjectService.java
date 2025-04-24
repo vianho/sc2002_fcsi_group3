@@ -113,12 +113,14 @@ public class ProjectService {
                 .toList();
     }
 
-    // Approve or reject an HDB Officer registration
-    public void updateOfficerRegistrationStatus(Registration registration, RegistrationStatus status) {
+    public boolean updateOfficerRegistrationStatus(Registration registration, RegistrationStatus status) {
         registration.setStatus(status);
         if (status == RegistrationStatus.APPROVED) {
-            registration.getProject().assignOfficer(registration.getApplicant().getNric());
+            // Attempt to assign the officer to the project
+            boolean success = registration.getProject().assignOfficer(registration.getApplicant().getNric());
+            return success; // Return true if the officer was successfully assigned
         }
+        return true; // Return true for non-approval statuses
     }
 
     // Get pending Applicant BTO applications for a specific project
@@ -208,5 +210,12 @@ public class ProjectService {
                 .filter(reg -> reg.getProject().getId() == projectId) // Match the project ID
                 .filter(reg -> reg.getStatus() == RegistrationStatus.APPROVED) // Filter by APPROVED status
                 .toList();
+    }
+
+    public int generateNewProjectId() {
+        return db.getProjects().stream()
+                .mapToInt(Project::getId)
+                .max()
+                .orElse(0) + 1; // Increment the highest existing ID by 1
     }
 }
