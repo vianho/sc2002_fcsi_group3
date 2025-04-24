@@ -9,14 +9,31 @@ import sc2002.fcsi.grp3.model.enums.RegistrationStatus;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * The RegistrationService class handles operations related to user registrations.
+ * It provides methods to manage and process registrations for projects.
+ */
 public class RegistrationService {
+
     private final DataStore db;
 
+    /**
+     * Constructs a RegistrationService with the specified data store.
+     *
+     * @param db the data store containing registration data
+     */
     public RegistrationService(DataStore db) {
         this.db = db;
     }
 
-    public void Join(Project project, User officer, LocalDate today){
+    /**
+     * Allows a user to join a project by creating a registration.
+     *
+     * @param project the project to join
+     * @param officer the officer joining the project
+     * @param today   the date of registration
+     */
+    public void Join(Project project, User officer, LocalDate today) {
 
         Registration reg = new Registration(project, officer, today);
         db.addRegistration(reg);
@@ -24,19 +41,23 @@ public class RegistrationService {
 
     }
 
-
-
-    public String getStatus (User user){
+    /**
+     * Retrieves the registration status of the specified user.
+     *
+     * @param user the user whose registration status is to be retrieved
+     * @return the registration status as a string, or "NIL" if no registration is found
+     */
+    public String getStatus(User user) {
 
         Registration found = null;
 
-        for(Registration reg : db.getRegistrations()){
-            if(reg.getApplicant() == user){
+        for (Registration reg : db.getRegistrations()) {
+            if (reg.getApplicant() == user) {
                 found = reg;
             }
         }
 
-        if(found != null)
+        if (found != null)
             //System.out.println(found.getStatus());
             return found.getStatus().toString();
         else
@@ -44,47 +65,64 @@ public class RegistrationService {
 
     }
 
-    public void setStatus (User user){
+    /**
+     * Sets the registration status of the specified user to APPROVED.
+     *
+     * @param user the user whose registration status is to be updated
+     */
+    public void setStatus(User user) {
 
         Registration found = null;
 
-        for(Registration reg : db.getRegistrations()){
-            if(reg.getApplicant() == user){
+        for (Registration reg : db.getRegistrations()) {
+            if (reg.getApplicant() == user) {
                 found = reg;
             }
         }
 
-        if(found != null)
+        if (found != null)
             found.setStatus(RegistrationStatus.APPROVED);
     }
 
-    public String getProjectName (User user){
+    /**
+     * Retrieves the name of the project associated with the specified user's registration.
+     *
+     * @param user the user whose project name is to be retrieved
+     * @return the project name, or "None found" if no registration is found
+     */
+    public String getProjectName(User user) {
 
         Registration found = null;
 
-        for(Registration reg : db.getRegistrations()){
-            if(reg.getApplicant() == user){
+        for (Registration reg : db.getRegistrations()) {
+            if (reg.getApplicant() == user) {
                 found = reg;
             }
         }
 
-        if(found != null)
+        if (found != null)
             //System.out.println(found.getProject().getName());
             return found.getProject().getName();
-        else{
+        else {
             return "None found";
         }
     }
 
-    public Project getHandledProject (String userNRIC){
+    /**
+     * Retrieves the project handled by the specified officer.
+     *
+     * @param userNRIC the NRIC of the officer
+     * @return the project handled by the officer, or null if no project is found
+     */
+    public Project getHandledProject(String userNRIC) {
 
         Project found = null;
 
 
         for (Project proj : db.getProjects()) {
             List<String> lNRIC = proj.getOfficerNrics();
-            for (String nric : lNRIC){
-                if(nric.equals(userNRIC)){
+            for (String nric : lNRIC) {
+                if (nric.equals(userNRIC)) {
                     found = proj;
                 }
             }

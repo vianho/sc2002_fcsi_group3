@@ -5,13 +5,22 @@ import sc2002.fcsi.grp3.datastore.DataStore;
 import sc2002.fcsi.grp3.io.CSVDataLoader;
 import sc2002.fcsi.grp3.service.SystemSaver;
 
+/**
+ * The SystemInitializer class is responsible for initializing the system.
+ * It loads data from external sources, sets up controllers and views, and registers a shutdown hook to save the system state.
+ */
 public class SystemInitializer {
+
     private final DataStore dataStore;
     private final ConfigLoader config;
     private final ViewInitializer viewInitializer;
     private final ControllerInitializer controllerInitializer;
     private final SystemSaver systemSaver;
 
+    /**
+     * Constructs a SystemInitializer and initializes the required components.
+     * Registers a shutdown hook to save the system state upon termination.
+     */
     public SystemInitializer() {
         this.dataStore = DataStore.getInstance();
         this.config = new ConfigLoader("config.properties");
@@ -21,6 +30,10 @@ public class SystemInitializer {
         registerShutdownHook();
     }
 
+    /**
+     * Loads data from CSV files into the DataStore.
+     * The file paths are retrieved from the configuration file.
+     */
     private void loadData() {
         String usersPath = config.get("usersFile");
         String projectsPath = config.get("projectsFile");
@@ -53,6 +66,9 @@ public class SystemInitializer {
         System.out.println("[SystemInitializer] Loaded " + dataStore.getRegistrations().size() + " registrations.");
     }
 
+    /**
+     * Registers a shutdown hook to save the system state when the application terminates.
+     */
     private void registerShutdownHook() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("[SystemSaver] Saving system state...");
@@ -60,6 +76,9 @@ public class SystemInitializer {
         }));
     }
 
+    /**
+     * Starts the system by loading data and launching the main menu controller.
+     */
     public void startSystem() {
         loadData();
         controllerInitializer.getMainMenuController().start();

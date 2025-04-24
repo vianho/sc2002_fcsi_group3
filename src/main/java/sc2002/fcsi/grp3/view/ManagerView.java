@@ -13,36 +13,88 @@ import java.util.List;
 
 import sc2002.fcsi.grp3.view.helper.Prompter;
 
+/**
+ * The ManagerView class provides methods for displaying and interacting with manager-related data.
+ * It includes functionality for managing projects, registrations, applications, and flats.
+ */
 public class ManagerView extends BaseView {
+
+    /**
+     * Constructs a ManagerView with the specified prompter.
+     *
+     * @param prompt the prompter used for user input and output
+     */
     public ManagerView(Prompter prompt) {
         super(prompt);
     }
+
+    /**
+     * Displays a message to the user.
+     *
+     * @param msg the message to display
+     */
     public void showMessage(String msg) {
         System.out.println(msg);
     }
 
+    /**
+     * Displays a menu with options and prompts the user to select a choice.
+     *
+     * @param title   the title of the menu
+     * @param options the menu options
+     * @return the user's choice
+     */
     public int showMenuAndGetChoice(String title, String[] options) {
         return prompt.menuPromptInt(title, options, "> ");
     }
 
+    /**
+     * Prompts the user to enter a string.
+     *
+     * @param msg the message to display when prompting
+     * @return the entered string
+     */
     public String promptString(String msg) {
         return prompt.promptString(msg);
     }
 
+    /**
+     * Prompts the user to enter an integer.
+     *
+     * @param msg the message to display when prompting
+     * @return the entered integer
+     */
     public int promptInt(String msg) {
         return prompt.promptInt(msg);
     }
 
+    /**
+     * Prompts the user to enter a date.
+     *
+     * @param msg the message to display when prompting
+     * @return the entered date
+     */
     public LocalDate promptDate(String msg) {
         return prompt.promptDate(msg);
     }
-    
+
+    /**
+     * Prompts the user to enter a float value.
+     *
+     * @param msg the message to display when prompting
+     * @return the entered float value
+     */
     public float promptFloat(String msg) {
         return prompt.promptFloat(msg);
     }
 
-    
-    public Project  getNewProjectDetails(String managerNric) {
+    /**
+     * Prompts the manager to enter details for creating a new project.
+     *
+     * @param managerNric the NRIC of the manager creating the project
+     * @return the created Project object
+     */
+    public Project getNewProjectDetails(String managerNric) {
         prompt.showTitle("Create New Project");
 
         // Prompt for project details
@@ -67,6 +119,13 @@ public class ManagerView extends BaseView {
                 flats, List.of()
         );
     }
+
+    /**
+     * Displays a list of projects with their details.
+     *
+     * @param title    the title of the display
+     * @param projects the list of projects to display
+     */
     public void showProjects(String title, List<Project> projects) {
         prompt.showTitle(title); // Use the provided title
         if (projects.isEmpty()) {
@@ -90,14 +149,19 @@ public class ManagerView extends BaseView {
         prompt.pressEnterToContinue();
     }
 
-
+    /**
+     * Prompts the manager to select a project from a list.
+     *
+     * @param projects the list of projects to select from
+     * @return the selected Project object, or null if no selection is made
+     */
     public Project selectProject(List<Project> projects) {
         if (projects.isEmpty()) {
             prompt.showMessage("No projects available to select.");
             return null;
         }
 
-        showProjects("Your Projects",projects);
+        showProjects("Projects",projects);
 
         int projectId = prompt.promptInt("Enter the ID of the project to select: ");
         return projects.stream()
@@ -106,6 +170,12 @@ public class ManagerView extends BaseView {
             .orElse(null);
     }
 
+    /**
+     * Confirms the deletion of a project.
+     *
+     * @param project the project to delete
+     * @return true if the deletion is confirmed, false otherwise
+     */
     public boolean confirmDeletion(Project project) {
         if (project == null) {
             showMessage("No project selected for deletion.");
@@ -117,6 +187,11 @@ public class ManagerView extends BaseView {
         return confirmation.equals("yes");
     }
 
+    /**
+     * Displays the details of a specific project.
+     *
+     * @param project the project whose details are to be displayed
+     */
     public void showProjectDetails(Project project) {
         if (project == null) {
             prompt.showMessage("No project details available.");
@@ -159,7 +234,11 @@ public class ManagerView extends BaseView {
         prompt.pressEnterToContinue();
     }
 
-    // Display pending HDB Officer registrations
+    /**
+     * Displays a list of pending HDB officer registrations.
+     *
+     * @param registrations the list of pending registrations
+     */
     public void showPendingOfficerRegistrations(List<Registration> registrations) {
         prompt.showTitle("Pending HDB Officer Registrations");
         if (registrations.isEmpty()) {
@@ -178,7 +257,12 @@ public class ManagerView extends BaseView {
         }
     }
 
-    // Prompt to approve/reject an HDB Officer registration
+    /**
+     * Prompts the manager to approve or reject an HDB officer registration.
+     *
+     * @param registrations the list of pending registrations
+     * @return the selected Registration object, or null if no selection is made
+     */
     public Registration promptOfficerRegistrationApproval(List<Registration> registrations) {
         showPendingOfficerRegistrations(registrations);
         int id = prompt.promptInt("Enter Registration ID to approve/reject (0 to cancel): ");
@@ -188,7 +272,11 @@ public class ManagerView extends BaseView {
                 .orElse(null);
     }
 
-    // Display pending Applicant BTO applications
+    /**
+     * Displays a list of pending BTO applications.
+     *
+     * @param applications the list of pending applications
+     */
     public void showPendingBTOApplications(List<Application> applications) {
         prompt.showTitle("Pending Applicant BTO Applications");
         if (applications.isEmpty()) {
@@ -207,7 +295,12 @@ public class ManagerView extends BaseView {
         }
     }
 
-    // Prompt to approve/reject an Applicant BTO application
+    /**
+     * Prompts the manager to approve or reject a BTO application.
+     *
+     * @param applications the list of pending applications
+     * @return the selected Application object, or null if no selection is made
+     */
     public Application promptBTOApplicationApproval(List<Application> applications) {
         showPendingBTOApplications(applications);
         int id = prompt.promptInt("Enter Application ID to approve/reject (0 to cancel): ");
@@ -217,12 +310,23 @@ public class ManagerView extends BaseView {
                 .orElse(null);
     }
 
-    // Prompt to approve/reject an HDB Officer registration
+    /**
+     * Prompts the manager to approve or reject an action.
+     *
+     * @param message the message to display when prompting
+     * @return the decision entered by the manager ("approve" or "reject")
+     */
     public String promptApprovalDecision(String message) {
         return prompt.promptString(message + " (approve/reject): ").toLowerCase();
     }
 
-    // Display messages for success or failure
+    /**
+     * Displays a success or failure message based on the result of an action.
+     *
+     * @param success        true if the action was successful, false otherwise
+     * @param successMessage the message to display if successful
+     * @param failureMessage the message to display if failed
+     */
     public void showApprovalMessage(boolean success, String successMessage, String failureMessage) {
         if (success) {
             prompt.showMessage(successMessage);
@@ -231,6 +335,11 @@ public class ManagerView extends BaseView {
         }
     }
 
+    /**
+     * Prompts the manager to enter details for flats in a project.
+     *
+     * @return a list of Flat objects
+     */
     public List<Flat> getFlatDetails() {
         List<Flat> flats = new ArrayList<>();
         boolean addMoreFlats = true; // Initialize to true to enter the loop
@@ -255,6 +364,12 @@ public class ManagerView extends BaseView {
         return flats;
     }
 
+    /**
+     * Prompts the manager to select an application from a list.
+     *
+     * @param applications the list of applications to select from
+     * @return the selected Application object, or null if no selection is made
+     */
     public Application selectApplication(List<Application> applications) {
         if (applications.isEmpty()) {
             prompt.showMessage("No applications available.");
@@ -279,6 +394,11 @@ public class ManagerView extends BaseView {
         return applications.get(choice - 1);
     }
 
+    /**
+     * Displays a list of approved HDB officer registrations.
+     *
+     * @param registrations the list of approved registrations
+     */
     public void showApprovedOfficerRegistrations(List<Registration> registrations) {
         prompt.showTitle("Approved HDB Officer Registrations");
         if (registrations.isEmpty()) {
@@ -297,6 +417,12 @@ public class ManagerView extends BaseView {
         prompt.pressEnterToContinue();
     }
 
+    /**
+     * Prompts the manager to select a registration from a list.
+     *
+     * @param registrations the list of registrations to select from
+     * @return the selected Registration object, or null if no selection is made
+     */
     public Registration selectRegistration(List<Registration> registrations) {
         if (registrations.isEmpty()) {
             prompt.showMessage("No registrations available.");

@@ -11,11 +11,26 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * The ProjectView class provides methods for displaying and interacting with project-related data.
+ * It includes functionality for showing project details, flats, filters, and sorting options.
+ */
 public class ProjectView extends BaseView {
+
+    /**
+     * Constructs a ProjectView with the specified prompter.
+     *
+     * @param prompt the prompter used for user input and output
+     */
     public ProjectView(Prompter prompt) {
         super(prompt);
     }
 
+    /**
+     * Displays a list of project flats with their details.
+     *
+     * @param flats the list of project flats to display
+     */
     public void showProjectFlats(List<ProjectFlatRow> flats) {
         List<String> headers = List.of("ID", "Name", "Neighbourhood", "Flat Type", "Units Available", "Selling Price (S$)", "Application Opening Date", "Application Closing Date");
         List<List<String>> rows = flats.stream().map(row -> List.of(
@@ -31,6 +46,11 @@ public class ProjectView extends BaseView {
         prompt.showTable(headers, rows);
     }
 
+    /**
+     * Displays a list of projects with their details.
+     *
+     * @param projects the list of projects to display
+     */
     public void showProjects(List<Project> projects) {
         if (projects.isEmpty()) {
             prompt.showMessage("No projects available.");
@@ -52,6 +72,11 @@ public class ProjectView extends BaseView {
         prompt.pressEnterToContinue();
     }
 
+    /**
+     * Displays the details of a specific project in a tabular format.
+     *
+     * @param project the project whose details are to be displayed
+     */
     public void showProjectDetailsTable(Project project) {
         prompt.showTitle("Project Details");
 
@@ -75,7 +100,11 @@ public class ProjectView extends BaseView {
         prompt.showTable(headers, List.of(row));
     }
 
-    // filters
+    /**
+     * Displays the current filter settings.
+     *
+     * @param filter the current filter settings
+     */
     public void showCurrentFilter(ProjectFilter filter) {
         prompt.showMessage("Current Filters:");
         prompt.showMessage("- Neighbourhood: " + (filter.getNeighbourhood() == null ? "Any" : filter.getNeighbourhood()));
@@ -91,30 +120,65 @@ public class ProjectView extends BaseView {
         );
     }
 
+    /**
+     * Displays the current sorting option.
+     *
+     * @param sortOption the current sorting option
+     */
     public void showCurrentSortOption(ProjectSortOption sortOption) {
         prompt.showMessagef("Current sort option: %s %s", sortOption.getKey().getDisplayName(), sortOption.getDirection().getDisplayName());
     }
 
+    /**
+     * Prompts the user to enter a neighbourhood filter.
+     *
+     * @return the entered neighbourhood, or null if left blank
+     */
     public String promptNeighbourhood() {
         return prompt.prompStringOptional("Neighbourhood (blank for any): ");
     }
 
+    /**
+     * Prompts the user to enter a filter for application opening dates after a specific date.
+     *
+     * @return the entered date, or null if left blank
+     */
     public LocalDate promptApplicationOpeningAfter() {
         return prompt.promptDateOptional("Application Open After (DD/MM/YYYY) (blank for any): ");
     }
 
+    /**
+     * Prompts the user to enter a filter for application closing dates before a specific date.
+     *
+     * @return the entered date, or null if left blank
+     */
     public LocalDate promptApplicationClosingBefore() {
         return prompt.promptDateOptional("Application Close Before (DD/MM/YYYY) (blank for any): ");
     }
 
+    /**
+     * Prompts the user to enter a list of flat types to filter by.
+     *
+     * @return the list of flat types, or null if left blank
+     */
     public List<FlatType> promptFlatTypes() {
         return prompt.promptFlatTypesOptional("Flat Types (e.g. 2R,3R - leave blank for any): ");
     }
 
+    /**
+     * Prompts the user to enter a minimum price filter.
+     *
+     * @return the entered minimum price, or null if left blank
+     */
     public Float promptMinPrice() {
         return prompt.promptFloatOptional("Minimum Price (blank for any): ");
     }
 
+    /**
+     * Prompts the user to enter a maximum price filter.
+     *
+     * @return the entered maximum price, or null if left blank
+     */
     public Float promptMaxPrice() {
         return prompt.promptFloatOptional("Maximum Price (blank for any): ");
     }

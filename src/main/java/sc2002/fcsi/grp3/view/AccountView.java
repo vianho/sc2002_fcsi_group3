@@ -10,19 +10,46 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The AccountView class provides methods for displaying and interacting with user account information.
+ * It includes functionality for showing profiles, prompting for passwords, and displaying success messages.
+ */
 public class AccountView extends BaseView {
+
+    /**
+     * Constructs an AccountView with the specified prompter.
+     *
+     * @param prompt the prompter used for user input and output
+     */
     public AccountView(Prompter prompt) {
         super(prompt);
     }
 
+    /**
+     * Prompts the user to enter a password with a hidden input.
+     *
+     * @param msg the message to display when prompting for the password
+     * @return the entered password
+     */
     public String promptPassword(String msg) {
         return prompt.promptHiddenInput(msg);
     }
 
+    /**
+     * Displays a success message for a password change.
+     */
     public void showPasswordChangeSuccess() {
         showMessage("Password changed successfully.");
     }
 
+    /**
+     * Displays the user's profile, including their name, NRIC, age, marital status, and eligibility for flats.
+     * If the user manages a project or has booked a flat, those details are also displayed.
+     *
+     * @param user          the user whose profile is being displayed
+     * @param managedProject the project managed by the user, or null if none
+     * @param bookedFlat    the flat booked by the user, or null if none
+     */
     public void showProfile(User user, Project managedProject, Booking bookedFlat) {
         showMessage("Name: " + user.getName());
         showMessage("NRIC: " + user.getNric());

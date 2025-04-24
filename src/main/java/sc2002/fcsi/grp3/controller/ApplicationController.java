@@ -18,13 +18,28 @@ import sc2002.fcsi.grp3.view.SharedView;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Controller class for managing user applications for projects.
+ * Handles operations such as applying for a project, viewing applications,
+ * and withdrawing applications.
+ */
 public class ApplicationController implements IBaseController {
+
     private final SharedView sharedView;
     private final ApplicationView applicationView;
     private final ProjectView projectView;
     private final ProjectService projectService;
     private final ApplicationService applicationService;
 
+    /**
+     * Constructs an ApplicationController with the required dependencies.
+     *
+     * @param sharedView         the shared view for displaying common UI elements
+     * @param applicationView    the view for displaying application-related UI elements
+     * @param projectView        the view for displaying project-related UI elements
+     * @param projectService     the service for managing project-related operations
+     * @param applicationService the service for managing application-related operations
+     */
     public ApplicationController(
             SharedView sharedView,
             ApplicationView applicationView,
@@ -39,6 +54,10 @@ public class ApplicationController implements IBaseController {
         this.applicationService = applicationService;
     }
 
+    /**
+     * Starts the application controller, displaying a menu for the user to
+     * perform various application-related actions.
+     */
     public void start() {
         int choice;
         String[] options = {
@@ -60,6 +79,14 @@ public class ApplicationController implements IBaseController {
         } while (choice != options.length);
     }
 
+    /**
+     * Retrieves the list of projects visible to the user.
+     * If the list is not cached in the session, it fetches the projects
+     * from the project service and caches them.
+     *
+     * @param user the current user
+     * @return a list of visible projects
+     */
     private List<Project> getVisibleProjects(User user) {
         List<Project> projects = Session.getList("visibleProjects", Project.class);
 
@@ -74,6 +101,12 @@ public class ApplicationController implements IBaseController {
         return projects;
     }
 
+    /**
+     * Prompts the user to enter a project ID and validates the input.
+     *
+     * @param user the current user
+     * @return an Optional containing the project ID if valid, or empty if cancelled
+     */
     private Optional<Integer> getProjectId(User user) {
         // prompt for project id
         boolean isValidProjectId;
@@ -93,6 +126,12 @@ public class ApplicationController implements IBaseController {
         return Optional.of(Integer.parseInt(projectId));
     }
 
+    /**
+     * Allows the user to apply for a project. Displays eligible projects,
+     * prompts the user to select a project and flat type, and submits the application.
+     *
+     * @param user the current user
+     */
     private void applyForProject(User user) {
         // check if user has an active application
         Application activeApplication = getActiveApplication(user);
@@ -146,12 +185,24 @@ public class ApplicationController implements IBaseController {
         }
     }
 
+    /**
+     * Displays the list of applications submitted by the user.
+     *
+     * @param user the current user
+     */
     private void viewApplications(User user) {
         sharedView.showTitle("Applications");
         applicationView.showApplications(applicationService.getApplicationsFor(user));
         sharedView.pressEnterToContinue();
     }
 
+    /**
+     * Retrieves the active application for the user from the session or
+     * fetches it from the application service if not cached.
+     *
+     * @param user the current user
+     * @return the active application, or null if none exists
+     */
     private Application getActiveApplication(User user) {
         Application application = Session.get("activeApplication", Application.class);
         if (application == null) {
@@ -166,6 +217,12 @@ public class ApplicationController implements IBaseController {
         return application;
     }
 
+    /**
+     * Allows the user to withdraw their active application.
+     * Prompts for confirmation and performs the withdrawal if confirmed.
+     *
+     * @param user the current user
+     */
     private void withdrawApplication(User user) {
         // check if user has an active application
         Application activeApplication = getActiveApplication(user);

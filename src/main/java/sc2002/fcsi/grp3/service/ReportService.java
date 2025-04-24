@@ -10,13 +10,30 @@ import sc2002.fcsi.grp3.model.enums.FlatType;
 
 import java.util.List;
 
+/**
+ * The ReportService class provides functionality for generating reports.
+ * It includes methods to retrieve flat booking reports based on specified filters.
+ */
 public class ReportService {
+
     private final DataStore db;
 
+    /**
+     * Constructs a ReportService with the specified data store.
+     *
+     * @param db the data store containing application and project data
+     */
     public ReportService(DataStore db) {
         this.db = db;
     }
 
+    /**
+     * Generates a flat booking report based on the specified filter.
+     * The report includes details of booked flats and applies the filter criteria if provided.
+     *
+     * @param filter the filter criteria for the report, or null to include all booked flats
+     * @return a list of FlatBookingReportRow objects representing the report
+     */
     public List<FlatBookingReportRow> getFlatBookingReport(ReportFilter filter) {
         return db.getApplications().stream()
                 .filter(app -> app.getStatus() == ApplicationStatus.BOOKED)

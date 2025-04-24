@@ -5,12 +5,25 @@ import sc2002.fcsi.grp3.session.Session;
 import sc2002.fcsi.grp3.view.MainMenuView;
 import sc2002.fcsi.grp3.view.SharedView;
 
+/**
+ * Controller class for managing the main menu of the application.
+ * Handles user login and navigation to role-specific controllers.
+ */
 public class MainMenuController implements IBaseController {
+
     private final SharedView sharedView;
     private final MainMenuView view;
     private final LoginController loginController;
     private final ControllerFactory controllerFactory;
 
+    /**
+     * Constructs a MainMenuController with the required dependencies.
+     *
+     * @param sharedView        the shared view for displaying common UI elements
+     * @param view              the view for displaying main menu UI elements
+     * @param loginController   the controller for handling user login
+     * @param controllerFactory the factory for creating role-specific controllers
+     */
     public MainMenuController(
             SharedView sharedView,
             MainMenuView view,
@@ -22,6 +35,9 @@ public class MainMenuController implements IBaseController {
         this.controllerFactory = controllerFactory;
     }
 
+    /**
+     * Starts the main menu, allowing the user to log in or exit the application.
+     */
     public void start() {
         int choice;
         String[] options = { "Login", "Exit" };
@@ -36,6 +52,10 @@ public class MainMenuController implements IBaseController {
         } while (choice != options.length);
     }
 
+    /**
+     * Handles the login process. If login is successful, navigates to the
+     * appropriate controller based on the user's role.
+     */
     private void handleLogin() {
         boolean success = loginController.login();
         if (!success) return;

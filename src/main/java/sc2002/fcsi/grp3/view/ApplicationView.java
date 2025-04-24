@@ -7,15 +7,35 @@ import sc2002.fcsi.grp3.view.helper.Prompter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The ApplicationView class provides methods for displaying and interacting with application-related data.
+ * It includes functionality for showing flat options, prompting for project IDs, and displaying applications.
+ */
 public class ApplicationView extends BaseView {
+
+    /**
+     * Constructs an ApplicationView with the specified prompter.
+     *
+     * @param prompt the prompter used for user input and output
+     */
     public ApplicationView(Prompter prompt) {
         super(prompt);
     }
 
+    /**
+     * Prompts the user to enter a project ID for applying.
+     *
+     * @return the entered project ID, or an empty string if canceled
+     */
     public String promptProjectId() {
         return prompt.promptString("Enter Project ID to apply for (enter to cancel): ");
     }
 
+    /**
+     * Displays a list of available flats with their details.
+     *
+     * @param flats the list of flats to display
+     */
     public void showFlatOptions(List<Flat> flats) {
         if (flats.isEmpty()) {
             showMessage("No available flats.");
@@ -35,10 +55,20 @@ public class ApplicationView extends BaseView {
         }
     }
 
+    /**
+     * Prompts the user to select a flat choice from the displayed options.
+     *
+     * @return the selected flat choice, or 0 to exit
+     */
     public int getFlatChoice() {
         return prompt.promptInt("Enter flat choice (0 to exit): ");
     }
 
+    /**
+     * Displays a list of applications with their details.
+     *
+     * @param applications the list of applications to display
+     */
     public void showApplications(List<Application> applications) {
         if (applications.isEmpty()) {
             showMessage("No applications found.");

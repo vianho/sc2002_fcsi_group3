@@ -5,7 +5,17 @@ import sc2002.fcsi.grp3.model.enums.MaritalStatus;
 import sc2002.fcsi.grp3.model.role.IRole;
 import sc2002.fcsi.grp3.model.role.RoleFactory;
 
+/**
+ * The UserParser class is responsible for parsing user data from CSV tokens.
+ */
 public class UserParser implements IBaseParser<User> {
+
+    /**
+     * Parses a CSV row into a User object.
+     *
+     * @param tokens the CSV row tokens
+     * @return the parsed User object, or null if the row is invalid
+     */
     @Override
     public User parse(String[] tokens) {
         if (tokens.length != 6) return null;
