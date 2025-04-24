@@ -349,6 +349,10 @@ public class OfficerController implements IBaseController {
     //Join project as Officer
     private void joinProject(){
         User user = Session.getCurrentUser();
+        if(registrationService.getHandledProject(user.getNric()) != null){
+            views.sharedView().showMessage("You are currently handling a project");
+            return;
+        }
         List<Project> projects = projectService.getVisibleProjects(user);
         views.projectView().showProjectFlats(ProjectViewUtils.flattenEligibleFlats(projects, user));
         int choice;

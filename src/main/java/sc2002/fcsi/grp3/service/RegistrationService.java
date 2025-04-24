@@ -118,7 +118,6 @@ public class RegistrationService {
 
         Project found = null;
 
-
         for (Project proj : db.getProjects()) {
             List<String> lNRIC = proj.getOfficerNrics();
             for (String nric : lNRIC) {
