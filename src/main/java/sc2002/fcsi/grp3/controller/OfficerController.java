@@ -14,7 +14,35 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 import java.time.LocalDate;
-
+/**
+ * The {@code OfficerController} is the central controller handling the logic for an officer user in the BTO application system.
+ * It is responsible for Officer logic and as an applicant, including:
+ * <ul>
+ *     <li>Viewing and applying to housing projects as an applicant</li>
+ *     <li>Handling project registration, enquiry response, and flat bookings as an officer</li>
+ *     <li>Viewing and updating account settings</li>
+ *     <li>Switching between applicant and officer modes</li>
+ *     <li>Logging out of the system</li>
+ * </ul>
+ *
+ * <p>This controller delegates functionality to specialized sub-controllers for:
+ * <ul>
+ *     <li>{@link OfficerEnquiryController} for officer enquiry operations</li>
+ *     <li>{@link ApplicantEnquiryController} for applicant enquiries</li>
+ *     <li>{@link ProjectViewerController} to display projects</li>
+ *     <li>{@link ApplicationController} to handle applications</li>
+ *     <li>{@link AccountController} to manage account-related settings</li>
+ * </ul>
+ *
+ * <p>It also utilizes services for interacting with the data layer such as {@link ProjectService},
+ * {@link RegistrationService}, {@link BookingService}, {@link ApplicationService}, and {@link UserService}.
+ *
+ * <p>The controller assumes a logged-in user session via the {@link Session} class and uses shared views
+ * for consistent CLI-based user interface rendering.
+ *
+ * @author
+ * @version 1.0
+ */
 public class OfficerController implements IBaseController {
     private final OfficerViews views;
     private final AuthService authService;
@@ -314,6 +342,10 @@ public class OfficerController implements IBaseController {
     //Join project as Officer
     private void joinProject(){
         User user = Session.getCurrentUser();
+        if(registrationService.getHandledProject(user.getNric()) != null){
+            views.sharedView().showMessage("You are currently handling a project");
+            return;
+        }
         List<Project> projects = projectService.getVisibleProjects(user);
         views.projectView().showProjectFlats(ProjectViewUtils.flattenEligibleFlats(projects, user));
         int choice;
