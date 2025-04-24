@@ -131,11 +131,16 @@ public class AccountController implements IBaseController {
             }
 
             String confirm = accountView.promptPassword("Confirm new password: ");
-            String result = authService.changePassword(user, newPassword, confirm);
-            if (result == null) {
-                accountView.showPasswordChangeSuccess();
+            if (confirm.equals(newPassword)) {
+                String result = authService.changePassword(user, currentPassword, newPassword);
+                if (result == null) {
+                    accountView.showPasswordChangeSuccess();
+                    break;
+                } else {
+                    accountView.showError(result);
+                }
             } else {
-                accountView.showError(result);
+                accountView.showError("Incorrect confirmation password. Please try again.");
             }
         }
     }
