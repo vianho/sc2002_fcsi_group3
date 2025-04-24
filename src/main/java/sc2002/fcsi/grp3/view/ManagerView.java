@@ -1,5 +1,6 @@
 package sc2002.fcsi.grp3.view;
 
+import sc2002.fcsi.grp3.dto.FlatBookingReportRow;
 import sc2002.fcsi.grp3.model.Application;
 import sc2002.fcsi.grp3.model.Flat;
 import sc2002.fcsi.grp3.model.Project;

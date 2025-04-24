@@ -61,18 +61,18 @@ public class ControllerFactory {
                     userService
                 );
             }
-            case "Manager" -> {
-                yield new ManagerController(
-                        viewInit.getManagerView(),
-                        viewInit.getSharedView(),
-                        viewInit.getAccountView(),
-                        viewInit.getEnquiryView(),
-                        new AuthService(userService),
-                        new BookingService(store),
-                        new ProjectService(store),
-                        new EnquiryService(store)
-                );
-            }
+            case "Manager" -> new ManagerController(
+                    viewInit.getManagerView(),
+                    viewInit.getSharedView(),
+                    viewInit.getAccountView(),
+                    viewInit.getEnquiryView(),
+                    viewInit.getReportView(),
+                    new AuthService(userService),
+                    new BookingService(store),
+                    new ProjectService(store),
+                    new EnquiryService(store),
+                    new ReportService(store)
+            );
             default -> throw new IllegalStateException("Unknown role: " + roleName);
         };
     }

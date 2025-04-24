@@ -48,5 +48,7 @@ public class ViewInitializer {
     }
 
     public AccountView getAccountView() { return new AccountView(sharedPrompt); }
+
+    public ReportView getReportView() { return new ReportView(sharedPrompt); }
 }
 

@@ -349,8 +349,7 @@ public class OfficerController implements IBaseController {
             return;
         }
 
-
-                                //Checking if Officer applied to project as Applicant
+        //Checking if Officer applied to project as Applicant
         found = applicationService.findApplication(user.getNric());
         if (found != null) {
             if (found.getProject().getId() == proj.getId()) {
@@ -359,7 +358,6 @@ public class OfficerController implements IBaseController {
             }
 
         }
-
 
         //Create Project Registration with 'PENDING' Status
         registrationService.Join(proj, user, Now);

@@ -1,20 +1,12 @@
 package sc2002.fcsi.grp3.controller;
 
-import sc2002.fcsi.grp3.model.Application;
-import sc2002.fcsi.grp3.model.Project;
-import sc2002.fcsi.grp3.model.Registration;
-import sc2002.fcsi.grp3.model.User;
+import sc2002.fcsi.grp3.dto.FlatBookingReportRow;
+import sc2002.fcsi.grp3.model.*;
 import sc2002.fcsi.grp3.model.enums.ApplicationStatus;
 import sc2002.fcsi.grp3.model.enums.RegistrationStatus;
-import sc2002.fcsi.grp3.service.AuthService;
-import sc2002.fcsi.grp3.service.BookingService;
-import sc2002.fcsi.grp3.service.EnquiryService;
-import sc2002.fcsi.grp3.service.ProjectService;
+import sc2002.fcsi.grp3.service.*;
 import sc2002.fcsi.grp3.session.Session;
-import sc2002.fcsi.grp3.view.AccountView;
-import sc2002.fcsi.grp3.view.ManagerView;
-import sc2002.fcsi.grp3.view.EnquiryView;
-import sc2002.fcsi.grp3.view.SharedView;
+import sc2002.fcsi.grp3.view.*;
 
 import java.util.List;
 
@@ -24,29 +16,35 @@ public class ManagerController implements IBaseController {
     private final SharedView sharedView;
     private final AccountView accountView;
     private final EnquiryView enquiryView;
+    private final ReportView reportView;
     private final AuthService authService;
     private final BookingService bookingService;
     private final ProjectService projectService;
     private final EnquiryService enquiryService;
+    private final ReportService reportService;
 
     public ManagerController(
             ManagerView view,
             SharedView sharedView,
             AccountView accountView,
             EnquiryView enquiryView,
+            ReportView reportView,
             AuthService authService,
             BookingService bookingService,
             ProjectService projectService,
-            EnquiryService enquiryService
+            EnquiryService enquiryService,
+            ReportService reportService
     ) {
         this.view = view;
         this.sharedView = sharedView;
         this.accountView = accountView;
         this.enquiryView = enquiryView;
+        this.reportView = reportView;
         this.authService = authService;
         this.bookingService = bookingService;
         this.projectService = projectService;
         this.enquiryService = enquiryService;
+        this.reportService = reportService;
     }
 
     @Override
@@ -107,7 +105,6 @@ public class ManagerController implements IBaseController {
                 default -> view.showMessage("Invalid choice.");
             }
         }
-    
 
         //Create a Project
         public void createProject() {
@@ -385,7 +382,15 @@ public class ManagerController implements IBaseController {
             }
         }
 
-        
+        public void generateApplicantReport() {
+            ReportViewerController reportViewerController = new ReportViewerController(
+                    sharedView,
+                    reportView,
+                    reportService
+            );
+            reportViewerController.start();
+        }
+
         private void manageRegistrations() {
             String[] options = {
                     "View All Registrations for Projects", // Includes both pending and approved registrations
@@ -419,7 +424,7 @@ public class ManagerController implements IBaseController {
                 switch (choice) {
                     case 1 -> approveBTOApplication();
                     case 2 -> approveWithdrawalRequests();
-                    //case 3 -> generateApplicantReport();
+                    case 3 -> generateApplicantReport();
                     case 4 -> view.showMessage("Returning to main menu...");
                     default -> view.showMessage("Invalid choice.");
                 }
@@ -450,9 +455,6 @@ public class ManagerController implements IBaseController {
                 }
             } while (choice != 6); // Exit submenu when "Back to Main Menu" is selected
         }
-
-        
-
 
         private void approveOrRejectRegistration() {
             User user = Session.getCurrentUser();
@@ -529,6 +531,7 @@ public class ManagerController implements IBaseController {
                 }
             }
         }
+
         private void manageEnquiries(){
             ManagerEnquiryController enquiryController = new ManagerEnquiryController(
                     sharedView,
@@ -537,5 +540,4 @@ public class ManagerController implements IBaseController {
             );
             enquiryController.start();
         }
-
 }
