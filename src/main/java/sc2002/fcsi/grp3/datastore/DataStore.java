@@ -53,6 +53,8 @@ public final class DataStore {
 
     public void addRegistration(Registration registration){registrations.add(registration);}
 
+    public void setRegistrations(List<Registration> registration){this.registrations = registration;}
+
     public List<Registration> getRegistrations(){ return registrations; }
 
     public List<Enquiry> getEnquiries() {return enquiries;}

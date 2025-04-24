@@ -3,6 +3,7 @@ package sc2002.fcsi.grp3.model;
 import sc2002.fcsi.grp3.model.enums.FlatType;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Project {
@@ -38,7 +39,9 @@ public class Project {
         this.applicationClosingDate = applicationClosingDate;
         this.managerNric = managerNric;
         this.totalOfficerSlots = totalOfficerSlots;
-        this.officerNrics = officerNrics;
+//        this.officerNrics = officerNrics;
+
+        this.officerNrics = new ArrayList<>(officerNrics);
     }
 
     public Project(

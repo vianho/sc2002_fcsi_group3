@@ -9,31 +9,31 @@ public class Registration {
     private String id;
     private Project project;
     private User applicant;
-    private FlatType flatType;
     private RegistrationStatus status;
     private LocalDate submittedAt;
+    private static int nextRegistrationId;
 
-//    public Registration (
-//            String id,
-//            Project project,
-//            User applicant,
-//            FlatType flatType,
-//            ApplicationStatus status,
-//            LocalDate submittedAt
-//    ) {
-//        this.id = id;
-//        this.project = project;
-//        this.applicant = applicant;
-//        this.flatType = flatType;
-//        this.status = status;
-//        this.submittedAt = submittedAt;
-//    }
+
+    public Registration (
+            String id,
+            Project project,
+            User applicant,
+            RegistrationStatus status,
+            LocalDate submittedAt
+    ) {
+        this.id = id;
+        this.project = project;
+        this.applicant = applicant;
+        this.status = status;
+        this.submittedAt = submittedAt;
+    }
 
     public Registration (
             Project project,
             User applicant,
             LocalDate submittedAt
     ) {
+        this.id = getNextRegistrationId();
         this.project = project;
         this.applicant = applicant;
         this.status = RegistrationStatus.PENDING;
@@ -46,9 +46,9 @@ public class Registration {
         return id;
     }
 
-    public FlatType getFlatType() {
-        return flatType;
-    }
+//    public FlatType getFlatType() {
+//        return flatType;
+//    }
 
     public Project getProject() {
         return project;
@@ -88,7 +88,15 @@ public class Registration {
         this.id = id;
     }
 
-    public void setFlatType(FlatType flatType) {
-        this.flatType = flatType;
+    public static void setNextRegistrationId(int id) {
+        nextRegistrationId = id;
     }
+
+    public static String getNextRegistrationId() {
+        return String.valueOf(++nextRegistrationId);
+    }
+
+//    public void setFlatType(FlatType flatType) {
+//        this.flatType = flatType;
+//    }
 }

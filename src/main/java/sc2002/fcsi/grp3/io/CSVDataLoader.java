@@ -18,6 +18,7 @@ public class CSVDataLoader implements IDataLoader {
     private final String applicationFilePath;
     private final String enquiryFilePath;
     private final String bookingFilePath;
+    private final String registrationFilePath;
     private final static DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private List<Project> projects;
     private static Map<Integer, Project> projectMap;
@@ -26,19 +27,22 @@ public class CSVDataLoader implements IDataLoader {
     private List<Application> applications;
     private List<Enquiry> enquiries;
     private List<Booking> bookings;
+    private List<Registration> registrations;
 
     public CSVDataLoader(
             String userFilePath,
             String projectFilePath,
             String applicationFilePath,
             String enquiryFilePath,
-            String bookingFilePath
+            String bookingFilePath,
+            String registrationFilePath
     ) {
         this.userFilePath = userFilePath;
         this.projectFilePath = projectFilePath;
         this.applicationFilePath = applicationFilePath;
         this.enquiryFilePath = enquiryFilePath;
         this.bookingFilePath = bookingFilePath;
+        this.registrationFilePath = registrationFilePath;
     }
 
     protected static void readCSVLines(String filepath, Consumer<String[]> rowHandler) {
@@ -385,6 +389,60 @@ public class CSVDataLoader implements IDataLoader {
         try {
             Files.move(Paths.get(tmpFile), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
+            System.out.println("Failed to move temp file to final destination: " + e.getMessage());
+        }
+    }
+
+    public List<Registration> loadRegistrations(){
+        this.registrations = new ArrayList<>();
+        RegistrationParser registrationParser = new RegistrationParser(projectMap, userMap);
+        readCSVLines(registrationFilePath, tokens->{
+            try{
+                Registration registration = registrationParser.parse(tokens);
+                if (registration != null){
+                    registrations.add(registration);
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid registration row: " + Arrays.toString(tokens));
+                System.out.println(e.getMessage());
+                throw e;
+            }
+        });
+
+        int maxRegistrationId = registrations.stream()
+                .mapToInt(r -> {
+                    try{
+                        return Integer.parseInt(r.getId().trim());
+                    }
+                    catch(NumberFormatException e){
+                        return 0;
+                    }
+                })
+                .max()
+                .orElse(0);
+        return registrations;
+    }
+
+    public static void saveRegistrations(String filePath, List<Registration> registrations){
+        String tmpFile = filePath + ".tmp";
+        try(FileWriter writer = new FileWriter(tmpFile)){
+            writer.write("id,project,applicant,status,submittedAt\n");
+            for (Registration reg : registrations){
+                writer.write(String.format("%s,%d,%s,%s,%s\n",
+                        reg.getId(),
+                        reg.getProject().getId(),
+                        reg.getApplicant().getNric(),
+                        reg.getStatus().name(),
+                        reg.getSubmittedAt().format(dtFormatter)));
+            }
+        } catch (IOException e){
+            System.out.println("Failed to save registrations! " + e.getMessage());
+            new java.io.File(tmpFile).delete();
+            return;
+        }
+        try{
+            Files.move(Paths.get(tmpFile), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+        }catch (IOException e){
             System.out.println("Failed to move temp file to final destination: " + e.getMessage());
         }
     }
