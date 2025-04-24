@@ -4,15 +4,30 @@ import sc2002.fcsi.grp3.service.*;
 import sc2002.fcsi.grp3.session.Session;
 import sc2002.fcsi.grp3.view.ApplicantViews;
 
+/**
+ * The ApplicantController class handles all operations related to the applicant's role in the system.
+ * It provides functionality for viewing available projects, managing applications, enquiries, and account settings.
+ * This controller interacts with various services and views to facilitate the applicant's tasks.
+ */
 public class ApplicantController implements IBaseController {
-    private final ApplicantViews views;
 
+    private final ApplicantViews views;
     private final AuthService authService;
     private final ProjectService projectService;
     private final ApplicationService applicationService;
     private final EnquiryService enquiryService;
     private final BookingService bookingService;
 
+    /**
+     * Constructs an ApplicantController with the necessary dependencies.
+     *
+     * @param views              The ApplicantViews for displaying applicant-specific UI.
+     * @param authService        The AuthService for authentication-related operations.
+     * @param projectService     The ProjectService for managing projects.
+     * @param applicationService The ApplicationService for managing applications.
+     * @param enquiryService     The EnquiryService for managing enquiries.
+     * @param bookingService     The BookingService for managing bookings.
+     */
     public ApplicantController(
             ApplicantViews views,
             AuthService authService,
@@ -29,6 +44,10 @@ public class ApplicantController implements IBaseController {
         this.bookingService = bookingService;
     }
 
+    /**
+     * Starts the applicant's main menu and handles navigation to different functionalities.
+     */
+    @Override
     public void start() {
         int choice;
         String[] options = {
@@ -51,11 +70,17 @@ public class ApplicantController implements IBaseController {
         } while (choice != options.length);
     }
 
+    /**
+     * Logs the applicant out of the system and displays a logout message.
+     */
     private void logout() {
         Session.logout();
         views.sharedView().showMessage("Logging out...");
     }
 
+    /**
+     * Displays available projects to the applicant using the ProjectViewerController.
+     */
     private void viewProjects() {
         ProjectViewerController projectViewerController = new ProjectViewerController(
                 views.sharedView(),
@@ -65,6 +90,9 @@ public class ApplicantController implements IBaseController {
         projectViewerController.start();
     }
 
+    /**
+     * Handles application-related actions for the applicant using the ApplicationController.
+     */
     private void applicationActions() {
         ApplicationController applicationController = new ApplicationController(
                 views.sharedView(),
@@ -76,6 +104,9 @@ public class ApplicantController implements IBaseController {
         applicationController.start();
     }
 
+    /**
+     * Handles account settings for the applicant using the AccountController.
+     */
     private void accountSettings() {
         AccountController accountController = new AccountController(
                 authService,
@@ -87,7 +118,10 @@ public class ApplicantController implements IBaseController {
         accountController.start();
     }
 
-    private void viewEnquiries(){
+    /**
+     * Displays and manages enquiries for the applicant using the ApplicantEnquiryController.
+     */
+    private void viewEnquiries() {
         ApplicantEnquiryController enquiryController = new ApplicantEnquiryController(
                 views.sharedView(),
                 views.enquiryView(),

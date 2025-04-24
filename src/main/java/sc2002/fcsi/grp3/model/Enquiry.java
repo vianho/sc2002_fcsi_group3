@@ -2,7 +2,13 @@ package sc2002.fcsi.grp3.model;
 
 import sc2002.fcsi.grp3.model.enums.EnquiryStatus;
 import java.time.LocalDate;
+
+/**
+ * The Enquiry class represents an enquiry submitted by a user.
+ * It contains details such as the title, content, reply, and related project.
+ */
 public class Enquiry {
+
     private int ID;
     private String title;
     private String content;
@@ -15,7 +21,21 @@ public class Enquiry {
     private LocalDate lastUpdatedAt;
     private static int nextEnquiryId;
 
-    public Enquiry(int ID, String title, String content, String reply, User createdBy, Project relatedProject, User repliedBy, EnquiryStatus status, LocalDate createdAt, LocalDate lastUpdatedAt){
+    /**
+     * Constructs an Enquiry with all specified details.
+     *
+     * @param ID             the unique ID of the enquiry
+     * @param title          the title of the enquiry
+     * @param content        the content of the enquiry
+     * @param reply          the reply to the enquiry
+     * @param createdBy      the user who created the enquiry
+     * @param relatedProject the project related to the enquiry
+     * @param repliedBy      the user who replied to the enquiry
+     * @param status         the status of the enquiry
+     * @param createdAt      the date the enquiry was created
+     * @param lastUpdatedAt  the date the enquiry was last updated
+     */
+    public Enquiry(int ID, String title, String content, String reply, User createdBy, Project relatedProject, User repliedBy, EnquiryStatus status, LocalDate createdAt, LocalDate lastUpdatedAt) {
         this.ID = ID;
         this.title = title;
         this.content = content;
@@ -27,7 +47,17 @@ public class Enquiry {
         this.createdAt = createdAt;
         this.lastUpdatedAt = lastUpdatedAt;
     }
-    public Enquiry(String title, String content, User user,Project project){
+
+    /**
+     * Constructs an Enquiry with default reply and status.
+     * The enquiry ID is auto-incremented.
+     *
+     * @param title          the title of the enquiry
+     * @param content        the content of the enquiry
+     * @param user           the user who created the enquiry
+     * @param project        the project related to the enquiry
+     */
+    public Enquiry(String title, String content, User user, Project project) {
         this.ID = ++nextEnquiryId;
         this.title = title;
         this.content = content;
@@ -40,86 +70,192 @@ public class Enquiry {
         this.lastUpdatedAt = LocalDate.now();
     }
 
-
-    public int getId(){
+    /**
+     * Gets the unique ID of the enquiry.
+     *
+     * @return the enquiry ID
+     */
+    public int getId() {
         return this.ID;
     }
-    public String getTitle(){
+
+    /**
+     * Gets the title of the enquiry.
+     *
+     * @return the title
+     */
+    public String getTitle() {
         return this.title;
     }
-    public String getContent(){
+
+    /**
+     * Gets the content of the enquiry.
+     *
+     * @return the content
+     */
+    public String getContent() {
         return this.content;
     }
 
-    public String getReply(){
+    /**
+     * Gets the reply to the enquiry.
+     *
+     * @return the reply
+     */
+    public String getReply() {
         return this.reply;
     }
 
-    public User getCreatedBy(){
+    /**
+     * Gets the user who created the enquiry.
+     *
+     * @return the creator of the enquiry
+     */
+    public User getCreatedBy() {
         return this.createdBy;
     }
 
-    public Project getRelatedProject(){
+    /**
+     * Gets the project related to the enquiry.
+     *
+     * @return the related project
+     */
+    public Project getRelatedProject() {
         return this.relatedProject;
     }
 
-    public User getRepliedBy(){
+    /**
+     * Gets the user who replied to the enquiry.
+     *
+     * @return the replier of the enquiry
+     */
+    public User getRepliedBy() {
         return this.repliedBy;
     }
 
-    public EnquiryStatus getStatus(){
+    /**
+     * Gets the status of the enquiry.
+     *
+     * @return the enquiry status
+     */
+    public EnquiryStatus getStatus() {
         return this.status;
     }
 
-    public LocalDate getCreatedAt(){
+    /**
+     * Gets the date the enquiry was created.
+     *
+     * @return the creation date
+     */
+    public LocalDate getCreatedAt() {
         return this.createdAt;
     }
 
-    public LocalDate getLastUpdatedAt(){
+    /**
+     * Gets the date the enquiry was last updated.
+     *
+     * @return the last updated date
+     */
+    public LocalDate getLastUpdatedAt() {
         return this.lastUpdatedAt;
     }
 
+    /**
+     * Sets the next enquiry ID.
+     *
+     * @param id the next enquiry ID to set
+     */
     public static void setNextEnquiryId(int id) {
         nextEnquiryId = id;
     }
 
-    public void setTitle(String title){
+    /**
+     * Sets the title of the enquiry.
+     *
+     * @param title the title to set
+     */
+    public void setTitle(String title) {
         this.title = title;
     }
 
-    public void setContent(String content){
+    /**
+     * Sets the content of the enquiry.
+     *
+     * @param content the content to set
+     */
+    public void setContent(String content) {
         this.content = content;
     }
 
-    public void setReply(String reply){
+    /**
+     * Sets the reply to the enquiry.
+     *
+     * @param reply the reply to set
+     */
+    public void setReply(String reply) {
         this.reply = reply;
     }
 
-    public void setCreatedBy(User user){
+    /**
+     * Sets the user who created the enquiry.
+     *
+     * @param user the creator to set
+     */
+    public void setCreatedBy(User user) {
         this.createdBy = user;
     }
 
-    public void setRelatedProject(Project project){
+    /**
+     * Sets the project related to the enquiry.
+     *
+     * @param project the related project to set
+     */
+    public void setRelatedProject(Project project) {
         this.relatedProject = project;
     }
 
-    public void setRepliedBy(User user){
+    /**
+     * Sets the user who replied to the enquiry.
+     *
+     * @param user the replier to set
+     */
+    public void setRepliedBy(User user) {
         this.repliedBy = user;
     }
 
-    public void setStatus(EnquiryStatus status){
+    /**
+     * Sets the status of the enquiry.
+     *
+     * @param status the status to set
+     */
+    public void setStatus(EnquiryStatus status) {
         this.status = status;
     }
 
-    public void setCreatedAt(LocalDate date){
+    /**
+     * Sets the date the enquiry was created.
+     *
+     * @param date the creation date to set
+     */
+    public void setCreatedAt(LocalDate date) {
         this.createdAt = date;
     }
 
-    public void setLastUpdatedAt(LocalDate date){
+    /**
+     * Sets the date the enquiry was last updated.
+     *
+     * @param date the last updated date to set
+     */
+    public void setLastUpdatedAt(LocalDate date) {
         this.lastUpdatedAt = date;
     }
 
-    public boolean isReplied(){
+    /**
+     * Checks if the enquiry has been replied to.
+     *
+     * @return true if the enquiry has a reply and a replier, false otherwise
+     */
+    public boolean isReplied() {
         return reply != null && repliedBy != null;
     }
 

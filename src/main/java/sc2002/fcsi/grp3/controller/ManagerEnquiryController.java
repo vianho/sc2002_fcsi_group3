@@ -13,17 +13,33 @@ import sc2002.fcsi.grp3.view.SharedView;
 import java.util.List;
 import java.util.Optional;
 
-public class ManagerEnquiryController implements IBaseController{
+/**
+ * Controller class for managing enquiries assigned to a manager.
+ * Allows the manager to view and reply to enquiries related to their projects.
+ */
+public class ManagerEnquiryController implements IBaseController {
+
     private final SharedView sharedView;
     private final EnquiryView view;
     private final EnquiryService service;
 
+    /**
+     * Constructs a ManagerEnquiryController with the required dependencies.
+     *
+     * @param sharedView the shared view for displaying common UI elements
+     * @param view       the view for displaying enquiry-related UI elements
+     * @param service    the service for managing enquiry-related operations
+     */
     public ManagerEnquiryController(SharedView sharedView, EnquiryView view, EnquiryService service) {
         this.sharedView = sharedView;
         this.view = view;
         this.service = service;
     }
-    public void start(){
+
+    /**
+     * Starts the manager enquiry menu, allowing the manager to view or reply to enquiries.
+     */
+    public void start() {
         int choice;
         String[] options = {
                 "View All Enquiries Submitted",
@@ -31,26 +47,34 @@ public class ManagerEnquiryController implements IBaseController{
                 "Back"
         };
 
-        do{
+        do {
             choice = sharedView.showMenuAndGetChoice("Manager Enquiry Menu", options);
-            switch(choice){
+            switch (choice) {
                 case 1 -> viewAssignedEnquiries();
                 case 2 -> replyEnquiry();
-                case 3 -> {}
+                case 3 -> {
+                }
                 default -> view.showError("Invalid choice!");
             }
-        }while (choice != 3);
+        } while (choice != 3);
     }
 
-    private void viewAssignedEnquiries(){
+    /**
+     * Displays all enquiries assigned to the manager for the projects they are managing.
+     */
+    private void viewAssignedEnquiries() {
         User manager = Session.getCurrentUser();
         view.showEnquiriesOfficerManager(service.getAllEnquiriesManager(manager));
     }
 
-    private void replyEnquiry(){
+    /**
+     * Allows the manager to reply to an enquiry for the projects they are managing.
+     * Prompts the manager to select an enquiry and provide a reply.
+     */
+    private void replyEnquiry() {
         User manager = Session.getCurrentUser();
         List<Enquiry> notReplied = service.getUnrepliedEnquiriesHandledByManager(manager);
-        if(notReplied.isEmpty()){
+        if (notReplied.isEmpty()) {
             view.showError("No unreplied enquiries available for the project you are managing!");
             return;
         }
@@ -59,20 +83,19 @@ public class ManagerEnquiryController implements IBaseController{
         int id = view.promptEnquiryId();
         Optional<Enquiry> enquiryOpt = service.getUnrepliedEnquiriesHandledByManagerById(manager, id);
 
-        if (enquiryOpt.isEmpty()){
+        if (enquiryOpt.isEmpty()) {
             view.showError("Enquiry not found or not in your assigned projects.");
             return;
         }
         String reply = view.promptReply();
-        if (!Validator.isNonEmpty(reply)){
+        if (!Validator.isNonEmpty(reply)) {
             view.showError("Reply cannot be empty.");
             return;
         }
         ActionResult<Enquiry> result = service.replyToEnquiry(enquiryOpt.get(), manager, reply);
-        if (result.isSuccess()){
+        if (result.isSuccess()) {
             view.showMessage(result.getMessage());
-        }
-        else{
+        } else {
             view.showError(result.getMessage());
         }
     }

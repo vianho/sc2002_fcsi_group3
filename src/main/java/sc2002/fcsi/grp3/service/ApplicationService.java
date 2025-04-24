@@ -14,15 +14,32 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * The ApplicationService class provides functionality for managing applications.
+ * It includes methods for applying, withdrawing, and retrieving applications.
+ */
 public class ApplicationService {
+
     private final IApplicationPermission permission;
     private final DataStore db;
 
+    /**
+     * Constructs an ApplicationService with the specified permission and data store.
+     *
+     * @param permission the permission handler for application-related actions
+     * @param db         the data store containing application data
+     */
     public ApplicationService(IApplicationPermission permission, DataStore db) {
         this.permission = permission;
         this.db = db;
     }
 
+    /**
+     * Retrieves all applications submitted by the specified user.
+     *
+     * @param user the user whose applications are to be retrieved
+     * @return a list of applications submitted by the user
+     */
     public List<Application> getApplicationsFor(User user) {
         return db.getApplications()
                 .stream()
@@ -30,12 +47,27 @@ public class ApplicationService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves the active application for the specified user, if any.
+     * An application is considered active if its status is PENDING or SUCCESSFUL.
+     *
+     * @param user the user whose active application is to be retrieved
+     * @return an Optional containing the active application, or empty if none exists
+     */
     public Optional<Application> getActiveApplicationFor(User user) {
         return getApplicationsFor(user).stream()
                 .filter(Application::isActive)
                 .findFirst();
     }
 
+    /**
+     * Submits an application for a flat in the specified project and flat type.
+     *
+     * @param user     the user submitting the application
+     * @param project  the project for which the application is being made
+     * @param flatType the type of flat being applied for
+     * @return an ActionResult containing the application if successful, or an error message if not
+     */
     public ActionResult<Application> apply(User user, Project project, FlatType flatType) {
         if (permission.canApplyForFlat(user, project, flatType)) {
             Application app = new Application(project, user, flatType);
@@ -45,6 +77,12 @@ public class ApplicationService {
         return ActionResult.failure("You do not have permission to apply for a " + flatType.getDisplayName() + " flat in project " +project.getName() + " submitted");
     }
 
+    /**
+     * Finds an application by the applicant's NRIC.
+     *
+     * @param nric the NRIC of the applicant
+     * @return the application if found, or null if not found
+     */
     public Application findApplication(String nric){
         Application found = null;
         for(Application app : db.getApplications()){
@@ -56,6 +94,13 @@ public class ApplicationService {
         return found;
     }
 
+    /**
+     * Submits a withdrawal request for the specified application.
+     *
+     * @param user        the user submitting the withdrawal request
+     * @param application the application to be withdrawn
+     * @return an ActionResult indicating success or failure of the withdrawal request
+     */
     public ActionResult<Application> withdraw(User user, Application application) {
         if (permission.canWithdrawApplication(user, application)) {
             application.setStatus(ApplicationStatus.WITHDRAWAL_REQUESTED);

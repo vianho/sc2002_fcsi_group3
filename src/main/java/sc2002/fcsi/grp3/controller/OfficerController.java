@@ -14,34 +14,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 import java.time.LocalDate;
+
 /**
- * The {@code OfficerController} is the central controller handling the logic for an officer user in the BTO application system.
- * It is responsible for Officer logic and as an applicant, including:
- * <ul>
- *     <li>Viewing and applying to housing projects as an applicant</li>
- *     <li>Handling project registration, enquiry response, and flat bookings as an officer</li>
- *     <li>Viewing and updating account settings</li>
- *     <li>Switching between applicant and officer modes</li>
- *     <li>Logging out of the system</li>
- * </ul>
- *
- * <p>This controller delegates functionality to specialized sub-controllers for:
- * <ul>
- *     <li>{@link OfficerEnquiryController} for officer enquiry operations</li>
- *     <li>{@link ApplicantEnquiryController} for applicant enquiries</li>
- *     <li>{@link ProjectViewerController} to display projects</li>
- *     <li>{@link ApplicationController} to handle applications</li>
- *     <li>{@link AccountController} to manage account-related settings</li>
- * </ul>
- *
- * <p>It also utilizes services for interacting with the data layer such as {@link ProjectService},
- * {@link RegistrationService}, {@link BookingService}, {@link ApplicationService}, and {@link UserService}.
- *
- * <p>The controller assumes a logged-in user session via the {@link Session} class and uses shared views
- * for consistent CLI-based user interface rendering.
- *
- * @author
- * @version 1.0
+ * The OfficerController class handles all operations related to the officer's role in the system.
+ * It provides functionality for managing projects, applications, enquiries, and flat bookings.
+ * This controller interacts with various services and views to facilitate the officer's tasks.
  */
 public class OfficerController implements IBaseController {
     private final OfficerViews views;
@@ -69,6 +46,18 @@ public class OfficerController implements IBaseController {
     private final OfficerEnquiryController enquiryControllerOfficer ;
 
 
+    /**
+     * Constructs an OfficerController with the necessary dependencies.
+     *
+     * @param views               The OfficerViews for displaying officer-specific UI.
+     * @param authService         The AuthService for authentication-related operations.
+     * @param projectService      The ProjectService for managing projects.
+     * @param applicationService  The ApplicationService for managing applications.
+     * @param registrationService The RegistrationService for managing registrations.
+     * @param enquiryService      The EnquiryService for managing enquiries.
+     * @param bookingService      The BookingService for managing bookings.
+     * @param userService         The UserService for managing user-related operations.
+     */
     public OfficerController(
             OfficerViews views,
             AuthService authService,
@@ -91,6 +80,9 @@ public class OfficerController implements IBaseController {
         this.enquiryControllerOfficer = new OfficerEnquiryController(views.sharedView(), views.enquiryView(), enquiryService);
     }
 
+    /**
+     * Starts the officer's main menu and handles navigation to different functionalities.
+     */
     @Override
     public void start() {
         int choice;
@@ -113,6 +105,9 @@ public class OfficerController implements IBaseController {
 
     }
 
+    /**
+     * Displays the applicant menu, allowing the officer to view projects, applications, and enquiries as an applicant.
+     */
     private void applicantActions() {
         int choice;
         String[] options = {
@@ -135,6 +130,9 @@ public class OfficerController implements IBaseController {
 
     }
 
+    /**
+     * Displays the list of available projects for the officer to view.
+     */
     private void viewProjects() {
         ProjectViewerController projectViewerController = new ProjectViewerController(
                 views.sharedView(),
@@ -144,6 +142,9 @@ public class OfficerController implements IBaseController {
         projectViewerController.start();
     }
 
+    /**
+     * Handles application-related actions for the officer acting as an applicant.
+     */
     private void applicationActions() {
         ApplicationController applicationController = new ApplicationController(
                 views.sharedView(),
@@ -155,6 +156,9 @@ public class OfficerController implements IBaseController {
         applicationController.start();
     }
 
+    /**
+     * Displays the enquiries for the officer acting as an applicant.
+     */
     private void viewEnquiriesAsApplicant(){
         ApplicantEnquiryController enquiryController = new ApplicantEnquiryController(
                 views.sharedView(),
@@ -164,6 +168,9 @@ public class OfficerController implements IBaseController {
         enquiryController.start();
     }
 
+    /**
+     * Handles account settings for the officer. Delegates to the AccountController for managing account-related tasks.
+     */
     private void accountSettings() {
         AccountController accountController = new AccountController(
                 authService,

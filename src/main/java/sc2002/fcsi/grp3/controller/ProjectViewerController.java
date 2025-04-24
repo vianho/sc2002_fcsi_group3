@@ -15,11 +15,23 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The ProjectViewerController class handles the viewing and filtering of projects.
+ * It provides functionality for creating, updating, and clearing filters, as well as sorting projects.
+ */
 public class ProjectViewerController implements IBaseController {
+
     private final SharedView sharedView;
     private final ProjectView view;
     private final ProjectService projectService;
 
+    /**
+     * Constructs a ProjectViewerController with the necessary dependencies.
+     *
+     * @param sharedView     the shared view for displaying common UI elements
+     * @param view           the view for displaying project-related UI elements
+     * @param projectService the service for managing project-related operations
+     */
     public ProjectViewerController(
             SharedView sharedView,
             ProjectView view,
@@ -30,6 +42,9 @@ public class ProjectViewerController implements IBaseController {
         this.projectService = projectService;
     }
 
+    /**
+     * Starts the project viewer menu, allowing the user to filter, sort, and view projects.
+     */
     public void start() {
         int choice;
         String[] options = {
@@ -74,6 +89,13 @@ public class ProjectViewerController implements IBaseController {
         } while (choice != options.length);
     }
 
+    /**
+     * Retrieves the list of projects visible to the user.
+     * If the list is not cached in the session, it fetches the projects from the project service and caches them.
+     *
+     * @param user the current user
+     * @return a list of visible projects
+     */
     private List<Project> getVisibleProjects(User user) {
         List<Project> visibleProjects = Session.getList("visibleProjects", Project.class);
 
@@ -89,6 +111,15 @@ public class ProjectViewerController implements IBaseController {
         return visibleProjects;
     }
 
+    /**
+     * Retrieves the list of projects filtered and sorted based on the user's preferences.
+     *
+     * @param user       the current user
+     * @param projects   the list of projects to filter
+     * @param filter     the filter criteria
+     * @param sortOption the sorting criteria
+     * @return a list of filtered and sorted projects
+     */
     private List<Project> getFilteredProjects(User user, List<Project> projects, ProjectFilter filter, ProjectSortOption sortOption) {
         List<Project> filteredProjects = projectService.filterProjects(user, projects, filter, sortOption);
         if (filteredProjects.isEmpty()) {
@@ -97,12 +128,23 @@ public class ProjectViewerController implements IBaseController {
         return filteredProjects;
     }
 
+    /**
+     * Displays the list of projects based on the current filter and sort options.
+     *
+     * @param user       the current user
+     * @param filter     the filter criteria
+     * @param sortOption the sorting criteria
+     */
     private void viewProjects(User user, ProjectFilter filter, ProjectSortOption sortOption) {
         List<Project> filteredProjects = getFilteredProjects(user, getVisibleProjects(user), filter, sortOption);
         List<ProjectFlatRow> rows = ProjectViewUtils.flattenEligibleFlats(filteredProjects, user);
         view.showProjectFlats(rows);
     }
 
+    /**
+     * Prompts the user to create a new filter for projects.
+     * The filter criteria include neighbourhood, application dates, flat types, and price range.
+     */
     private void createFilter() {
         sharedView.showTitle("Create Filter");
         String neighbourhood = view.promptNeighbourhood();
@@ -132,6 +174,12 @@ public class ProjectViewerController implements IBaseController {
         }
     }
 
+    /**
+     * Allows the user to update an existing filter for projects.
+     * The user can modify individual filter criteria or clear all filters.
+     *
+     * @param filter the current filter to update
+     */
     private void updateFilter(ProjectFilter filter) {
         int choice;
         String[] options = {
@@ -177,6 +225,12 @@ public class ProjectViewerController implements IBaseController {
         sharedView.showMessage("Filter Updated.");
     }
 
+    /**
+     * Prompts the user to select sorting options for projects.
+     * The user can choose a sort key and direction (ascending or descending).
+     *
+     * @param sortOption the current sorting option to update
+     */
     private void sortProjects(ProjectSortOption sortOption) {
         sharedView.showTitle("Sort Projects");
         int choice;

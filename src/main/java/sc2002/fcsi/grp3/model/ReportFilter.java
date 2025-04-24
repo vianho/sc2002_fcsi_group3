@@ -6,55 +6,113 @@ import sc2002.fcsi.grp3.model.enums.MaritalStatus;
 
 import java.util.List;
 
+/**
+ * The ReportFilter class represents the criteria used to filter flat booking reports.
+ * It includes attributes such as marital status, age range, flat types, and neighbourhood.
+ */
 public class ReportFilter {
+
     private MaritalStatus maritalStatus;
     private Integer minAge;
     private Integer maxAge;
     private List<FlatType> flatTypes;
     private String neighbourhood;
 
+    /**
+     * Constructs an empty ReportFilter with no criteria.
+     */
     public ReportFilter() {}
 
-    // getters
+    // Getters
 
+    /**
+     * Gets the marital status to filter by.
+     *
+     * @return the marital status
+     */
     public MaritalStatus getMaritalStatus() {
         return maritalStatus;
     }
 
+    /**
+     * Gets the minimum age to filter by.
+     *
+     * @return the minimum age
+     */
     public Integer getMinAge() {
         return minAge;
     }
 
+    /**
+     * Gets the maximum age to filter by.
+     *
+     * @return the maximum age
+     */
     public Integer getMaxAge() {
         return maxAge;
     }
 
+    /**
+     * Gets the list of flat types to filter by.
+     *
+     * @return the list of flat types
+     */
     public List<FlatType> getFlatTypes() {
         return flatTypes;
     }
 
+    /**
+     * Gets the neighbourhood to filter by.
+     *
+     * @return the neighbourhood
+     */
     public String getNeighbourhood() {
         return neighbourhood;
     }
 
-    // setters
+    // Setters
 
+    /**
+     * Sets the marital status to filter by.
+     *
+     * @param maritalStatus the marital status to set
+     */
     public void setMaritalStatus(MaritalStatus maritalStatus) {
         this.maritalStatus = maritalStatus;
     }
 
+    /**
+     * Sets the minimum age to filter by.
+     *
+     * @param minAge the minimum age to set
+     */
     public void setMinAge(Integer minAge) {
         this.minAge = minAge;
     }
 
+    /**
+     * Sets the maximum age to filter by.
+     *
+     * @param maxAge the maximum age to set
+     */
     public void setMaxAge(Integer maxAge) {
         this.maxAge = maxAge;
     }
 
+    /**
+     * Sets the list of flat types to filter by.
+     *
+     * @param flatTypes the list of flat types to set
+     */
     public void setFlatTypes(List<FlatType> flatTypes) {
         this.flatTypes = flatTypes;
     }
 
+    /**
+     * Sets the neighbourhood to filter by.
+     *
+     * @param neighbourhood the neighbourhood to set
+     */
     public void setNeighbourhood(String neighbourhood) {
         this.neighbourhood = neighbourhood;
     }

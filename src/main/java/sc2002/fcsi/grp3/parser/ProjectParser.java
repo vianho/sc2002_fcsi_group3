@@ -9,7 +9,20 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProjectParser implements IBaseParser<Project>{
+/**
+ * The ProjectParser class is responsible for parsing project data from CSV tokens.
+ * It includes logic to parse flat details and project attributes.
+ */
+public class ProjectParser implements IBaseParser<Project> {
+
+    /**
+     * Parses flat details from arrays of flat types, available units, and selling prices.
+     *
+     * @param flatTypes      an array of flat type codes
+     * @param availableUnits an array of available unit counts
+     * @param sellingPrice   an array of selling prices
+     * @return a list of Flat objects
+     */
     protected static List<Flat> parseFlats(String[] flatTypes, String[] availableUnits, String[] sellingPrice) {
         List<Flat> flats = new ArrayList<>();
         for (int i = 0; i < flatTypes.length; i++) {
@@ -26,6 +39,12 @@ public class ProjectParser implements IBaseParser<Project>{
         return flats;
     }
 
+    /**
+     * Parses a CSV row into a Project object.
+     *
+     * @param tokens the CSV row tokens
+     * @return the parsed Project object, or null if the row is invalid
+     */
     @Override
     public Project parse(String[] tokens) {
         if (tokens.length != 12) return null;

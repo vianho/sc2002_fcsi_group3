@@ -11,17 +11,32 @@ import sc2002.fcsi.grp3.view.SharedView;
 
 import java.util.List;
 
+/**
+ * The ReportViewerController class handles the viewing and filtering of applicant booking reports.
+ * It provides functionality for creating, updating, and clearing filters for generating reports.
+ */
 public class ReportViewerController implements IBaseController {
+
     private final SharedView sharedView;
     private final ReportView view;
     private final ReportService reportService;
 
+    /**
+     * Constructs a ReportViewerController with the necessary dependencies.
+     *
+     * @param sharedView    the shared view for displaying common UI elements
+     * @param view          the view for displaying report-related UI elements
+     * @param reportService the service for managing report-related operations
+     */
     public ReportViewerController(SharedView sharedView, ReportView view, ReportService reportService) {
         this.sharedView = sharedView;
         this.view = view;
         this.reportService = reportService;
     }
 
+    /**
+     * Starts the report viewer menu, allowing the user to filter and view applicant booking reports.
+     */
     public void start() {
         int choice;
         String[] options = {
@@ -58,6 +73,10 @@ public class ReportViewerController implements IBaseController {
         } while (choice != options.length);
     }
 
+    /**
+     * Prompts the user to create a new filter for the report.
+     * The filter criteria include marital status, flat types, age range, and neighbourhood.
+     */
     private void createFilter() {
         sharedView.showTitle("Create Filter");
 
@@ -83,6 +102,12 @@ public class ReportViewerController implements IBaseController {
         sharedView.showMessage("Filter created.");
     }
 
+    /**
+     * Allows the user to update an existing filter for the report.
+     * The user can modify individual filter criteria or clear all filters.
+     *
+     * @param filter the current filter to update
+     */
     private void updateFilter(ReportFilter filter) {
         String[] options = {
                 "Marital Status",

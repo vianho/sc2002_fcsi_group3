@@ -11,19 +11,33 @@ import sc2002.fcsi.grp3.view.SharedView;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The OfficerEnquiryController class handles all operations related to managing enquiries assigned to an officer.
+ * It provides functionality for viewing and replying to enquiries.
+ */
 public class OfficerEnquiryController implements IBaseController {
+
     private final SharedView sharedView;
     private final EnquiryView view;
     private final EnquiryService service;
 
-
+    /**
+     * Constructs an OfficerEnquiryController with the necessary dependencies.
+     *
+     * @param sharedView the shared view for displaying common UI elements
+     * @param view       the view for displaying enquiry-related UI elements
+     * @param service    the service for managing enquiry-related operations
+     */
     public OfficerEnquiryController(SharedView sharedView, EnquiryView view, EnquiryService service) {
         this.sharedView = sharedView;
         this.view = view;
         this.service = service;
     }
 
-    public void start(){
+    /**
+     * Starts the officer enquiry menu, allowing the officer to view or reply to enquiries.
+     */
+    public void start() {
         int choice;
         String[] options  = {
                 "View Assigned Project Enquiries",
@@ -40,11 +54,17 @@ public class OfficerEnquiryController implements IBaseController {
         } while (choice != options.length);
     }
 
+    /**
+     * Displays all enquiries assigned to the officer for the projects they are handling.
+     */
     private void viewAssignedEnquiries(){
         User officer = Session.getCurrentUser();
         view.showEnquiriesOfficerManager(service.getEnquiriesHandledByOfficer(officer));
     }
 
+    /**
+     * Allows the officer to reply to an enquiry. Prompts the officer to select an enquiry and provide a reply.
+     */
     private void replyEnquiry(){
         User officer = Session.getCurrentUser();
         List<Enquiry> notReplied = service.getUnrepliedEnquiriesHandledByOfficer(officer);

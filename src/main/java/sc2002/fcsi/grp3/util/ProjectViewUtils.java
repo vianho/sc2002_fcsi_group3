@@ -8,8 +8,18 @@ import sc2002.fcsi.grp3.dto.ProjectFlatRow;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The ProjectViewUtils class provides utility methods for processing and displaying project data.
+ */
 public class ProjectViewUtils {
 
+    /**
+     * Flattens a list of projects into a list of ProjectFlatRow objects, including only flats eligible for the specified user.
+     *
+     * @param projects the list of projects to process
+     * @param user     the user for whom eligibility is checked
+     * @return a list of ProjectFlatRow objects containing eligible flats
+     */
     public static List<ProjectFlatRow> flattenEligibleFlats(List<Project> projects, User user) {
         List<ProjectFlatRow> rows = new ArrayList<>();
 

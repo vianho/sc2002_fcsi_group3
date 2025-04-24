@@ -4,7 +4,15 @@ package sc2002.fcsi.grp3.model.enums;
  * Represents the marital status of a user.
  */
 public enum MaritalStatus {
+
+    /**
+     * Represents a user who is single.
+     */
     SINGLE,
+
+    /**
+     * Represents a user who is married.
+     */
     MARRIED;
 
     /**
