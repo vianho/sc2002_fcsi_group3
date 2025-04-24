@@ -1,5 +1,5 @@
 id,Project Name,Neighborhood,Visible,Flat Types,Available Units,Selling Price,Application opening date,Application closing date,Manager,Officer Slot,Officer NRICs
-1,Acacia Breeze,Yishun,true,2R;3R,1;3,350000.00;450000.00,15/02/2025,20/05/2025,S5678901G,3,T2109876H;S6543210I;T1234567J
+1,Acacia Breeze,Yishun,true,2R;3R,4;3,350000.00;450000.00,15/02/2025,20/05/2025,S5678901G,3,T2109876H;S6543210I;T1234567J
 2,Admiralty Flora,Woodlands,true,2R;3R,3;3,308000.00;400000.00,15/02/2025,20/05/2025,S5678901G,3,
 3,Stirling Horizon,Queenstown,true,2R;3R,3;3,365000.00;529000.00,15/02/2025,20/05/2025,S5678901G,3,
 4,Woodlands North Verge,Woodlands,true,2R;3R,3;3,251000.00;363000.00,15/02/2025,20/05/2025,S5678901G,3,
