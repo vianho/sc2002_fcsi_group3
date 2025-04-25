@@ -163,7 +163,7 @@ public class CSVDataLoader implements IDataLoader {
         int maxProjectId = projects.stream()
                 .mapToInt(Project::getId)
                 .max()
-                .orElse(1);
+                .orElse(1) + 1;
         Project.setNextProjectId(maxProjectId);
         return projects;
     }

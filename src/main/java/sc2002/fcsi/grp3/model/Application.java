@@ -154,6 +154,6 @@ public class Application {
      * @return true if the application is active, false otherwise
      */
     public boolean isActive() {
-        return status == ApplicationStatus.PENDING || status == ApplicationStatus.SUCCESSFUL;
+        return status == ApplicationStatus.PENDING || status == ApplicationStatus.SUCCESSFUL || status == ApplicationStatus.BOOKED;
     }
 }

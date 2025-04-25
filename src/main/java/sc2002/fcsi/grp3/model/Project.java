@@ -56,7 +56,7 @@ public class Project {
         this.applicationClosingDate = applicationClosingDate;
         this.managerNric = managerNric;
         this.totalOfficerSlots = totalOfficerSlots;
-        this.officerNrics = new ArrayList<>(officerNrics);
+        this.officerNrics = officerNrics;
     }
 
     /**
