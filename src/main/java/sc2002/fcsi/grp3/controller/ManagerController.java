@@ -554,13 +554,7 @@ public class ManagerController implements IBaseController {
             if (decision.equals("approve")) {
                 boolean success = projectService.updateOfficerRegistrationStatus(registration, RegistrationStatus.APPROVED);
                 if (success) {
-                    // Add the officer's NRIC to the project's officerNrics list
-                    boolean added = project.assignOfficer(registration.getApplicant().getNric());
-                    if (added) {
-                        view.showMessage("Registration approved, and officer added to the project.");
-                    } else {
-                        view.showMessage("Registration approved, but officer could not be added (e.g., duplicate NRIC or max slots reached).");
-                    }
+                    view.showMessage("Registration approved, and officer added to the project.");
                 } else {
                     view.showMessage("Registration approval failed.");
                 }

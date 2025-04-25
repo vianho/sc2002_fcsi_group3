@@ -60,7 +60,13 @@ public class ProjectParser implements IBaseParser<Project> {
         LocalDate applicationClosingDate = LocalDate.parse(tokens[8].trim(), dtFormatter);
         String managerNric = tokens[9].trim();
         int totalOfficerSlots = Integer.parseInt(tokens[10].trim());
-        String[] officerNrics = tokens[11].trim().split(";");
+        List<String> officerNrics = new ArrayList<>();
+        // initialize officer nric as mutable list
+        for (String s : tokens[11].split(";")) {
+            if (!s.isEmpty()) {
+                officerNrics.add(s);
+            }
+        }
 
         List<Flat> flats = parseFlats(flatTypes, availableUnits, sellingPrice);
 
@@ -74,7 +80,7 @@ public class ProjectParser implements IBaseParser<Project> {
                 managerNric,
                 totalOfficerSlots,
                 flats,
-                List.of(officerNrics)
+                officerNrics
         );
     }
 }

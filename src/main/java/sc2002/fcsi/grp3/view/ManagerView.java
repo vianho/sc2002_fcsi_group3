@@ -100,8 +100,8 @@ public class ManagerView extends BaseView {
         // Prompt for project details
         String name = promptString("Enter project name: ");
         String neighbourhood = promptString("Enter project neighbourhood: ");
-        LocalDate applicationOpeningDate = promptDate("Enter application opening date (YYYY-MM-DD): ");
-        LocalDate applicationClosingDate = promptDate("Enter application closing date (YYYY-MM-DD): ");
+        LocalDate applicationOpeningDate = promptDate("Enter application opening date (DD-MM-YYYY): ");
+        LocalDate applicationClosingDate = promptDate("Enter application closing date (DD-MM-YYYY): ");
         int totalOfficerSlots = promptInt("Enter total officer slots: ");
 
         // Prompt for flats
@@ -116,7 +116,7 @@ public class ManagerView extends BaseView {
                 applicationClosingDate,
                 managerNric, // Set the manager's NRIC
                 totalOfficerSlots,
-                flats, List.of()
+                flats, new ArrayList<>()
         );
     }
 
