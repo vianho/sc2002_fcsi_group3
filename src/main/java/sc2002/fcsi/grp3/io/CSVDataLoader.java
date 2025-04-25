@@ -163,7 +163,8 @@ public class CSVDataLoader implements IDataLoader {
         int maxProjectId = projects.stream()
                 .mapToInt(Project::getId)
                 .max()
-                .orElse(1) + 1;
+                .orElse(0);
+        maxProjectId = maxProjectId + 1;
         Project.setNextProjectId(maxProjectId);
         return projects;
     }
@@ -247,7 +248,7 @@ public class CSVDataLoader implements IDataLoader {
         int maxApplicationId = applications.stream()
                 .mapToInt(Application::getId)
                 .max()
-                .orElse(1);
+                .orElse(0);
         maxApplicationId = maxApplicationId + 1;
         Application.setNextId(maxApplicationId);
 
